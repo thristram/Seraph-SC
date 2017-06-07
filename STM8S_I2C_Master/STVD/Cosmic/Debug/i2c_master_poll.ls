@@ -1,830 +1,830 @@
    1                     ; C Compiler for STM8 (COSMIC Software)
    2                     ; Generator V4.2.4 - 19 Dec 2007
-  50                     .const:	section	.text
-  51  0000               L6:
-  52  0000 000f4240      	dc.l	1000000
-  53                     ; 30 uint8_t I2C_Config(void) {
-  54                     	scross	off
-  55                     .text:	section	.text,new
-  56  0000               _I2C_Config:
-  58  0000 89            	pushw	x
-  59       00000002      OFST:	set	2
-  62                     ; 31 	uint16_t time_out = 0;
-  64  0001 5f            	clrw	x
-  65  0002 1f01          	ldw	(OFST-1,sp),x
-  66                     ; 32 	enableInterrupts();
-  69  0004 9a            rim
-  71                     ; 36 	I2C_DeInit();
-  74  0005 cd0000        	call	_I2C_DeInit
-  76                     ; 38 	I2C_Init(100000,0x50,I2C_DUTYCYCLE_2,I2C_ACK_CURR,I2C_ADDMODE_7BIT,CLK_GetClockFreq()/1000000);
-  78  0008 cd0000        	call	_CLK_GetClockFreq
-  80  000b ae0000        	ldw	x,#L6
-  81  000e cd0000        	call	c_ludv
-  83  0011 b603          	ld	a,c_lreg+3
-  84  0013 88            	push	a
-  85  0014 4b00          	push	#0
-  86  0016 4b01          	push	#1
-  87  0018 4b00          	push	#0
-  88  001a ae0050        	ldw	x,#80
-  89  001d 89            	pushw	x
-  90  001e ae86a0        	ldw	x,#34464
-  91  0021 89            	pushw	x
-  92  0022 ae0001        	ldw	x,#1
-  93  0025 89            	pushw	x
-  94  0026 cd0000        	call	_I2C_Init
-  96  0029 5b0a          	addw	sp,#10
-  97                     ; 40 	I2C_Cmd(ENABLE);
-  99  002b a601          	ld	a,#1
- 100  002d cd0000        	call	_I2C_Cmd
- 103  0030 2033          	jra	L13
- 104  0032               L72:
- 105                     ; 43 		set_tout_ms(10);
- 107  0032 ae000a        	ldw	x,#10
- 108  0035 bf00          	ldw	_TIM4_tout,x
- 109                     ; 44     I2C->CR2 |= I2C_CR2_STOP;                        								// STOP=1, generate stop
- 112  0037 72125211      	bset	21009,#1
- 114  003b               L73:
- 115                     ; 45     while((I2C->CR2 & I2C_CR2_STOP) && tout());      								// wait until stop is performed
- 117  003b c65211        	ld	a,21009
- 118  003e a502          	bcp	a,#2
- 119  0040 2704          	jreq	L34
- 121  0042 be00          	ldw	x,_TIM4_tout
- 122  0044 26f5          	jrne	L73
- 123  0046               L34:
- 124                     ; 46 		time_out += 10;
- 126  0046 1e01          	ldw	x,(OFST-1,sp)
- 127  0048 1c000a        	addw	x,#10
- 128  004b 1f01          	ldw	(OFST-1,sp),x
- 129                     ; 47 		if(!tout()){
- 131  004d be00          	ldw	x,_TIM4_tout
- 132  004f 2609          	jrne	L54
- 133                     ; 48 			I2C_SoftwareResetCmd(ENABLE);
- 135  0051 a601          	ld	a,#1
- 136  0053 cd0000        	call	_I2C_SoftwareResetCmd
- 138                     ; 49 			I2C_SoftwareResetCmd(DISABLE);
- 140  0056 4f            	clr	a
- 141  0057 cd0000        	call	_I2C_SoftwareResetCmd
- 143  005a               L54:
- 144                     ; 51 		if(time_out > 500){
- 146  005a 1e01          	ldw	x,(OFST-1,sp)
- 147  005c a301f5        	cpw	x,#501
- 148  005f 2504          	jrult	L13
- 149                     ; 52 			return IIC_ERROR_BUSY;
- 151  0061 a602          	ld	a,#2
- 153  0063 2008          	jra	L01
- 154  0065               L13:
- 155                     ; 41   while((I2C->SR3 & I2C_SR3_BUSY))       									// Wait while the bus is busy
- 157  0065 c65219        	ld	a,21017
- 158  0068 a502          	bcp	a,#2
- 159  006a 26c6          	jrne	L72
- 160                     ; 55 	return IIC_SUCCESS;
- 162  006c 4f            	clr	a
- 164  006d               L01:
- 166  006d 85            	popw	x
- 167  006e 81            	ret
- 230                     ; 65 uint8_t I2C_WriteBytes(uint16_t SlaveAddr, uint8_t *pWriteDataBuffer, uint8_t NumByteToWrite, uint8_t TimeOutOfMs)
- 230                     ; 66 {
- 231                     .text:	section	.text,new
- 232  0000               _I2C_WriteBytes:
- 234  0000 89            	pushw	x
- 235       00000000      OFST:	set	0
- 238                     ; 67 	set_tout_ms(TimeOutOfMs);
- 240  0001 7b08          	ld	a,(OFST+8,sp)
- 241  0003 5f            	clrw	x
- 242  0004 97            	ld	xl,a
- 243  0005 bf00          	ldw	_TIM4_tout,x
- 246  0007 200f          	jra	L501
- 247  0009               L301:
- 248                     ; 70     I2C->CR2 |= I2C_CR2_STOP;                        								// STOP=1, generate stop
- 250  0009 72125211      	bset	21009,#1
- 252  000d               L311:
- 253                     ; 71     while((I2C->CR2 & I2C_CR2_STOP) && tout());      								// wait until stop is performed
- 255  000d c65211        	ld	a,21009
- 256  0010 a502          	bcp	a,#2
- 257  0012 2704          	jreq	L501
- 259  0014 be00          	ldw	x,_TIM4_tout
- 260  0016 26f5          	jrne	L311
- 261  0018               L501:
- 262                     ; 68   while((I2C->SR3 & I2C_SR3_BUSY) && tout())       									// Wait while the bus is busy
- 264  0018 c65219        	ld	a,21017
- 265  001b a502          	bcp	a,#2
- 266  001d 2704          	jreq	L121
- 268  001f be00          	ldw	x,_TIM4_tout
- 269  0021 26e6          	jrne	L301
- 270  0023               L121:
- 271                     ; 73 	if(!tout()){return IIC_ERROR_BUSY;}
- 273  0023 be00          	ldw	x,_TIM4_tout
- 274  0025 2604          	jrne	L321
- 277  0027 a602          	ld	a,#2
- 279  0029 201d          	jra	L41
- 280  002b               L321:
- 281                     ; 74   I2C->CR2 |= I2C_CR2_START;                        									// START=1, generate start
- 283  002b 72105211      	bset	21009,#0
- 285  002f               L721:
- 286                     ; 75   while(((I2C->SR1 & I2C_SR1_SB)==0) && tout()); 									// Wait for start bit detection (SB)
- 288  002f c65217        	ld	a,21015
- 289  0032 a501          	bcp	a,#1
- 290  0034 2604          	jrne	L331
- 292  0036 be00          	ldw	x,_TIM4_tout
- 293  0038 26f5          	jrne	L721
- 294  003a               L331:
- 295                     ; 77   if(tout())
- 298  003a be00          	ldw	x,_TIM4_tout
- 299  003c 2708          	jreq	L531
- 300                     ; 87       I2C->DR = (u8)(SlaveAddr << 1);   									// Send 7-bit device address & Write (R/W = 0)
- 302  003e 7b02          	ld	a,(OFST+2,sp)
- 303  0040 48            	sll	a
- 304  0041 c75216        	ld	21014,a
- 306  0044 2004          	jra	L341
- 307  0046               L531:
- 308                     ; 90 		return IIC_ERROR_TIME_OUT;
- 310  0046 a601          	ld	a,#1
- 312  0048               L41:
- 314  0048 85            	popw	x
- 315  0049 81            	ret
- 316  004a               L341:
- 317                     ; 92   while(!(I2C->SR1 & I2C_SR1_ADDR) && tout());     									// Wait for address ack (ADDR)
- 319  004a c65217        	ld	a,21015
- 320  004d a502          	bcp	a,#2
- 321  004f 2604          	jrne	L741
- 323  0051 be00          	ldw	x,_TIM4_tout
- 324  0053 26f5          	jrne	L341
- 325  0055               L741:
- 326                     ; 93 	if(!tout()){
- 328  0055 be00          	ldw	x,_TIM4_tout
- 329  0057 2608          	jrne	L151
- 330                     ; 94 		I2C->CR2 |= I2C_CR2_STOP;
- 332  0059 72125211      	bset	21009,#1
- 333                     ; 95 		return IIC_ERROR_NOT_ACK;
- 335  005d a603          	ld	a,#3
- 337  005f 20e7          	jra	L41
- 338  0061               L151:
- 339                     ; 98   I2C->SR3;
- 342  0061 c65219        	ld	a,21017
- 343  0064 97            	ld	xl,a
- 345  0065               L551:
- 346                     ; 99   while(!(I2C->SR1 & I2C_SR1_TXE) && tout());  									// Wait for TxE
- 348  0065 c65217        	ld	a,21015
- 349  0068 a580          	bcp	a,#128
- 350  006a 2604          	jrne	L161
- 352  006c be00          	ldw	x,_TIM4_tout
- 353  006e 26f5          	jrne	L551
- 354  0070               L161:
- 355                     ; 100   if(NumByteToWrite)
- 357  0070 0d07          	tnz	(OFST+7,sp)
- 358  0072 2733          	jreq	L361
- 360  0074 201d          	jra	L761
- 361  0076               L561:
- 362                     ; 104 			I2C->DR = *pWriteDataBuffer++; 
- 364  0076 1e05          	ldw	x,(OFST+5,sp)
- 365  0078 1c0001        	addw	x,#1
- 366  007b 1f05          	ldw	(OFST+5,sp),x
- 367  007d 1d0001        	subw	x,#1
- 368  0080 f6            	ld	a,(x)
- 369  0081 c75216        	ld	21014,a
- 371  0084               L771:
- 372                     ; 105 			while(!(I2C->SR1 & I2C_SR1_TXE) && tout());  								// test EV8 - wait for TxE
- 374  0084 c65217        	ld	a,21015
- 375  0087 a580          	bcp	a,#128
- 376  0089 2604          	jrne	L302
- 378  008b be00          	ldw	x,_TIM4_tout
- 379  008d 26f5          	jrne	L771
- 380  008f               L302:
- 381                     ; 106 			if(!tout()){
- 383  008f be00          	ldw	x,_TIM4_tout
- 384  0091 2707          	jreq	L112
- 385                     ; 107 				break;
- 387  0093               L761:
- 388                     ; 102 		while(NumByteToWrite--)
- 390  0093 7b07          	ld	a,(OFST+7,sp)
- 391  0095 0a07          	dec	(OFST+7,sp)
- 392  0097 4d            	tnz	a
- 393  0098 26dc          	jrne	L561
- 394  009a               L112:
- 395                     ; 110 		while(((I2C->SR1 & (I2C_SR1_TXE|I2C_SR1_BTF)) != (I2C_SR1_TXE|I2C_SR1_BTF)) && tout()); 					// Wait for TxE & BTF
- 397  009a c65217        	ld	a,21015
- 398  009d a484          	and	a,#132
- 399  009f a184          	cp	a,#132
- 400  00a1 2704          	jreq	L361
- 402  00a3 be00          	ldw	x,_TIM4_tout
- 403  00a5 26f3          	jrne	L112
- 404  00a7               L361:
- 405                     ; 114   I2C->CR2 |= I2C_CR2_STOP;                        									// generate stop here (STOP=1)
- 407  00a7 72125211      	bset	21009,#1
- 409  00ab               L122:
- 410                     ; 115   while((I2C->CR2 & I2C_CR2_STOP) && tout());      									// wait until stop is performed  
- 412  00ab c65211        	ld	a,21009
- 413  00ae a502          	bcp	a,#2
- 414  00b0 2704          	jreq	L522
- 416  00b2 be00          	ldw	x,_TIM4_tout
- 417  00b4 26f5          	jrne	L122
- 418  00b6               L522:
- 419                     ; 116 	if(!tout()){
- 421  00b6 be00          	ldw	x,_TIM4_tout
- 422  00b8 2604          	jrne	L722
- 423                     ; 117 		return IIC_ERROR_TIME_OUT;
- 425  00ba a601          	ld	a,#1
- 427  00bc 2001          	jra	L61
- 428  00be               L722:
- 429                     ; 119 		return IIC_SUCCESS;
- 431  00be 4f            	clr	a
- 433  00bf               L61:
- 435  00bf 85            	popw	x
- 436  00c0 81            	ret
- 507                     ; 123 uint8_t I2C_ReadBytes(uint16_t SlaveAddr, uint8_t *pReadDataBuffer, uint8_t NumByteToRead, uint8_t TimeOutOfMs)
- 507                     ; 124 {
- 508                     .text:	section	.text,new
- 509  0000               _I2C_ReadBytes:
- 511  0000 89            	pushw	x
- 512       00000000      OFST:	set	0
- 515                     ; 125 	set_tout_ms(TimeOutOfMs);
- 517  0001 7b08          	ld	a,(OFST+8,sp)
- 518  0003 5f            	clrw	x
- 519  0004 97            	ld	xl,a
- 520  0005 bf00          	ldw	_TIM4_tout,x
- 523  0007 200f          	jra	L762
- 524  0009               L562:
- 525                     ; 129 		I2C->CR2 |= I2C_CR2_STOP;                   				// STOP=1, generate stop
- 527  0009 72125211      	bset	21009,#1
- 529  000d               L572:
- 530                     ; 130     while(I2C->CR2 & I2C_CR2_STOP  &&  tout()); 				// wait until stop is performed
- 532  000d c65211        	ld	a,21009
- 533  0010 a502          	bcp	a,#2
- 534  0012 2704          	jreq	L762
- 536  0014 be00          	ldw	x,_TIM4_tout
- 537  0016 26f5          	jrne	L572
- 538  0018               L762:
- 539                     ; 127 	while(I2C->SR3 & I2C_SR3_BUSY  &&  tout())	  				// Wait while the bus is busy
- 541  0018 c65219        	ld	a,21017
- 542  001b a502          	bcp	a,#2
- 543  001d 2704          	jreq	L303
- 545  001f be00          	ldw	x,_TIM4_tout
- 546  0021 26e6          	jrne	L562
- 547  0023               L303:
- 548                     ; 132 	if(!tout()){return IIC_ERROR_BUSY;}
- 550  0023 be00          	ldw	x,_TIM4_tout
- 551  0025 2604          	jrne	L503
- 554  0027 a602          	ld	a,#2
- 556  0029 2030          	jra	L22
- 557  002b               L503:
- 558                     ; 133 	I2C->CR2 &= ~I2C_CR2_STOP;
- 560  002b 72135211      	bres	21009,#1
- 561                     ; 134   I2C->CR2 |= I2C_CR2_ACK;                      				// ACK=1, Ack enable
- 563  002f 72145211      	bset	21009,#2
- 564                     ; 136   I2C->CR2 |= I2C_CR2_START;                    				// START=1, generate start
- 566  0033 72105211      	bset	21009,#0
- 568  0037               L113:
- 569                     ; 137   while((I2C->SR1 & I2C_SR1_SB)==0  &&  tout());				// wait for start bit detection (SB)
- 571  0037 c65217        	ld	a,21015
- 572  003a a501          	bcp	a,#1
- 573  003c 2604          	jrne	L513
- 575  003e be00          	ldw	x,_TIM4_tout
- 576  0040 26f5          	jrne	L113
- 577  0042               L513:
- 578                     ; 148     I2C->DR = (u8)(SlaveAddr << 1) | 1;       			// Send 7-bit device address & Write (R/W = 1)
- 580  0042 7b02          	ld	a,(OFST+2,sp)
- 581  0044 48            	sll	a
- 582  0045 aa01          	or	a,#1
- 583  0047 c75216        	ld	21014,a
- 585  004a               L323:
- 586                     ; 150   while(!(I2C->SR1 & I2C_SR1_ADDR)  &&  tout());				// Wait for address ack (ADDR)
- 588  004a c65217        	ld	a,21015
- 589  004d a502          	bcp	a,#2
- 590  004f 2604          	jrne	L723
- 592  0051 be00          	ldw	x,_TIM4_tout
- 593  0053 26f5          	jrne	L323
- 594  0055               L723:
- 595                     ; 151 	if(!tout()){
- 597  0055 be00          	ldw	x,_TIM4_tout
- 598  0057 2604          	jrne	L133
- 599                     ; 152 		return IIC_ERROR_NOT_ACK;
- 601  0059 a603          	ld	a,#3
- 603  005b               L22:
- 605  005b 85            	popw	x
- 606  005c 81            	ret
- 607  005d               L133:
- 608                     ; 155   if (NumByteToRead > 2)                 						// *** more than 2 bytes are received? ***
- 610  005d 7b07          	ld	a,(OFST+7,sp)
- 611  005f a103          	cp	a,#3
- 612  0061 2577          	jrult	L333
- 613                     ; 157     I2C->SR3;                                     			// ADDR clearing sequence    
- 615  0063 c65219        	ld	a,21017
- 616  0066 97            	ld	xl,a
- 618  0067 201b          	jra	L733
- 619  0069               L543:
- 620                     ; 160       while(!(I2C->SR1 & I2C_SR1_BTF)  &&  tout()); 				// Wait for BTF
- 622  0069 c65217        	ld	a,21015
- 623  006c a504          	bcp	a,#4
- 624  006e 2604          	jrne	L153
- 626  0070 be00          	ldw	x,_TIM4_tout
- 627  0072 26f5          	jrne	L543
- 628  0074               L153:
- 629                     ; 161 			*pReadDataBuffer++ = I2C->DR;                   				// Reading next data byte
- 631  0074 1e05          	ldw	x,(OFST+5,sp)
- 632  0076 1c0001        	addw	x,#1
- 633  0079 1f05          	ldw	(OFST+5,sp),x
- 634  007b 1d0001        	subw	x,#1
- 635  007e c65216        	ld	a,21014
- 636  0081 f7            	ld	(x),a
- 637                     ; 162       --NumByteToRead;																		// Decrease Numbyte to reade by 1
- 639  0082 0a07          	dec	(OFST+7,sp)
- 640  0084               L733:
- 641                     ; 158     while(NumByteToRead > 3  &&  tout())       			// not last three bytes?
- 643  0084 7b07          	ld	a,(OFST+7,sp)
- 644  0086 a104          	cp	a,#4
- 645  0088 2504          	jrult	L753
- 647  008a be00          	ldw	x,_TIM4_tout
- 648  008c 26db          	jrne	L543
- 649  008e               L753:
- 650                     ; 165     while(!(I2C->SR1 & I2C_SR1_BTF)  &&  tout()); 			// Wait for BTF
- 652  008e c65217        	ld	a,21015
- 653  0091 a504          	bcp	a,#4
- 654  0093 2604          	jrne	L363
- 656  0095 be00          	ldw	x,_TIM4_tout
- 657  0097 26f5          	jrne	L753
- 658  0099               L363:
- 659                     ; 166     I2C->CR2 &=~I2C_CR2_ACK;                      			// Clear ACK
- 661  0099 72155211      	bres	21009,#2
- 662                     ; 167     disableInterrupts();                          			// Errata workaround (Disable interrupt)
- 665  009d 9b            sim
- 667                     ; 168     *pReadDataBuffer++ = I2C->DR;                     		// Read 1st byte
- 670  009e 1e05          	ldw	x,(OFST+5,sp)
- 671  00a0 1c0001        	addw	x,#1
- 672  00a3 1f05          	ldw	(OFST+5,sp),x
- 673  00a5 1d0001        	subw	x,#1
- 674  00a8 c65216        	ld	a,21014
- 675  00ab f7            	ld	(x),a
- 676                     ; 169     I2C->CR2 |= I2C_CR2_STOP;                       		// Generate stop here (STOP=1)
- 678  00ac 72125211      	bset	21009,#1
- 679                     ; 170     *pReadDataBuffer++ = I2C->DR;                     		// Read 2nd byte
- 681  00b0 1e05          	ldw	x,(OFST+5,sp)
- 682  00b2 1c0001        	addw	x,#1
- 683  00b5 1f05          	ldw	(OFST+5,sp),x
- 684  00b7 1d0001        	subw	x,#1
- 685  00ba c65216        	ld	a,21014
- 686  00bd f7            	ld	(x),a
- 687                     ; 171     enableInterrupts();																	// Errata workaround (Enable interrupt)
- 690  00be 9a            rim
- 694  00bf               L763:
- 695                     ; 172     while(!(I2C->SR1 & I2C_SR1_RXNE)  &&  tout());			// Wait for RXNE
- 697  00bf c65217        	ld	a,21015
- 698  00c2 a540          	bcp	a,#64
- 699  00c4 2604          	jrne	L373
- 701  00c6 be00          	ldw	x,_TIM4_tout
- 702  00c8 26f5          	jrne	L763
- 703  00ca               L373:
- 704                     ; 173     *pReadDataBuffer++ = I2C->DR;                   			// Read 3rd Data byte
- 706  00ca 1e05          	ldw	x,(OFST+5,sp)
- 707  00cc 1c0001        	addw	x,#1
- 708  00cf 1f05          	ldw	(OFST+5,sp),x
- 709  00d1 1d0001        	subw	x,#1
- 710  00d4 c65216        	ld	a,21014
- 711  00d7 f7            	ld	(x),a
- 713  00d8 205a          	jra	L524
- 714  00da               L333:
- 715                     ; 177     if(NumByteToRead == 2)                						// *** just two bytes are received? ***
- 717  00da 7b07          	ld	a,(OFST+7,sp)
- 718  00dc a102          	cp	a,#2
- 719  00de 2635          	jrne	L773
- 720                     ; 179       I2C->CR2 |= I2C_CR2_POS;                      		// Set POS bit (NACK at next received byte)
- 722  00e0 72165211      	bset	21009,#3
- 723                     ; 180       disableInterrupts();                          		// Errata workaround (Disable interrupt)
- 726  00e4 9b            sim
- 728                     ; 181       I2C->SR3;                                       	// Clear ADDR Flag
- 731  00e5 c65219        	ld	a,21017
- 732  00e8 97            	ld	xl,a
- 733                     ; 182       I2C->CR2 &=~I2C_CR2_ACK;                        	// Clear ACK 
- 735  00e9 72155211      	bres	21009,#2
- 736                     ; 183       enableInterrupts();																// Errata workaround (Enable interrupt)
- 739  00ed 9a            rim
- 743  00ee               L304:
- 744                     ; 184       while(!(I2C->SR1 & I2C_SR1_BTF)  &&  tout()); 		// Wait for BTF
- 746  00ee c65217        	ld	a,21015
- 747  00f1 a504          	bcp	a,#4
- 748  00f3 2604          	jrne	L704
- 750  00f5 be00          	ldw	x,_TIM4_tout
- 751  00f7 26f5          	jrne	L304
- 752  00f9               L704:
- 753                     ; 185       disableInterrupts();                          		// Errata workaround (Disable interrupt)
- 756  00f9 9b            sim
- 758                     ; 186       I2C->CR2 |= I2C_CR2_STOP;                       	// Generate stop here (STOP=1)
- 761  00fa 72125211      	bset	21009,#1
- 762                     ; 187       *pReadDataBuffer++ = I2C->DR;                     	// Read 1st Data byte
- 764  00fe 1e05          	ldw	x,(OFST+5,sp)
- 765  0100 1c0001        	addw	x,#1
- 766  0103 1f05          	ldw	(OFST+5,sp),x
- 767  0105 1d0001        	subw	x,#1
- 768  0108 c65216        	ld	a,21014
- 769  010b f7            	ld	(x),a
- 770                     ; 188       enableInterrupts();																// Errata workaround (Enable interrupt)
- 773  010c 9a            rim
- 775                     ; 189 			*pReadDataBuffer = I2C->DR;													// Read 2nd Data byte
- 778  010d 1e05          	ldw	x,(OFST+5,sp)
- 779  010f c65216        	ld	a,21014
- 780  0112 f7            	ld	(x),a
- 782  0113 201f          	jra	L524
- 783  0115               L773:
- 784                     ; 193       I2C->CR2 &=~I2C_CR2_ACK;;                     		// Clear ACK 
- 786  0115 72155211      	bres	21009,#2
- 787                     ; 194       disableInterrupts();                          		// Errata workaround (Disable interrupt)
- 791  0119 9b            sim
- 793                     ; 195       I2C->SR3;                                       	// Clear ADDR Flag   
- 796  011a c65219        	ld	a,21017
- 797  011d 97            	ld	xl,a
- 798                     ; 196       I2C->CR2 |= I2C_CR2_STOP;                       	// generate stop here (STOP=1)
- 800  011e 72125211      	bset	21009,#1
- 801                     ; 197       enableInterrupts();																// Errata workaround (Enable interrupt)
- 804  0122 9a            rim
- 808  0123               L514:
- 809                     ; 198       while(!(I2C->SR1 & I2C_SR1_RXNE)  &&  tout()); 		// test EV7, wait for RxNE
- 811  0123 c65217        	ld	a,21015
- 812  0126 a540          	bcp	a,#64
- 813  0128 2604          	jrne	L124
- 815  012a be00          	ldw	x,_TIM4_tout
- 816  012c 26f5          	jrne	L514
- 817  012e               L124:
- 818                     ; 199       *pReadDataBuffer = I2C->DR;                     		// Read Data byte
- 820  012e 1e05          	ldw	x,(OFST+5,sp)
- 821  0130 c65216        	ld	a,21014
- 822  0133 f7            	ld	(x),a
- 823  0134               L524:
- 824                     ; 203   while((I2C->CR2 & I2C_CR2_STOP)  &&  tout());     		// Wait until stop is performed (STOPF = 1)
- 826  0134 c65211        	ld	a,21009
- 827  0137 a502          	bcp	a,#2
- 828  0139 2704          	jreq	L134
- 830  013b be00          	ldw	x,_TIM4_tout
- 831  013d 26f5          	jrne	L524
- 832  013f               L134:
- 833                     ; 204   I2C->CR2 &=~I2C_CR2_POS;                          		// return POS to default state (POS=0)
- 835  013f 72175211      	bres	21009,#3
- 836                     ; 205 	if(!tout()){
- 838  0143 be00          	ldw	x,_TIM4_tout
- 839  0145 2604          	jrne	L334
- 840                     ; 206 		return IIC_ERROR_TIME_OUT;
- 842  0147 a601          	ld	a,#1
- 844  0149 2001          	jra	L42
- 845  014b               L334:
- 846                     ; 208 		return IIC_SUCCESS;
- 848  014b 4f            	clr	a
- 850  014c               L42:
- 852  014c 85            	popw	x
- 853  014d 81            	ret
- 943                     ; 212 uint8_t I2C_WriteReadBytes(uint16_t SlaveAddr, uint8_t *pWriteDataBuffer, uint8_t NumByteToWrite,uint8_t *pReadDataBuffer, uint8_t NumByteToRead, uint8_t TimeOutOfMs)
- 943                     ; 213 {
- 944                     .text:	section	.text,new
- 945  0000               _I2C_WriteReadBytes:
- 947  0000 89            	pushw	x
- 948       00000000      OFST:	set	0
- 951                     ; 214 	set_tout_ms(TimeOutOfMs);
- 953  0001 7b0b          	ld	a,(OFST+11,sp)
- 954  0003 5f            	clrw	x
- 955  0004 97            	ld	xl,a
- 956  0005 bf00          	ldw	_TIM4_tout,x
- 959  0007 200f          	jra	L305
- 960  0009               L105:
- 961                     ; 218 		I2C->CR2 |= I2C_CR2_STOP;                   				// Generate stop here (STOP=1)
- 963  0009 72125211      	bset	21009,#1
- 965  000d               L115:
- 966                     ; 219     while(I2C->CR2 & I2C_CR2_STOP  &&  tout()); 				// Wait until stop is performed
- 968  000d c65211        	ld	a,21009
- 969  0010 a502          	bcp	a,#2
- 970  0012 2704          	jreq	L305
- 972  0014 be00          	ldw	x,_TIM4_tout
- 973  0016 26f5          	jrne	L115
- 974  0018               L305:
- 975                     ; 216 	while(I2C->SR3 & I2C_SR3_BUSY  &&  tout())	  				// Wait while the bus is busy
- 977  0018 c65219        	ld	a,21017
- 978  001b a502          	bcp	a,#2
- 979  001d 2704          	jreq	L715
- 981  001f be00          	ldw	x,_TIM4_tout
- 982  0021 26e6          	jrne	L105
- 983  0023               L715:
- 984                     ; 221 	if(!tout()){return IIC_ERROR_BUSY;}
- 986  0023 be00          	ldw	x,_TIM4_tout
- 987  0025 2604          	jrne	L125
- 990  0027 a602          	ld	a,#2
- 992  0029 2032          	jra	L03
- 993  002b               L125:
- 994                     ; 222 	I2C->CR2 &= ~I2C_CR2_STOP;
- 996  002b 72135211      	bres	21009,#1
- 997                     ; 223   I2C->CR2 |= I2C_CR2_ACK;                      				// ACK=1, Ack enable
- 999  002f 72145211      	bset	21009,#2
-1000                     ; 225   I2C->CR2 |= I2C_CR2_START;                    				// START=1, generate start
-1002  0033 72105211      	bset	21009,#0
-1004  0037               L525:
-1005                     ; 226   while((I2C->SR1 & I2C_SR1_SB)==0  &&  tout());				// Wait for start bit detection (SB)
-1007  0037 c65217        	ld	a,21015
-1008  003a a501          	bcp	a,#1
-1009  003c 2604          	jrne	L135
-1011  003e be00          	ldw	x,_TIM4_tout
-1012  0040 26f5          	jrne	L525
-1013  0042               L135:
-1014                     ; 228   if(tout())
-1016  0042 be00          	ldw	x,_TIM4_tout
-1017  0044 2706          	jreq	L735
-1018                     ; 238       I2C->DR = (u8)(SlaveAddr << 1);   						// Send 7-bit device address & Write (R/W = 0)
-1020  0046 7b02          	ld	a,(OFST+2,sp)
-1021  0048 48            	sll	a
-1022  0049 c75216        	ld	21014,a
-1023  004c               L735:
-1024                     ; 241   while(!(I2C->SR1 & I2C_SR1_ADDR) &&  tout()); 				// test EV6 - wait for address ack (ADDR)
-1026  004c c65217        	ld	a,21015
-1027  004f a502          	bcp	a,#2
-1028  0051 2604          	jrne	L345
-1030  0053 be00          	ldw	x,_TIM4_tout
-1031  0055 26f5          	jrne	L735
-1032  0057               L345:
-1033                     ; 242 	if(!tout()){
-1035  0057 be00          	ldw	x,_TIM4_tout
-1036  0059 2604          	jrne	L545
-1037                     ; 243 		return IIC_ERROR_NOT_ACK;
-1039  005b a603          	ld	a,#3
-1041  005d               L03:
-1043  005d 85            	popw	x
-1044  005e 81            	ret
-1045  005f               L545:
-1046                     ; 246   I2C->SR3;
-1049  005f c65219        	ld	a,21017
-1050  0062 97            	ld	xl,a
-1051                     ; 248 	if(NumByteToWrite > 0){
-1053  0063 0d07          	tnz	(OFST+7,sp)
-1054  0065 2733          	jreq	L745
-1056  0067 201d          	jra	L355
-1057  0069               L165:
-1058                     ; 250 			while(!(I2C->SR1 & I2C_SR1_TXE) &&  tout());  				// Wait for TxE
-1060  0069 c65217        	ld	a,21015
-1061  006c a580          	bcp	a,#128
-1062  006e 2604          	jrne	L565
-1064  0070 be00          	ldw	x,_TIM4_tout
-1065  0072 26f5          	jrne	L165
-1066  0074               L565:
-1067                     ; 251 			if(tout())
-1069  0074 be00          	ldw	x,_TIM4_tout
-1070  0076 270e          	jreq	L355
-1071                     ; 253 				I2C->DR = *pWriteDataBuffer++;                         			// Send register address
-1073  0078 1e05          	ldw	x,(OFST+5,sp)
-1074  007a 1c0001        	addw	x,#1
-1075  007d 1f05          	ldw	(OFST+5,sp),x
-1076  007f 1d0001        	subw	x,#1
-1077  0082 f6            	ld	a,(x)
-1078  0083 c75216        	ld	21014,a
-1079  0086               L355:
-1080                     ; 249 		while(NumByteToWrite--){
-1082  0086 7b07          	ld	a,(OFST+7,sp)
-1083  0088 0a07          	dec	(OFST+7,sp)
-1084  008a 4d            	tnz	a
-1085  008b 26dc          	jrne	L165
-1087  008d               L375:
-1088                     ; 256 		while((I2C->SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) != (I2C_SR1_TXE | I2C_SR1_BTF)  &&  tout()); 
-1090  008d c65217        	ld	a,21015
-1091  0090 a484          	and	a,#132
-1092  0092 a184          	cp	a,#132
-1093  0094 2704          	jreq	L745
-1095  0096 be00          	ldw	x,_TIM4_tout
-1096  0098 26f3          	jrne	L375
-1097  009a               L745:
-1098                     ; 267 	I2C->CR2 &= ~I2C_CR2_STOP;
-1100  009a 72135211      	bres	21009,#1
-1101                     ; 268   I2C->CR2 |= I2C_CR2_START;                     				// START=1, generate re-start
-1103  009e 72105211      	bset	21009,#0
-1105  00a2               L306:
-1106                     ; 269   while((I2C->SR1 & I2C_SR1_SB)==0  &&  tout()); 				// Wait for start bit detection (SB)
-1108  00a2 c65217        	ld	a,21015
-1109  00a5 a501          	bcp	a,#1
-1110  00a7 2604          	jrne	L706
-1112  00a9 be00          	ldw	x,_TIM4_tout
-1113  00ab 26f5          	jrne	L306
-1114  00ad               L706:
-1115                     ; 271   if(tout())
-1117  00ad be00          	ldw	x,_TIM4_tout
-1118  00af 2708          	jreq	L516
-1119                     ; 283       I2C->DR = (u8)(SlaveAddr << 1) | 1;         	// Send 7-bit device address & Write (R/W = 1)
-1121  00b1 7b02          	ld	a,(OFST+2,sp)
-1122  00b3 48            	sll	a
-1123  00b4 aa01          	or	a,#1
-1124  00b6 c75216        	ld	21014,a
-1125  00b9               L516:
-1126                     ; 286   while(!(I2C->SR1 & I2C_SR1_ADDR)  &&  tout());  			// Wait for address ack (ADDR)
-1128  00b9 c65217        	ld	a,21015
-1129  00bc a502          	bcp	a,#2
-1130  00be 2604          	jrne	L126
-1132  00c0 be00          	ldw	x,_TIM4_tout
-1133  00c2 26f5          	jrne	L516
-1134  00c4               L126:
-1135                     ; 287 	if(!tout()){
-1137  00c4 be00          	ldw	x,_TIM4_tout
-1138  00c6 2604          	jrne	L326
-1139                     ; 288 		return IIC_ERROR_NOT_ACK;
-1141  00c8 a603          	ld	a,#3
-1143  00ca 2091          	jra	L03
-1144  00cc               L326:
-1145                     ; 291   if (NumByteToRead > 2)                 						// *** more than 2 bytes are received? ***
-1147  00cc 7b0a          	ld	a,(OFST+10,sp)
-1148  00ce a103          	cp	a,#3
-1149  00d0 2577          	jrult	L526
-1150                     ; 293     I2C->SR3;                                     			// ADDR clearing sequence    
-1152  00d2 c65219        	ld	a,21017
-1153  00d5 97            	ld	xl,a
-1155  00d6 201b          	jra	L136
-1156  00d8               L736:
-1157                     ; 296       while(!(I2C->SR1 & I2C_SR1_BTF)  &&  tout()); 				// Wait for BTF
-1159  00d8 c65217        	ld	a,21015
-1160  00db a504          	bcp	a,#4
-1161  00dd 2604          	jrne	L346
-1163  00df be00          	ldw	x,_TIM4_tout
-1164  00e1 26f5          	jrne	L736
-1165  00e3               L346:
-1166                     ; 297 			*pReadDataBuffer++ = I2C->DR;                   				// Reading next data byte
-1168  00e3 1e08          	ldw	x,(OFST+8,sp)
-1169  00e5 1c0001        	addw	x,#1
-1170  00e8 1f08          	ldw	(OFST+8,sp),x
-1171  00ea 1d0001        	subw	x,#1
-1172  00ed c65216        	ld	a,21014
-1173  00f0 f7            	ld	(x),a
-1174                     ; 298       --NumByteToRead;																		// Decrease Numbyte to reade by 1
-1176  00f1 0a0a          	dec	(OFST+10,sp)
-1177  00f3               L136:
-1178                     ; 294     while(NumByteToRead > 3  &&  tout())       			// not last three bytes?
-1180  00f3 7b0a          	ld	a,(OFST+10,sp)
-1181  00f5 a104          	cp	a,#4
-1182  00f7 2504          	jrult	L156
-1184  00f9 be00          	ldw	x,_TIM4_tout
-1185  00fb 26db          	jrne	L736
-1186  00fd               L156:
-1187                     ; 301     while(!(I2C->SR1 & I2C_SR1_BTF)  &&  tout()); 			// Wait for BTF
-1189  00fd c65217        	ld	a,21015
-1190  0100 a504          	bcp	a,#4
-1191  0102 2604          	jrne	L556
-1193  0104 be00          	ldw	x,_TIM4_tout
-1194  0106 26f5          	jrne	L156
-1195  0108               L556:
-1196                     ; 302     I2C->CR2 &=~I2C_CR2_ACK;                      			// Clear ACK
-1198  0108 72155211      	bres	21009,#2
-1199                     ; 303     disableInterrupts();                          			// Errata workaround (Disable interrupt)
-1202  010c 9b            sim
-1204                     ; 304     *pReadDataBuffer++ = I2C->DR;                     		// Read 1st byte
-1207  010d 1e08          	ldw	x,(OFST+8,sp)
-1208  010f 1c0001        	addw	x,#1
-1209  0112 1f08          	ldw	(OFST+8,sp),x
-1210  0114 1d0001        	subw	x,#1
-1211  0117 c65216        	ld	a,21014
-1212  011a f7            	ld	(x),a
-1213                     ; 305     I2C->CR2 |= I2C_CR2_STOP;                       		// Generate stop here (STOP=1)
-1215  011b 72125211      	bset	21009,#1
-1216                     ; 306     *pReadDataBuffer++ = I2C->DR;                     		// Read 2nd byte
-1218  011f 1e08          	ldw	x,(OFST+8,sp)
-1219  0121 1c0001        	addw	x,#1
-1220  0124 1f08          	ldw	(OFST+8,sp),x
-1221  0126 1d0001        	subw	x,#1
-1222  0129 c65216        	ld	a,21014
-1223  012c f7            	ld	(x),a
-1224                     ; 307     enableInterrupts();																	// Errata workaround (Enable interrupt)
-1227  012d 9a            rim
-1231  012e               L166:
-1232                     ; 308     while(!(I2C->SR1 & I2C_SR1_RXNE)  &&  tout());			// Wait for RXNE
-1234  012e c65217        	ld	a,21015
-1235  0131 a540          	bcp	a,#64
-1236  0133 2604          	jrne	L566
-1238  0135 be00          	ldw	x,_TIM4_tout
-1239  0137 26f5          	jrne	L166
-1240  0139               L566:
-1241                     ; 309     *pReadDataBuffer++ = I2C->DR;                   			// Read 3rd Data byte
-1243  0139 1e08          	ldw	x,(OFST+8,sp)
-1244  013b 1c0001        	addw	x,#1
-1245  013e 1f08          	ldw	(OFST+8,sp),x
-1246  0140 1d0001        	subw	x,#1
-1247  0143 c65216        	ld	a,21014
-1248  0146 f7            	ld	(x),a
-1250  0147 205a          	jra	L717
-1251  0149               L526:
-1252                     ; 313    if(NumByteToRead == 2)                						// *** just two bytes are received? ***
-1254  0149 7b0a          	ld	a,(OFST+10,sp)
-1255  014b a102          	cp	a,#2
-1256  014d 2635          	jrne	L176
-1257                     ; 315       I2C->CR2 |= I2C_CR2_POS;                      		// Set POS bit (NACK at next received byte)
-1259  014f 72165211      	bset	21009,#3
-1260                     ; 316       disableInterrupts();                          		// Errata workaround (Disable interrupt)
-1263  0153 9b            sim
-1265                     ; 317       I2C->SR3;                                       	// Clear ADDR Flag
-1268  0154 c65219        	ld	a,21017
-1269  0157 97            	ld	xl,a
-1270                     ; 318       I2C->CR2 &=~I2C_CR2_ACK;                        	// Clear ACK 
-1272  0158 72155211      	bres	21009,#2
-1273                     ; 319       enableInterrupts();																// Errata workaround (Enable interrupt)
-1276  015c 9a            rim
-1280  015d               L576:
-1281                     ; 320       while(!(I2C->SR1 & I2C_SR1_BTF)  &&  tout()); 		// Wait for BTF
-1283  015d c65217        	ld	a,21015
-1284  0160 a504          	bcp	a,#4
-1285  0162 2604          	jrne	L107
-1287  0164 be00          	ldw	x,_TIM4_tout
-1288  0166 26f5          	jrne	L576
-1289  0168               L107:
-1290                     ; 321       disableInterrupts();                          		// Errata workaround (Disable interrupt)
-1293  0168 9b            sim
-1295                     ; 322       I2C->CR2 |= I2C_CR2_STOP;                       	// Generate stop here (STOP=1)
-1298  0169 72125211      	bset	21009,#1
-1299                     ; 323       *pReadDataBuffer++ = I2C->DR;                     	// Read 1st Data byte
-1301  016d 1e08          	ldw	x,(OFST+8,sp)
-1302  016f 1c0001        	addw	x,#1
-1303  0172 1f08          	ldw	(OFST+8,sp),x
-1304  0174 1d0001        	subw	x,#1
-1305  0177 c65216        	ld	a,21014
-1306  017a f7            	ld	(x),a
-1307                     ; 324       enableInterrupts();																// Errata workaround (Enable interrupt)
-1310  017b 9a            rim
-1312                     ; 325 			*pReadDataBuffer = I2C->DR;													// Read 2nd Data byte
-1315  017c 1e08          	ldw	x,(OFST+8,sp)
-1316  017e c65216        	ld	a,21014
-1317  0181 f7            	ld	(x),a
-1319  0182 201f          	jra	L717
-1320  0184               L176:
-1321                     ; 329       I2C->CR2 &=~I2C_CR2_ACK;;                     		// Clear ACK 
-1323  0184 72155211      	bres	21009,#2
-1324                     ; 330       disableInterrupts();                          		// Errata workaround (Disable interrupt)
-1328  0188 9b            sim
-1330                     ; 331       I2C->SR3;                                       	// Clear ADDR Flag   
-1333  0189 c65219        	ld	a,21017
-1334  018c 97            	ld	xl,a
-1335                     ; 332       I2C->CR2 |= I2C_CR2_STOP;                       	// generate stop here (STOP=1)
-1337  018d 72125211      	bset	21009,#1
-1338                     ; 333       enableInterrupts();																// Errata workaround (Enable interrupt)
-1341  0191 9a            rim
-1345  0192               L707:
-1346                     ; 334       while(!(I2C->SR1 & I2C_SR1_RXNE)  &&  tout()); 		// test EV7, wait for RxNE
-1348  0192 c65217        	ld	a,21015
-1349  0195 a540          	bcp	a,#64
-1350  0197 2604          	jrne	L317
-1352  0199 be00          	ldw	x,_TIM4_tout
-1353  019b 26f5          	jrne	L707
-1354  019d               L317:
-1355                     ; 335       *pReadDataBuffer = I2C->DR;                     		// Read Data byte
-1357  019d 1e08          	ldw	x,(OFST+8,sp)
-1358  019f c65216        	ld	a,21014
-1359  01a2 f7            	ld	(x),a
-1360  01a3               L717:
-1361                     ; 339   while((I2C->CR2 & I2C_CR2_STOP)  &&  tout());     		// Wait until stop is performed (STOPF = 1)
-1363  01a3 c65211        	ld	a,21009
-1364  01a6 a502          	bcp	a,#2
-1365  01a8 2704          	jreq	L327
-1367  01aa be00          	ldw	x,_TIM4_tout
-1368  01ac 26f5          	jrne	L717
-1369  01ae               L327:
-1370                     ; 340   I2C->CR2 &=~I2C_CR2_POS;                          		// return POS to default state (POS=0)
-1372  01ae 72175211      	bres	21009,#3
-1373                     ; 341 	return IIC_SUCCESS;
-1375  01b2 4f            	clr	a
-1378  01b3 85            	popw	x
-1379  01b4 81            	ret
-1403                     ; 351 void ErrProc(void)
-1403                     ; 352 {
-1404                     .text:	section	.text,new
-1405  0000               _ErrProc:
-1409                     ; 354     I2C->SR2= 0;
-1411  0000 725f5218      	clr	21016
-1412                     ; 356 	  I2C->CR2 |= 2;  
-1414  0004 72125211      	bset	21009,#1
-1415                     ; 358     TIM4_tout= 0;
-1417  0008 5f            	clrw	x
-1418  0009 bf00          	ldw	_TIM4_tout,x
-1419                     ; 361 }
-1422  000b 81            	ret
-1447                     ; 374 @far @interrupt void I2C_error_Interrupt_Handler (void) {
-1449                     .text:	section	.text,new
-1450  0000               f_I2C_error_Interrupt_Handler:
-1453  0000 3b0002        	push	c_x+2
-1454  0003 be00          	ldw	x,c_x
-1455  0005 89            	pushw	x
-1456  0006 3b0002        	push	c_y+2
-1457  0009 be00          	ldw	x,c_y
-1458  000b 89            	pushw	x
-1461                     ; 378 ErrProc();
-1463  000c cd0000        	call	_ErrProc
-1465                     ; 379 }
-1468  000f 85            	popw	x
-1469  0010 bf00          	ldw	c_y,x
-1470  0012 320002        	pop	c_y+2
-1471  0015 85            	popw	x
-1472  0016 bf00          	ldw	c_x,x
-1473  0018 320002        	pop	c_x+2
-1474  001b 80            	iret
-1497                     	xdef	f_I2C_error_Interrupt_Handler
-1498                     	switch	.ubsct
-1499  0000               _TIM4_tout:
-1500  0000 0000          	ds.b	2
-1501                     	xdef	_TIM4_tout
-1502                     	xdef	_ErrProc
-1503                     	xdef	_I2C_WriteReadBytes
-1504                     	xdef	_I2C_ReadBytes
-1505                     	xdef	_I2C_WriteBytes
-1506                     	xdef	_I2C_Config
-1507                     	xref	_I2C_SoftwareResetCmd
-1508                     	xref	_I2C_Cmd
-1509                     	xref	_I2C_Init
-1510                     	xref	_I2C_DeInit
-1511                     	xref	_CLK_GetClockFreq
-1512                     	xref.b	c_lreg
-1513                     	xref.b	c_x
-1514                     	xref.b	c_y
-1534                     	xref	c_ludv
-1535                     	end
+  48                     .const:	section	.text
+  49  0000               L6:
+  50  0000 000f4240      	dc.l	1000000
+  51                     ; 30 uint8_t I2C_Config(void) {
+  52                     	scross	off
+  53                     .text:	section	.text,new
+  54  0000               _I2C_Config:
+  56  0000 89            	pushw	x
+  57       00000002      OFST:	set	2
+  60                     ; 31 	uint16_t time_out = 0;
+  62  0001 5f            	clrw	x
+  63  0002 1f01          	ldw	(OFST-1,sp),x
+  64                     ; 32 	enableInterrupts();
+  67  0004 9a            rim
+  69                     ; 36 	I2C_DeInit();
+  72  0005 cd0000        	call	_I2C_DeInit
+  74                     ; 38 	I2C_Init(100000,0x50,I2C_DUTYCYCLE_2,I2C_ACK_CURR,I2C_ADDMODE_7BIT,CLK_GetClockFreq()/1000000);
+  76  0008 cd0000        	call	_CLK_GetClockFreq
+  78  000b ae0000        	ldw	x,#L6
+  79  000e cd0000        	call	c_ludv
+  81  0011 b603          	ld	a,c_lreg+3
+  82  0013 88            	push	a
+  83  0014 4b00          	push	#0
+  84  0016 4b01          	push	#1
+  85  0018 4b00          	push	#0
+  86  001a ae0050        	ldw	x,#80
+  87  001d 89            	pushw	x
+  88  001e ae86a0        	ldw	x,#34464
+  89  0021 89            	pushw	x
+  90  0022 ae0001        	ldw	x,#1
+  91  0025 89            	pushw	x
+  92  0026 cd0000        	call	_I2C_Init
+  94  0029 5b0a          	addw	sp,#10
+  95                     ; 40 	I2C_Cmd(ENABLE);
+  97  002b a601          	ld	a,#1
+  98  002d cd0000        	call	_I2C_Cmd
+ 101  0030 2036          	jra	L72
+ 102  0032               L52:
+ 103                     ; 43 		set_tout_ms(10);
+ 105  0032 ae000a        	ldw	x,#10
+ 106  0035 cf0000        	ldw	_TIM4_tout,x
+ 107                     ; 44     I2C->CR2 |= I2C_CR2_STOP;                        								// STOP=1, generate stop
+ 110  0038 72125211      	bset	21009,#1
+ 112  003c               L53:
+ 113                     ; 45     while((I2C->CR2 & I2C_CR2_STOP) && tout());      								// wait until stop is performed
+ 115  003c c65211        	ld	a,21009
+ 116  003f a502          	bcp	a,#2
+ 117  0041 2705          	jreq	L14
+ 119  0043 ce0000        	ldw	x,_TIM4_tout
+ 120  0046 26f4          	jrne	L53
+ 121  0048               L14:
+ 122                     ; 46 		time_out += 10;
+ 124  0048 1e01          	ldw	x,(OFST-1,sp)
+ 125  004a 1c000a        	addw	x,#10
+ 126  004d 1f01          	ldw	(OFST-1,sp),x
+ 127                     ; 47 		if(!tout()){
+ 129  004f ce0000        	ldw	x,_TIM4_tout
+ 130  0052 2609          	jrne	L34
+ 131                     ; 48 			I2C_SoftwareResetCmd(ENABLE);
+ 133  0054 a601          	ld	a,#1
+ 134  0056 cd0000        	call	_I2C_SoftwareResetCmd
+ 136                     ; 49 			I2C_SoftwareResetCmd(DISABLE);
+ 138  0059 4f            	clr	a
+ 139  005a cd0000        	call	_I2C_SoftwareResetCmd
+ 141  005d               L34:
+ 142                     ; 51 		if(time_out > 500){
+ 144  005d 1e01          	ldw	x,(OFST-1,sp)
+ 145  005f a301f5        	cpw	x,#501
+ 146  0062 2504          	jrult	L72
+ 147                     ; 52 			return IIC_ERROR_BUSY;
+ 149  0064 a602          	ld	a,#2
+ 151  0066 2008          	jra	L01
+ 152  0068               L72:
+ 153                     ; 41   while((I2C->SR3 & I2C_SR3_BUSY))       									// Wait while the bus is busy
+ 155  0068 c65219        	ld	a,21017
+ 156  006b a502          	bcp	a,#2
+ 157  006d 26c3          	jrne	L52
+ 158                     ; 55 	return IIC_SUCCESS;
+ 160  006f 4f            	clr	a
+ 162  0070               L01:
+ 164  0070 85            	popw	x
+ 165  0071 81            	ret
+ 222                     ; 65 uint8_t I2C_WriteBytes(uint16_t SlaveAddr, uint8_t *pWriteDataBuffer, uint8_t NumByteToWrite, uint8_t TimeOutOfMs)
+ 222                     ; 66 {
+ 223                     .text:	section	.text,new
+ 224  0000               _I2C_WriteBytes:
+ 226  0000 89            	pushw	x
+ 227       00000000      OFST:	set	0
+ 230                     ; 67 	set_tout_ms(TimeOutOfMs);
+ 232  0001 7b08          	ld	a,(OFST+8,sp)
+ 233  0003 5f            	clrw	x
+ 234  0004 97            	ld	xl,a
+ 235  0005 cf0000        	ldw	_TIM4_tout,x
+ 238  0008 2010          	jra	L57
+ 239  000a               L37:
+ 240                     ; 70     I2C->CR2 |= I2C_CR2_STOP;                        								// STOP=1, generate stop
+ 242  000a 72125211      	bset	21009,#1
+ 244  000e               L301:
+ 245                     ; 71     while((I2C->CR2 & I2C_CR2_STOP) && tout());      								// wait until stop is performed
+ 247  000e c65211        	ld	a,21009
+ 248  0011 a502          	bcp	a,#2
+ 249  0013 2705          	jreq	L57
+ 251  0015 ce0000        	ldw	x,_TIM4_tout
+ 252  0018 26f4          	jrne	L301
+ 253  001a               L57:
+ 254                     ; 68   while((I2C->SR3 & I2C_SR3_BUSY) && tout())       									// Wait while the bus is busy
+ 256  001a c65219        	ld	a,21017
+ 257  001d a502          	bcp	a,#2
+ 258  001f 2705          	jreq	L111
+ 260  0021 ce0000        	ldw	x,_TIM4_tout
+ 261  0024 26e4          	jrne	L37
+ 262  0026               L111:
+ 263                     ; 73 	if(!tout()){return IIC_ERROR_BUSY;}
+ 265  0026 ce0000        	ldw	x,_TIM4_tout
+ 266  0029 2604          	jrne	L311
+ 269  002b a602          	ld	a,#2
+ 271  002d 201f          	jra	L41
+ 272  002f               L311:
+ 273                     ; 74   I2C->CR2 |= I2C_CR2_START;                        									// START=1, generate start
+ 275  002f 72105211      	bset	21009,#0
+ 277  0033               L711:
+ 278                     ; 75   while(((I2C->SR1 & I2C_SR1_SB)==0) && tout()); 									// Wait for start bit detection (SB)
+ 280  0033 c65217        	ld	a,21015
+ 281  0036 a501          	bcp	a,#1
+ 282  0038 2605          	jrne	L321
+ 284  003a ce0000        	ldw	x,_TIM4_tout
+ 285  003d 26f4          	jrne	L711
+ 286  003f               L321:
+ 287                     ; 77   if(tout())
+ 290  003f ce0000        	ldw	x,_TIM4_tout
+ 291  0042 2708          	jreq	L521
+ 292                     ; 87       I2C->DR = (u8)(SlaveAddr << 1);   									// Send 7-bit device address & Write (R/W = 0)
+ 294  0044 7b02          	ld	a,(OFST+2,sp)
+ 295  0046 48            	sll	a
+ 296  0047 c75216        	ld	21014,a
+ 298  004a 2004          	jra	L331
+ 299  004c               L521:
+ 300                     ; 90 		return IIC_ERROR_TIME_OUT;
+ 302  004c a601          	ld	a,#1
+ 304  004e               L41:
+ 306  004e 85            	popw	x
+ 307  004f 81            	ret
+ 308  0050               L331:
+ 309                     ; 92   while(!(I2C->SR1 & I2C_SR1_ADDR) && tout());     									// Wait for address ack (ADDR)
+ 311  0050 c65217        	ld	a,21015
+ 312  0053 a502          	bcp	a,#2
+ 313  0055 2605          	jrne	L731
+ 315  0057 ce0000        	ldw	x,_TIM4_tout
+ 316  005a 26f4          	jrne	L331
+ 317  005c               L731:
+ 318                     ; 93 	if(!tout()){
+ 320  005c ce0000        	ldw	x,_TIM4_tout
+ 321  005f 2608          	jrne	L141
+ 322                     ; 94 		I2C->CR2 |= I2C_CR2_STOP;
+ 324  0061 72125211      	bset	21009,#1
+ 325                     ; 95 		return IIC_ERROR_NOT_ACK;
+ 327  0065 a603          	ld	a,#3
+ 329  0067 20e5          	jra	L41
+ 330  0069               L141:
+ 331                     ; 98   I2C->SR3;
+ 334  0069 c65219        	ld	a,21017
+ 335  006c 97            	ld	xl,a
+ 337  006d               L541:
+ 338                     ; 99   while(!(I2C->SR1 & I2C_SR1_TXE) && tout());  									// Wait for TxE
+ 340  006d c65217        	ld	a,21015
+ 341  0070 a580          	bcp	a,#128
+ 342  0072 2605          	jrne	L151
+ 344  0074 ce0000        	ldw	x,_TIM4_tout
+ 345  0077 26f4          	jrne	L541
+ 346  0079               L151:
+ 347                     ; 100   if(NumByteToWrite)
+ 349  0079 0d07          	tnz	(OFST+7,sp)
+ 350  007b 2736          	jreq	L351
+ 352  007d 201f          	jra	L751
+ 353  007f               L551:
+ 354                     ; 104 			I2C->DR = *pWriteDataBuffer++; 
+ 356  007f 1e05          	ldw	x,(OFST+5,sp)
+ 357  0081 1c0001        	addw	x,#1
+ 358  0084 1f05          	ldw	(OFST+5,sp),x
+ 359  0086 1d0001        	subw	x,#1
+ 360  0089 f6            	ld	a,(x)
+ 361  008a c75216        	ld	21014,a
+ 363  008d               L761:
+ 364                     ; 105 			while(!(I2C->SR1 & I2C_SR1_TXE) && tout());  								// test EV8 - wait for TxE
+ 366  008d c65217        	ld	a,21015
+ 367  0090 a580          	bcp	a,#128
+ 368  0092 2605          	jrne	L371
+ 370  0094 ce0000        	ldw	x,_TIM4_tout
+ 371  0097 26f4          	jrne	L761
+ 372  0099               L371:
+ 373                     ; 106 			if(!tout()){
+ 375  0099 ce0000        	ldw	x,_TIM4_tout
+ 376  009c 2707          	jreq	L102
+ 377                     ; 107 				break;
+ 379  009e               L751:
+ 380                     ; 102 		while(NumByteToWrite--)
+ 382  009e 7b07          	ld	a,(OFST+7,sp)
+ 383  00a0 0a07          	dec	(OFST+7,sp)
+ 384  00a2 4d            	tnz	a
+ 385  00a3 26da          	jrne	L551
+ 386  00a5               L102:
+ 387                     ; 110 		while(((I2C->SR1 & (I2C_SR1_TXE|I2C_SR1_BTF)) != (I2C_SR1_TXE|I2C_SR1_BTF)) && tout()); 					// Wait for TxE & BTF
+ 389  00a5 c65217        	ld	a,21015
+ 390  00a8 a484          	and	a,#132
+ 391  00aa a184          	cp	a,#132
+ 392  00ac 2705          	jreq	L351
+ 394  00ae ce0000        	ldw	x,_TIM4_tout
+ 395  00b1 26f2          	jrne	L102
+ 396  00b3               L351:
+ 397                     ; 114   I2C->CR2 |= I2C_CR2_STOP;                        									// generate stop here (STOP=1)
+ 399  00b3 72125211      	bset	21009,#1
+ 401  00b7               L112:
+ 402                     ; 115   while((I2C->CR2 & I2C_CR2_STOP) && tout());      									// wait until stop is performed  
+ 404  00b7 c65211        	ld	a,21009
+ 405  00ba a502          	bcp	a,#2
+ 406  00bc 2705          	jreq	L512
+ 408  00be ce0000        	ldw	x,_TIM4_tout
+ 409  00c1 26f4          	jrne	L112
+ 410  00c3               L512:
+ 411                     ; 116 	if(!tout()){
+ 413  00c3 ce0000        	ldw	x,_TIM4_tout
+ 414  00c6 2604          	jrne	L712
+ 415                     ; 117 		return IIC_ERROR_TIME_OUT;
+ 417  00c8 a601          	ld	a,#1
+ 419  00ca 2001          	jra	L61
+ 420  00cc               L712:
+ 421                     ; 119 		return IIC_SUCCESS;
+ 423  00cc 4f            	clr	a
+ 425  00cd               L61:
+ 427  00cd 85            	popw	x
+ 428  00ce 81            	ret
+ 493                     ; 123 uint8_t I2C_ReadBytes(uint16_t SlaveAddr, uint8_t *pReadDataBuffer, uint8_t NumByteToRead, uint8_t TimeOutOfMs)
+ 493                     ; 124 {
+ 494                     .text:	section	.text,new
+ 495  0000               _I2C_ReadBytes:
+ 497  0000 89            	pushw	x
+ 498       00000000      OFST:	set	0
+ 501                     ; 125 	set_tout_ms(TimeOutOfMs);
+ 503  0001 7b08          	ld	a,(OFST+8,sp)
+ 504  0003 5f            	clrw	x
+ 505  0004 97            	ld	xl,a
+ 506  0005 cf0000        	ldw	_TIM4_tout,x
+ 509  0008 2010          	jra	L152
+ 510  000a               L742:
+ 511                     ; 129 		I2C->CR2 |= I2C_CR2_STOP;                   				// STOP=1, generate stop
+ 513  000a 72125211      	bset	21009,#1
+ 515  000e               L752:
+ 516                     ; 130     while(I2C->CR2 & I2C_CR2_STOP  &&  tout()); 				// wait until stop is performed
+ 518  000e c65211        	ld	a,21009
+ 519  0011 a502          	bcp	a,#2
+ 520  0013 2705          	jreq	L152
+ 522  0015 ce0000        	ldw	x,_TIM4_tout
+ 523  0018 26f4          	jrne	L752
+ 524  001a               L152:
+ 525                     ; 127 	while(I2C->SR3 & I2C_SR3_BUSY  &&  tout())	  				// Wait while the bus is busy
+ 527  001a c65219        	ld	a,21017
+ 528  001d a502          	bcp	a,#2
+ 529  001f 2705          	jreq	L562
+ 531  0021 ce0000        	ldw	x,_TIM4_tout
+ 532  0024 26e4          	jrne	L742
+ 533  0026               L562:
+ 534                     ; 132 	if(!tout()){return IIC_ERROR_BUSY;}
+ 536  0026 ce0000        	ldw	x,_TIM4_tout
+ 537  0029 2604          	jrne	L762
+ 540  002b a602          	ld	a,#2
+ 542  002d 2033          	jra	L22
+ 543  002f               L762:
+ 544                     ; 133 	I2C->CR2 &= ~I2C_CR2_STOP;
+ 546  002f 72135211      	bres	21009,#1
+ 547                     ; 134   I2C->CR2 |= I2C_CR2_ACK;                      				// ACK=1, Ack enable
+ 549  0033 72145211      	bset	21009,#2
+ 550                     ; 136   I2C->CR2 |= I2C_CR2_START;                    				// START=1, generate start
+ 552  0037 72105211      	bset	21009,#0
+ 554  003b               L372:
+ 555                     ; 137   while((I2C->SR1 & I2C_SR1_SB)==0  &&  tout());				// wait for start bit detection (SB)
+ 557  003b c65217        	ld	a,21015
+ 558  003e a501          	bcp	a,#1
+ 559  0040 2605          	jrne	L772
+ 561  0042 ce0000        	ldw	x,_TIM4_tout
+ 562  0045 26f4          	jrne	L372
+ 563  0047               L772:
+ 564                     ; 148     I2C->DR = (u8)(SlaveAddr << 1) | 1;       			// Send 7-bit device address & Write (R/W = 1)
+ 566  0047 7b02          	ld	a,(OFST+2,sp)
+ 567  0049 48            	sll	a
+ 568  004a aa01          	or	a,#1
+ 569  004c c75216        	ld	21014,a
+ 571  004f               L503:
+ 572                     ; 150   while(!(I2C->SR1 & I2C_SR1_ADDR)  &&  tout());				// Wait for address ack (ADDR)
+ 574  004f c65217        	ld	a,21015
+ 575  0052 a502          	bcp	a,#2
+ 576  0054 2605          	jrne	L113
+ 578  0056 ce0000        	ldw	x,_TIM4_tout
+ 579  0059 26f4          	jrne	L503
+ 580  005b               L113:
+ 581                     ; 151 	if(!tout()){
+ 583  005b ce0000        	ldw	x,_TIM4_tout
+ 584  005e 2604          	jrne	L313
+ 585                     ; 152 		return IIC_ERROR_NOT_ACK;
+ 587  0060 a603          	ld	a,#3
+ 589  0062               L22:
+ 591  0062 85            	popw	x
+ 592  0063 81            	ret
+ 593  0064               L313:
+ 594                     ; 155   if (NumByteToRead > 2)                 						// *** more than 2 bytes are received? ***
+ 596  0064 7b07          	ld	a,(OFST+7,sp)
+ 597  0066 a103          	cp	a,#3
+ 598  0068 257b          	jrult	L513
+ 599                     ; 157     I2C->SR3;                                     			// ADDR clearing sequence    
+ 601  006a c65219        	ld	a,21017
+ 602  006d 97            	ld	xl,a
+ 604  006e 201c          	jra	L123
+ 605  0070               L723:
+ 606                     ; 160       while(!(I2C->SR1 & I2C_SR1_BTF)  &&  tout()); 				// Wait for BTF
+ 608  0070 c65217        	ld	a,21015
+ 609  0073 a504          	bcp	a,#4
+ 610  0075 2605          	jrne	L333
+ 612  0077 ce0000        	ldw	x,_TIM4_tout
+ 613  007a 26f4          	jrne	L723
+ 614  007c               L333:
+ 615                     ; 161 			*pReadDataBuffer++ = I2C->DR;                   				// Reading next data byte
+ 617  007c 1e05          	ldw	x,(OFST+5,sp)
+ 618  007e 1c0001        	addw	x,#1
+ 619  0081 1f05          	ldw	(OFST+5,sp),x
+ 620  0083 1d0001        	subw	x,#1
+ 621  0086 c65216        	ld	a,21014
+ 622  0089 f7            	ld	(x),a
+ 623                     ; 162       --NumByteToRead;																		// Decrease Numbyte to reade by 1
+ 625  008a 0a07          	dec	(OFST+7,sp)
+ 626  008c               L123:
+ 627                     ; 158     while(NumByteToRead > 3  &&  tout())       			// not last three bytes?
+ 629  008c 7b07          	ld	a,(OFST+7,sp)
+ 630  008e a104          	cp	a,#4
+ 631  0090 2505          	jrult	L143
+ 633  0092 ce0000        	ldw	x,_TIM4_tout
+ 634  0095 26d9          	jrne	L723
+ 635  0097               L143:
+ 636                     ; 165     while(!(I2C->SR1 & I2C_SR1_BTF)  &&  tout()); 			// Wait for BTF
+ 638  0097 c65217        	ld	a,21015
+ 639  009a a504          	bcp	a,#4
+ 640  009c 2605          	jrne	L543
+ 642  009e ce0000        	ldw	x,_TIM4_tout
+ 643  00a1 26f4          	jrne	L143
+ 644  00a3               L543:
+ 645                     ; 166     I2C->CR2 &=~I2C_CR2_ACK;                      			// Clear ACK
+ 647  00a3 72155211      	bres	21009,#2
+ 648                     ; 167     disableInterrupts();                          			// Errata workaround (Disable interrupt)
+ 651  00a7 9b            sim
+ 653                     ; 168     *pReadDataBuffer++ = I2C->DR;                     		// Read 1st byte
+ 656  00a8 1e05          	ldw	x,(OFST+5,sp)
+ 657  00aa 1c0001        	addw	x,#1
+ 658  00ad 1f05          	ldw	(OFST+5,sp),x
+ 659  00af 1d0001        	subw	x,#1
+ 660  00b2 c65216        	ld	a,21014
+ 661  00b5 f7            	ld	(x),a
+ 662                     ; 169     I2C->CR2 |= I2C_CR2_STOP;                       		// Generate stop here (STOP=1)
+ 664  00b6 72125211      	bset	21009,#1
+ 665                     ; 170     *pReadDataBuffer++ = I2C->DR;                     		// Read 2nd byte
+ 667  00ba 1e05          	ldw	x,(OFST+5,sp)
+ 668  00bc 1c0001        	addw	x,#1
+ 669  00bf 1f05          	ldw	(OFST+5,sp),x
+ 670  00c1 1d0001        	subw	x,#1
+ 671  00c4 c65216        	ld	a,21014
+ 672  00c7 f7            	ld	(x),a
+ 673                     ; 171     enableInterrupts();																	// Errata workaround (Enable interrupt)
+ 676  00c8 9a            rim
+ 680  00c9               L153:
+ 681                     ; 172     while(!(I2C->SR1 & I2C_SR1_RXNE)  &&  tout());			// Wait for RXNE
+ 683  00c9 c65217        	ld	a,21015
+ 684  00cc a540          	bcp	a,#64
+ 685  00ce 2605          	jrne	L553
+ 687  00d0 ce0000        	ldw	x,_TIM4_tout
+ 688  00d3 26f4          	jrne	L153
+ 689  00d5               L553:
+ 690                     ; 173     *pReadDataBuffer++ = I2C->DR;                   			// Read 3rd Data byte
+ 692  00d5 1e05          	ldw	x,(OFST+5,sp)
+ 693  00d7 1c0001        	addw	x,#1
+ 694  00da 1f05          	ldw	(OFST+5,sp),x
+ 695  00dc 1d0001        	subw	x,#1
+ 696  00df c65216        	ld	a,21014
+ 697  00e2 f7            	ld	(x),a
+ 699  00e3 205c          	jra	L704
+ 700  00e5               L513:
+ 701                     ; 177     if(NumByteToRead == 2)                						// *** just two bytes are received? ***
+ 703  00e5 7b07          	ld	a,(OFST+7,sp)
+ 704  00e7 a102          	cp	a,#2
+ 705  00e9 2636          	jrne	L163
+ 706                     ; 179       I2C->CR2 |= I2C_CR2_POS;                      		// Set POS bit (NACK at next received byte)
+ 708  00eb 72165211      	bset	21009,#3
+ 709                     ; 180       disableInterrupts();                          		// Errata workaround (Disable interrupt)
+ 712  00ef 9b            sim
+ 714                     ; 181       I2C->SR3;                                       	// Clear ADDR Flag
+ 717  00f0 c65219        	ld	a,21017
+ 718  00f3 97            	ld	xl,a
+ 719                     ; 182       I2C->CR2 &=~I2C_CR2_ACK;                        	// Clear ACK 
+ 721  00f4 72155211      	bres	21009,#2
+ 722                     ; 183       enableInterrupts();																// Errata workaround (Enable interrupt)
+ 725  00f8 9a            rim
+ 729  00f9               L563:
+ 730                     ; 184       while(!(I2C->SR1 & I2C_SR1_BTF)  &&  tout()); 		// Wait for BTF
+ 732  00f9 c65217        	ld	a,21015
+ 733  00fc a504          	bcp	a,#4
+ 734  00fe 2605          	jrne	L173
+ 736  0100 ce0000        	ldw	x,_TIM4_tout
+ 737  0103 26f4          	jrne	L563
+ 738  0105               L173:
+ 739                     ; 185       disableInterrupts();                          		// Errata workaround (Disable interrupt)
+ 742  0105 9b            sim
+ 744                     ; 186       I2C->CR2 |= I2C_CR2_STOP;                       	// Generate stop here (STOP=1)
+ 747  0106 72125211      	bset	21009,#1
+ 748                     ; 187       *pReadDataBuffer++ = I2C->DR;                     	// Read 1st Data byte
+ 750  010a 1e05          	ldw	x,(OFST+5,sp)
+ 751  010c 1c0001        	addw	x,#1
+ 752  010f 1f05          	ldw	(OFST+5,sp),x
+ 753  0111 1d0001        	subw	x,#1
+ 754  0114 c65216        	ld	a,21014
+ 755  0117 f7            	ld	(x),a
+ 756                     ; 188       enableInterrupts();																// Errata workaround (Enable interrupt)
+ 759  0118 9a            rim
+ 761                     ; 189 			*pReadDataBuffer = I2C->DR;													// Read 2nd Data byte
+ 764  0119 1e05          	ldw	x,(OFST+5,sp)
+ 765  011b c65216        	ld	a,21014
+ 766  011e f7            	ld	(x),a
+ 768  011f 2020          	jra	L704
+ 769  0121               L163:
+ 770                     ; 193       I2C->CR2 &=~I2C_CR2_ACK;;                     		// Clear ACK 
+ 772  0121 72155211      	bres	21009,#2
+ 773                     ; 194       disableInterrupts();                          		// Errata workaround (Disable interrupt)
+ 777  0125 9b            sim
+ 779                     ; 195       I2C->SR3;                                       	// Clear ADDR Flag   
+ 782  0126 c65219        	ld	a,21017
+ 783  0129 97            	ld	xl,a
+ 784                     ; 196       I2C->CR2 |= I2C_CR2_STOP;                       	// generate stop here (STOP=1)
+ 786  012a 72125211      	bset	21009,#1
+ 787                     ; 197       enableInterrupts();																// Errata workaround (Enable interrupt)
+ 790  012e 9a            rim
+ 794  012f               L773:
+ 795                     ; 198       while(!(I2C->SR1 & I2C_SR1_RXNE)  &&  tout()); 		// test EV7, wait for RxNE
+ 797  012f c65217        	ld	a,21015
+ 798  0132 a540          	bcp	a,#64
+ 799  0134 2605          	jrne	L304
+ 801  0136 ce0000        	ldw	x,_TIM4_tout
+ 802  0139 26f4          	jrne	L773
+ 803  013b               L304:
+ 804                     ; 199       *pReadDataBuffer = I2C->DR;                     		// Read Data byte
+ 806  013b 1e05          	ldw	x,(OFST+5,sp)
+ 807  013d c65216        	ld	a,21014
+ 808  0140 f7            	ld	(x),a
+ 809  0141               L704:
+ 810                     ; 203   while((I2C->CR2 & I2C_CR2_STOP)  &&  tout());     		// Wait until stop is performed (STOPF = 1)
+ 812  0141 c65211        	ld	a,21009
+ 813  0144 a502          	bcp	a,#2
+ 814  0146 2705          	jreq	L314
+ 816  0148 ce0000        	ldw	x,_TIM4_tout
+ 817  014b 26f4          	jrne	L704
+ 818  014d               L314:
+ 819                     ; 204   I2C->CR2 &=~I2C_CR2_POS;                          		// return POS to default state (POS=0)
+ 821  014d 72175211      	bres	21009,#3
+ 822                     ; 205 	if(!tout()){
+ 824  0151 ce0000        	ldw	x,_TIM4_tout
+ 825  0154 2604          	jrne	L514
+ 826                     ; 206 		return IIC_ERROR_TIME_OUT;
+ 828  0156 a601          	ld	a,#1
+ 830  0158 2001          	jra	L42
+ 831  015a               L514:
+ 832                     ; 208 		return IIC_SUCCESS;
+ 834  015a 4f            	clr	a
+ 836  015b               L42:
+ 838  015b 85            	popw	x
+ 839  015c 81            	ret
+ 921                     ; 212 uint8_t I2C_WriteReadBytes(uint16_t SlaveAddr, uint8_t *pWriteDataBuffer, uint8_t NumByteToWrite,uint8_t *pReadDataBuffer, uint8_t NumByteToRead, uint8_t TimeOutOfMs)
+ 921                     ; 213 {
+ 922                     .text:	section	.text,new
+ 923  0000               _I2C_WriteReadBytes:
+ 925  0000 89            	pushw	x
+ 926       00000000      OFST:	set	0
+ 929                     ; 214 	set_tout_ms(TimeOutOfMs);
+ 931  0001 7b0b          	ld	a,(OFST+11,sp)
+ 932  0003 5f            	clrw	x
+ 933  0004 97            	ld	xl,a
+ 934  0005 cf0000        	ldw	_TIM4_tout,x
+ 937  0008 2010          	jra	L554
+ 938  000a               L354:
+ 939                     ; 218 		I2C->CR2 |= I2C_CR2_STOP;                   				// Generate stop here (STOP=1)
+ 941  000a 72125211      	bset	21009,#1
+ 943  000e               L364:
+ 944                     ; 219     while(I2C->CR2 & I2C_CR2_STOP  &&  tout()); 				// Wait until stop is performed
+ 946  000e c65211        	ld	a,21009
+ 947  0011 a502          	bcp	a,#2
+ 948  0013 2705          	jreq	L554
+ 950  0015 ce0000        	ldw	x,_TIM4_tout
+ 951  0018 26f4          	jrne	L364
+ 952  001a               L554:
+ 953                     ; 216 	while(I2C->SR3 & I2C_SR3_BUSY  &&  tout())	  				// Wait while the bus is busy
+ 955  001a c65219        	ld	a,21017
+ 956  001d a502          	bcp	a,#2
+ 957  001f 2705          	jreq	L174
+ 959  0021 ce0000        	ldw	x,_TIM4_tout
+ 960  0024 26e4          	jrne	L354
+ 961  0026               L174:
+ 962                     ; 221 	if(!tout()){return IIC_ERROR_BUSY;}
+ 964  0026 ce0000        	ldw	x,_TIM4_tout
+ 965  0029 2604          	jrne	L374
+ 968  002b a602          	ld	a,#2
+ 970  002d 2036          	jra	L03
+ 971  002f               L374:
+ 972                     ; 222 	I2C->CR2 &= ~I2C_CR2_STOP;
+ 974  002f 72135211      	bres	21009,#1
+ 975                     ; 223   I2C->CR2 |= I2C_CR2_ACK;                      				// ACK=1, Ack enable
+ 977  0033 72145211      	bset	21009,#2
+ 978                     ; 225   I2C->CR2 |= I2C_CR2_START;                    				// START=1, generate start
+ 980  0037 72105211      	bset	21009,#0
+ 982  003b               L774:
+ 983                     ; 226   while((I2C->SR1 & I2C_SR1_SB)==0  &&  tout());				// Wait for start bit detection (SB)
+ 985  003b c65217        	ld	a,21015
+ 986  003e a501          	bcp	a,#1
+ 987  0040 2605          	jrne	L305
+ 989  0042 ce0000        	ldw	x,_TIM4_tout
+ 990  0045 26f4          	jrne	L774
+ 991  0047               L305:
+ 992                     ; 228   if(tout())
+ 994  0047 ce0000        	ldw	x,_TIM4_tout
+ 995  004a 2706          	jreq	L115
+ 996                     ; 238       I2C->DR = (u8)(SlaveAddr << 1);   						// Send 7-bit device address & Write (R/W = 0)
+ 998  004c 7b02          	ld	a,(OFST+2,sp)
+ 999  004e 48            	sll	a
+1000  004f c75216        	ld	21014,a
+1001  0052               L115:
+1002                     ; 241   while(!(I2C->SR1 & I2C_SR1_ADDR) &&  tout()); 				// test EV6 - wait for address ack (ADDR)
+1004  0052 c65217        	ld	a,21015
+1005  0055 a502          	bcp	a,#2
+1006  0057 2605          	jrne	L515
+1008  0059 ce0000        	ldw	x,_TIM4_tout
+1009  005c 26f4          	jrne	L115
+1010  005e               L515:
+1011                     ; 242 	if(!tout()){
+1013  005e ce0000        	ldw	x,_TIM4_tout
+1014  0061 2604          	jrne	L715
+1015                     ; 243 		return IIC_ERROR_NOT_ACK;
+1017  0063 a603          	ld	a,#3
+1019  0065               L03:
+1021  0065 85            	popw	x
+1022  0066 81            	ret
+1023  0067               L715:
+1024                     ; 246   I2C->SR3;
+1027  0067 c65219        	ld	a,21017
+1028  006a 97            	ld	xl,a
+1029                     ; 248 	if(NumByteToWrite > 0){
+1031  006b 0d07          	tnz	(OFST+7,sp)
+1032  006d 2736          	jreq	L125
+1034  006f 201f          	jra	L525
+1035  0071               L335:
+1036                     ; 250 			while(!(I2C->SR1 & I2C_SR1_TXE) &&  tout());  				// Wait for TxE
+1038  0071 c65217        	ld	a,21015
+1039  0074 a580          	bcp	a,#128
+1040  0076 2605          	jrne	L735
+1042  0078 ce0000        	ldw	x,_TIM4_tout
+1043  007b 26f4          	jrne	L335
+1044  007d               L735:
+1045                     ; 251 			if(tout())
+1047  007d ce0000        	ldw	x,_TIM4_tout
+1048  0080 270e          	jreq	L525
+1049                     ; 253 				I2C->DR = *pWriteDataBuffer++;                         			// Send register address
+1051  0082 1e05          	ldw	x,(OFST+5,sp)
+1052  0084 1c0001        	addw	x,#1
+1053  0087 1f05          	ldw	(OFST+5,sp),x
+1054  0089 1d0001        	subw	x,#1
+1055  008c f6            	ld	a,(x)
+1056  008d c75216        	ld	21014,a
+1057  0090               L525:
+1058                     ; 249 		while(NumByteToWrite--){
+1060  0090 7b07          	ld	a,(OFST+7,sp)
+1061  0092 0a07          	dec	(OFST+7,sp)
+1062  0094 4d            	tnz	a
+1063  0095 26da          	jrne	L335
+1065  0097               L545:
+1066                     ; 256 		while((I2C->SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) != (I2C_SR1_TXE | I2C_SR1_BTF)  &&  tout()); 
+1068  0097 c65217        	ld	a,21015
+1069  009a a484          	and	a,#132
+1070  009c a184          	cp	a,#132
+1071  009e 2705          	jreq	L125
+1073  00a0 ce0000        	ldw	x,_TIM4_tout
+1074  00a3 26f2          	jrne	L545
+1075  00a5               L125:
+1076                     ; 267 	I2C->CR2 &= ~I2C_CR2_STOP;
+1078  00a5 72135211      	bres	21009,#1
+1079                     ; 268   I2C->CR2 |= I2C_CR2_START;                     				// START=1, generate re-start
+1081  00a9 72105211      	bset	21009,#0
+1083  00ad               L555:
+1084                     ; 269   while((I2C->SR1 & I2C_SR1_SB)==0  &&  tout()); 				// Wait for start bit detection (SB)
+1086  00ad c65217        	ld	a,21015
+1087  00b0 a501          	bcp	a,#1
+1088  00b2 2605          	jrne	L165
+1090  00b4 ce0000        	ldw	x,_TIM4_tout
+1091  00b7 26f4          	jrne	L555
+1092  00b9               L165:
+1093                     ; 271   if(tout())
+1095  00b9 ce0000        	ldw	x,_TIM4_tout
+1096  00bc 2708          	jreq	L765
+1097                     ; 283       I2C->DR = (u8)(SlaveAddr << 1) | 1;         	// Send 7-bit device address & Write (R/W = 1)
+1099  00be 7b02          	ld	a,(OFST+2,sp)
+1100  00c0 48            	sll	a
+1101  00c1 aa01          	or	a,#1
+1102  00c3 c75216        	ld	21014,a
+1103  00c6               L765:
+1104                     ; 286   while(!(I2C->SR1 & I2C_SR1_ADDR)  &&  tout());  			// Wait for address ack (ADDR)
+1106  00c6 c65217        	ld	a,21015
+1107  00c9 a502          	bcp	a,#2
+1108  00cb 2605          	jrne	L375
+1110  00cd ce0000        	ldw	x,_TIM4_tout
+1111  00d0 26f4          	jrne	L765
+1112  00d2               L375:
+1113                     ; 287 	if(!tout()){
+1115  00d2 ce0000        	ldw	x,_TIM4_tout
+1116  00d5 2604          	jrne	L575
+1117                     ; 288 		return IIC_ERROR_NOT_ACK;
+1119  00d7 a603          	ld	a,#3
+1121  00d9 208a          	jra	L03
+1122  00db               L575:
+1123                     ; 291   if (NumByteToRead > 2)                 						// *** more than 2 bytes are received? ***
+1125  00db 7b0a          	ld	a,(OFST+10,sp)
+1126  00dd a103          	cp	a,#3
+1127  00df 257b          	jrult	L775
+1128                     ; 293     I2C->SR3;                                     			// ADDR clearing sequence    
+1130  00e1 c65219        	ld	a,21017
+1131  00e4 97            	ld	xl,a
+1133  00e5 201c          	jra	L306
+1134  00e7               L116:
+1135                     ; 296       while(!(I2C->SR1 & I2C_SR1_BTF)  &&  tout()); 				// Wait for BTF
+1137  00e7 c65217        	ld	a,21015
+1138  00ea a504          	bcp	a,#4
+1139  00ec 2605          	jrne	L516
+1141  00ee ce0000        	ldw	x,_TIM4_tout
+1142  00f1 26f4          	jrne	L116
+1143  00f3               L516:
+1144                     ; 297 			*pReadDataBuffer++ = I2C->DR;                   				// Reading next data byte
+1146  00f3 1e08          	ldw	x,(OFST+8,sp)
+1147  00f5 1c0001        	addw	x,#1
+1148  00f8 1f08          	ldw	(OFST+8,sp),x
+1149  00fa 1d0001        	subw	x,#1
+1150  00fd c65216        	ld	a,21014
+1151  0100 f7            	ld	(x),a
+1152                     ; 298       --NumByteToRead;																		// Decrease Numbyte to reade by 1
+1154  0101 0a0a          	dec	(OFST+10,sp)
+1155  0103               L306:
+1156                     ; 294     while(NumByteToRead > 3  &&  tout())       			// not last three bytes?
+1158  0103 7b0a          	ld	a,(OFST+10,sp)
+1159  0105 a104          	cp	a,#4
+1160  0107 2505          	jrult	L326
+1162  0109 ce0000        	ldw	x,_TIM4_tout
+1163  010c 26d9          	jrne	L116
+1164  010e               L326:
+1165                     ; 301     while(!(I2C->SR1 & I2C_SR1_BTF)  &&  tout()); 			// Wait for BTF
+1167  010e c65217        	ld	a,21015
+1168  0111 a504          	bcp	a,#4
+1169  0113 2605          	jrne	L726
+1171  0115 ce0000        	ldw	x,_TIM4_tout
+1172  0118 26f4          	jrne	L326
+1173  011a               L726:
+1174                     ; 302     I2C->CR2 &=~I2C_CR2_ACK;                      			// Clear ACK
+1176  011a 72155211      	bres	21009,#2
+1177                     ; 303     disableInterrupts();                          			// Errata workaround (Disable interrupt)
+1180  011e 9b            sim
+1182                     ; 304     *pReadDataBuffer++ = I2C->DR;                     		// Read 1st byte
+1185  011f 1e08          	ldw	x,(OFST+8,sp)
+1186  0121 1c0001        	addw	x,#1
+1187  0124 1f08          	ldw	(OFST+8,sp),x
+1188  0126 1d0001        	subw	x,#1
+1189  0129 c65216        	ld	a,21014
+1190  012c f7            	ld	(x),a
+1191                     ; 305     I2C->CR2 |= I2C_CR2_STOP;                       		// Generate stop here (STOP=1)
+1193  012d 72125211      	bset	21009,#1
+1194                     ; 306     *pReadDataBuffer++ = I2C->DR;                     		// Read 2nd byte
+1196  0131 1e08          	ldw	x,(OFST+8,sp)
+1197  0133 1c0001        	addw	x,#1
+1198  0136 1f08          	ldw	(OFST+8,sp),x
+1199  0138 1d0001        	subw	x,#1
+1200  013b c65216        	ld	a,21014
+1201  013e f7            	ld	(x),a
+1202                     ; 307     enableInterrupts();																	// Errata workaround (Enable interrupt)
+1205  013f 9a            rim
+1209  0140               L336:
+1210                     ; 308     while(!(I2C->SR1 & I2C_SR1_RXNE)  &&  tout());			// Wait for RXNE
+1212  0140 c65217        	ld	a,21015
+1213  0143 a540          	bcp	a,#64
+1214  0145 2605          	jrne	L736
+1216  0147 ce0000        	ldw	x,_TIM4_tout
+1217  014a 26f4          	jrne	L336
+1218  014c               L736:
+1219                     ; 309     *pReadDataBuffer++ = I2C->DR;                   			// Read 3rd Data byte
+1221  014c 1e08          	ldw	x,(OFST+8,sp)
+1222  014e 1c0001        	addw	x,#1
+1223  0151 1f08          	ldw	(OFST+8,sp),x
+1224  0153 1d0001        	subw	x,#1
+1225  0156 c65216        	ld	a,21014
+1226  0159 f7            	ld	(x),a
+1228  015a 205c          	jra	L176
+1229  015c               L775:
+1230                     ; 313    if(NumByteToRead == 2)                						// *** just two bytes are received? ***
+1232  015c 7b0a          	ld	a,(OFST+10,sp)
+1233  015e a102          	cp	a,#2
+1234  0160 2636          	jrne	L346
+1235                     ; 315       I2C->CR2 |= I2C_CR2_POS;                      		// Set POS bit (NACK at next received byte)
+1237  0162 72165211      	bset	21009,#3
+1238                     ; 316       disableInterrupts();                          		// Errata workaround (Disable interrupt)
+1241  0166 9b            sim
+1243                     ; 317       I2C->SR3;                                       	// Clear ADDR Flag
+1246  0167 c65219        	ld	a,21017
+1247  016a 97            	ld	xl,a
+1248                     ; 318       I2C->CR2 &=~I2C_CR2_ACK;                        	// Clear ACK 
+1250  016b 72155211      	bres	21009,#2
+1251                     ; 319       enableInterrupts();																// Errata workaround (Enable interrupt)
+1254  016f 9a            rim
+1258  0170               L746:
+1259                     ; 320       while(!(I2C->SR1 & I2C_SR1_BTF)  &&  tout()); 		// Wait for BTF
+1261  0170 c65217        	ld	a,21015
+1262  0173 a504          	bcp	a,#4
+1263  0175 2605          	jrne	L356
+1265  0177 ce0000        	ldw	x,_TIM4_tout
+1266  017a 26f4          	jrne	L746
+1267  017c               L356:
+1268                     ; 321       disableInterrupts();                          		// Errata workaround (Disable interrupt)
+1271  017c 9b            sim
+1273                     ; 322       I2C->CR2 |= I2C_CR2_STOP;                       	// Generate stop here (STOP=1)
+1276  017d 72125211      	bset	21009,#1
+1277                     ; 323       *pReadDataBuffer++ = I2C->DR;                     	// Read 1st Data byte
+1279  0181 1e08          	ldw	x,(OFST+8,sp)
+1280  0183 1c0001        	addw	x,#1
+1281  0186 1f08          	ldw	(OFST+8,sp),x
+1282  0188 1d0001        	subw	x,#1
+1283  018b c65216        	ld	a,21014
+1284  018e f7            	ld	(x),a
+1285                     ; 324       enableInterrupts();																// Errata workaround (Enable interrupt)
+1288  018f 9a            rim
+1290                     ; 325 			*pReadDataBuffer = I2C->DR;													// Read 2nd Data byte
+1293  0190 1e08          	ldw	x,(OFST+8,sp)
+1294  0192 c65216        	ld	a,21014
+1295  0195 f7            	ld	(x),a
+1297  0196 2020          	jra	L176
+1298  0198               L346:
+1299                     ; 329       I2C->CR2 &=~I2C_CR2_ACK;;                     		// Clear ACK 
+1301  0198 72155211      	bres	21009,#2
+1302                     ; 330       disableInterrupts();                          		// Errata workaround (Disable interrupt)
+1306  019c 9b            sim
+1308                     ; 331       I2C->SR3;                                       	// Clear ADDR Flag   
+1311  019d c65219        	ld	a,21017
+1312  01a0 97            	ld	xl,a
+1313                     ; 332       I2C->CR2 |= I2C_CR2_STOP;                       	// generate stop here (STOP=1)
+1315  01a1 72125211      	bset	21009,#1
+1316                     ; 333       enableInterrupts();																// Errata workaround (Enable interrupt)
+1319  01a5 9a            rim
+1323  01a6               L166:
+1324                     ; 334       while(!(I2C->SR1 & I2C_SR1_RXNE)  &&  tout()); 		// test EV7, wait for RxNE
+1326  01a6 c65217        	ld	a,21015
+1327  01a9 a540          	bcp	a,#64
+1328  01ab 2605          	jrne	L566
+1330  01ad ce0000        	ldw	x,_TIM4_tout
+1331  01b0 26f4          	jrne	L166
+1332  01b2               L566:
+1333                     ; 335       *pReadDataBuffer = I2C->DR;                     		// Read Data byte
+1335  01b2 1e08          	ldw	x,(OFST+8,sp)
+1336  01b4 c65216        	ld	a,21014
+1337  01b7 f7            	ld	(x),a
+1338  01b8               L176:
+1339                     ; 339   while((I2C->CR2 & I2C_CR2_STOP)  &&  tout());     		// Wait until stop is performed (STOPF = 1)
+1341  01b8 c65211        	ld	a,21009
+1342  01bb a502          	bcp	a,#2
+1343  01bd 2705          	jreq	L576
+1345  01bf ce0000        	ldw	x,_TIM4_tout
+1346  01c2 26f4          	jrne	L176
+1347  01c4               L576:
+1348                     ; 340   I2C->CR2 &=~I2C_CR2_POS;                          		// return POS to default state (POS=0)
+1350  01c4 72175211      	bres	21009,#3
+1351                     ; 341 	return IIC_SUCCESS;
+1353  01c8 4f            	clr	a
+1356  01c9 85            	popw	x
+1357  01ca 81            	ret
+1381                     ; 351 void ErrProc(void)
+1381                     ; 352 {
+1382                     .text:	section	.text,new
+1383  0000               _ErrProc:
+1387                     ; 354     I2C->SR2= 0;
+1389  0000 725f5218      	clr	21016
+1390                     ; 356 	  I2C->CR2 |= 2;  
+1392  0004 72125211      	bset	21009,#1
+1393                     ; 358     TIM4_tout= 0;
+1395  0008 5f            	clrw	x
+1396  0009 cf0000        	ldw	_TIM4_tout,x
+1397                     ; 361 }
+1400  000c 81            	ret
+1425                     ; 374 @far @interrupt void I2C_error_Interrupt_Handler (void) {
+1427                     .text:	section	.text,new
+1428  0000               f_I2C_error_Interrupt_Handler:
+1431  0000 3b0002        	push	c_x+2
+1432  0003 be00          	ldw	x,c_x
+1433  0005 89            	pushw	x
+1434  0006 3b0002        	push	c_y+2
+1435  0009 be00          	ldw	x,c_y
+1436  000b 89            	pushw	x
+1439                     ; 378 ErrProc();
+1441  000c cd0000        	call	_ErrProc
+1443                     ; 379 }
+1446  000f 85            	popw	x
+1447  0010 bf00          	ldw	c_y,x
+1448  0012 320002        	pop	c_y+2
+1449  0015 85            	popw	x
+1450  0016 bf00          	ldw	c_x,x
+1451  0018 320002        	pop	c_x+2
+1452  001b 80            	iret
+1475                     	xdef	f_I2C_error_Interrupt_Handler
+1476                     	switch	.bss
+1477  0000               _TIM4_tout:
+1478  0000 0000          	ds.b	2
+1479                     	xdef	_TIM4_tout
+1480                     	xdef	_ErrProc
+1481                     	xdef	_I2C_WriteReadBytes
+1482                     	xdef	_I2C_ReadBytes
+1483                     	xdef	_I2C_WriteBytes
+1484                     	xdef	_I2C_Config
+1485                     	xref	_I2C_SoftwareResetCmd
+1486                     	xref	_I2C_Cmd
+1487                     	xref	_I2C_Init
+1488                     	xref	_I2C_DeInit
+1489                     	xref	_CLK_GetClockFreq
+1490                     	xref.b	c_lreg
+1491                     	xref.b	c_x
+1492                     	xref.b	c_y
+1512                     	xref	c_ludv
+1513                     	end

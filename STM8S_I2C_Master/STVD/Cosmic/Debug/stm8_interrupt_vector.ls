@@ -66,20 +66,20 @@
  122  0049 00            	dc.b	page(f_NonHandledInterrupt)
  123  004a 0000          	dc.w	f_NonHandledInterrupt
  124  004c 82            	dc.b	130
- 126  004d 00            	dc.b	page(_UART1_TX_ISR)
- 127  004e 0000          	dc.w	_UART1_TX_ISR
+ 126  004d 00            	dc.b	page(f_NonHandledInterrupt)
+ 127  004e 0000          	dc.w	f_NonHandledInterrupt
  128  0050 82            	dc.b	130
- 130  0051 00            	dc.b	page(_UART1_RX_ISR)
- 131  0052 0000          	dc.w	_UART1_RX_ISR
+ 130  0051 00            	dc.b	page(f_NonHandledInterrupt)
+ 131  0052 0000          	dc.w	f_NonHandledInterrupt
  132  0054 82            	dc.b	130
  134  0055 00            	dc.b	page(f_I2C_error_Interrupt_Handler)
  135  0056 0000          	dc.w	f_I2C_error_Interrupt_Handler
  136  0058 82            	dc.b	130
- 138  0059 00            	dc.b	page(f_NonHandledInterrupt)
- 139  005a 0000          	dc.w	f_NonHandledInterrupt
+ 138  0059 00            	dc.b	page(_UART2_TX_ISR)
+ 139  005a 0000          	dc.w	_UART2_TX_ISR
  140  005c 82            	dc.b	130
- 142  005d 00            	dc.b	page(f_NonHandledInterrupt)
- 143  005e 0000          	dc.w	f_NonHandledInterrupt
+ 142  005d 00            	dc.b	page(_UART2_RX_ISR)
+ 143  005e 0000          	dc.w	_UART2_RX_ISR
  144  0060 82            	dc.b	130
  146  0061 00            	dc.b	page(f_NonHandledInterrupt)
  147  0062 0000          	dc.w	f_NonHandledInterrupt
@@ -108,7 +108,7 @@
  227                     	xref	__stext
  228                     	xdef	f_NonHandledInterrupt
  229                     	xref	f_TIM4InterruptHandle
- 230                     	xref	_UART1_RX_ISR
- 231                     	xref	_UART1_TX_ISR
+ 230                     	xref	_UART2_RX_ISR
+ 231                     	xref	_UART2_TX_ISR
  232                     	xref	f_I2C_error_Interrupt_Handler
  251                     	end

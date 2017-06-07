@@ -21,16 +21,50 @@
 #include "i2c_master_poll.h"
 #include "timer.h"
 #include "uart.h"
-#include <string.h>
-#include <stdio.h>
+#include "i2c.h"
 
 
-#define LED_GPIO_PORT  (GPIOA)
+#define LED_GPIO_PORT  (GPIOB)
 
 const u8 DUMMY_INIT[MAX_DUMMY]= { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80, 0x90, 0xa0 };
 char *IIC_ErrorStr[]={"IIC_SUCCESS","IIC_ERROR_TIME_OUT","IIC_ERROR_BUSY","IIC_ERROR_NOT_ACK"};
 uint8_t write_buffer[MAX_DUMMY];
 uint8_t read_buffer[MAX_DUMMY];
+
+u8 init_slc_spc_done;
+u8 tick_5s;
+
+void sys_init(void)
+{
+	u8 i,j;
+	for(i = 0; i < 15; i++){
+		for(j = 0; j < 4;j++){
+			sc.slc[i].deviceid[j] = 0x00;
+			sc.spc[i].deviceid[j] = 0x00;
+		}
+		sc.slc[i].firmware = 0x00;
+		sc.slc[i].HWTtest = 0x00;
+		sc.slc[i].MDID = 0x00;
+		sc.slc[i].model = 0x00;
+		sc.slc[i].flag._flag_byte = 0x00;
+		sc.slc[i].ch1_status = 0x00;
+		sc.slc[i].ch2_status = 0x00;
+		sc.slc[i].ch3_status = 0x00;
+		sc.slc[i].ch4_status = 0x00;
+		sc.spc[i].firmware = 0x00;
+		sc.spc[i].HWTtest = 0x00;
+		sc.spc[i].MDID = 0x00;
+		sc.spc[i].model = 0x00;
+		sc.spc[i].flag._flag_byte = 0x00;
+		sc.spc[i].energy_consum = 0x0000;
+		sc.spc[i].ch1_status = 0x00;
+		sc.spc[i].ch2_status = 0x00;
+		sc.spc[i].ch3_status = 0x00;
+		sc.spc[i].ch4_status = 0x00;	
+	}
+}
+
+
 /******************************************************************************
 * Function name : main
 * Description 	: Main testing loop
@@ -50,12 +84,14 @@ void main (void) {
   CLK->SWCR  &= ~0x02; //关闭切换
 	// Set GPIO for LED uses 
   GPIO_Init(LED_GPIO_PORT, (GPIO_Pin_TypeDef)GPIO_PIN_3, GPIO_MODE_OUT_PP_LOW_FAST); 
+	GPIO_Init(LED_GPIO_PORT, (GPIO_Pin_TypeDef)GPIO_PIN_2, GPIO_MODE_OUT_PP_LOW_FAST); 
 	GPIO_WriteHigh(LED_GPIO_PORT, (GPIO_Pin_TypeDef)GPIO_PIN_3);
-	Init_Time4();
 	enableInterrupts();
-	TIM4->CR1 |= 0x01;//使能计数器
+	Init_Time4();
 	//串口初始化
-	Init_UART1();
+	Init_uart2();
+	//I2C初始化
+	I2C_Config();
 	//UART_Init(57600);
 	//printf("Hello World!\n");
 	// Initialize I2C for communication
@@ -127,7 +163,8 @@ void main (void) {
   TIM4_tout= loop_count= 0;
 	#endif
   */
-	// Enable all interrupts  
+	// Enable all interrupts
+	/*
 	#if 0
 
 	ret = I2C_WriteBytes(0x50,DUMMY_INIT,0,100);
@@ -181,7 +218,10 @@ void main (void) {
 		printf("\n");
 	}
 	#endif
+	*/
   /* main test loop */
+	
+	
   while(1) {
 		
 		/*
@@ -235,16 +275,30 @@ void main (void) {
       switch_on(LED1);
     delay(1);
 		*/
-		if(f_300ms){
-			f_300ms = 0;
-			UART1_Send_Data_Init();
-			UART1_Send_Data_Start();
+		if(!init_slc_spc_done){
+		scan_device();
+		i2c_device_info();
+		send_device_info();
+		init_slc_spc_done = 1;
 		}
+		
+		if(f_100ms){
+			f_100ms = 0;
+			rev_anaylze();
+		}
+		
+		//if(f_300ms){
+		//	f_300ms = 0;
+		//}
 		
 		if(f_1s){
 			f_1s = 0;
+			tick_5s++;
+			check_send_repeatedly();
+			report_energy_consum();
+			if(tick_5s >= 5)	{tick_5s = 0;i2c_heartbeat();}
+			send_malfunction();
 			GPIO_WriteReverse(LED_GPIO_PORT, (GPIO_Pin_TypeDef)GPIO_PIN_3);
-			printf("Hello World!\n");
 		}
 	}
 }
