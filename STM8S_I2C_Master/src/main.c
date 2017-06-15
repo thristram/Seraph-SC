@@ -33,17 +33,18 @@ uint8_t read_buffer[MAX_DUMMY];
 
 u8 init_slc_spc_done;
 u8 tick_5s;
-
+extern void delay(u16 Count);
 void sys_init(void)
 {
 	u8 i,j;
+	sc.HWTtest = 0xC0;
 	for(i = 0; i < 15; i++){
 		for(j = 0; j < 4;j++){
 			sc.slc[i].deviceid[j] = 0x00;
 			sc.spc[i].deviceid[j] = 0x00;
 		}
 		sc.slc[i].firmware = 0x00;
-		sc.slc[i].HWTtest = 0x00;
+		sc.slc[i].HWTtest = 0xC0;
 		sc.slc[i].MDID = 0x00;
 		sc.slc[i].model = 0x00;
 		sc.slc[i].flag._flag_byte = 0x00;
@@ -52,7 +53,7 @@ void sys_init(void)
 		sc.slc[i].ch3_status = 0x00;
 		sc.slc[i].ch4_status = 0x00;
 		sc.spc[i].firmware = 0x00;
-		sc.spc[i].HWTtest = 0x00;
+		sc.spc[i].HWTtest = 0xC0;
 		sc.spc[i].MDID = 0x00;
 		sc.spc[i].model = 0x00;
 		sc.spc[i].flag._flag_byte = 0x00;
@@ -92,6 +93,7 @@ void main (void) {
 	Init_uart2();
 	//I2C初始化
 	I2C_Config();
+	sys_init();
 	//UART_Init(57600);
 	//printf("Hello World!\n");
 	// Initialize I2C for communication
@@ -284,6 +286,18 @@ void main (void) {
 		
 		if(f_100ms){
 			f_100ms = 0;
+			if(action_dimmer_ext > 0)	{
+				action_dimmer_ext -= 1;
+				if(action_dimmer_ext == 0){
+					//i2c发送查询action dimmer执行结果
+					ret = i2c_single_action_dimmer_result(action_dimmer_MDID);
+					if(ret == IIC_SUCCESS) {
+						action_dimmer_MDID = 0x00;
+						delay(10);
+						sicp_receipt_Done(0x05,rev_ad_message_id,ns_own_meshid_H,ns_own_meshid_L,0x01,rev_ad_mdid);
+					}
+				}
+			}
 			rev_anaylze();
 		}
 		

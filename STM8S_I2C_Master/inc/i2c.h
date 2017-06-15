@@ -31,6 +31,9 @@ I2C_EXT u8 i2c_rx_len;
 
 I2C_EXT u16 device_flag;	//bit0~bit14表示设备存在
 I2C_EXT u8  hb_fail_mdid_cnt[15];
+I2C_EXT u8  action_dimmer_MDID;
+I2C_EXT u8  action_dimmer_ext;
+
 
 I2C_EXT void scan_device(void);
 I2C_EXT void i2c_device_info(void);
@@ -39,6 +42,6 @@ I2C_EXT void i2c_get_energy_consum(void);
 I2C_EXT u8 i2c_single_action_dimmer(u8 action,u8 mdid_channel,u8 value,u8 ext);
 I2C_EXT u8 i2c_action_plug(u8 action,u8 mdid_channel,u8 value,u8 ext);
 I2C_EXT u8 i2c_multiple_action_dimmer(u8 action_dimmer_num);
-
+I2C_EXT u8 i2c_single_action_dimmer_result(u8 mdid);
 
 #endif

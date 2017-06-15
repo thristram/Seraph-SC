@@ -260,19 +260,21 @@ void rev_anaylze(void)
 				case 0x52:
 				case 0x53:
 				case 0x54:
-					rev_mdid = (sicp_buf[7]&0xf0)>>4;
-					rev_channel = (sicp_buf[7]&0x0f);
-					sicp_receipt_OK(0x02,rev_message_id,ns_own_meshid_H,ns_own_meshid_L);
+					rev_ad_message_id = sicp_buf[2];
+					rev_ad_mdid = (sicp_buf[7]&0xf0)>>4;
+					rev_ad_channel = (sicp_buf[7]&0x0f);
+					action_dimmer_ext = sicp_buf[9]+2;
 					//I2C发送调光指令并发送读取调光结果指令
 					ret = i2c_single_action_dimmer(sicp_buf[6],sicp_buf[7],sicp_buf[8],sicp_buf[9]);
-					if(ret == IIC_SUCCESS)	sicp_receipt_Done(0x05,rev_message_id,ns_own_meshid_H,ns_own_meshid_L,0x01,rev_mdid);
+					if(ret == IIC_SUCCESS)	sicp_receipt_OK(0x02,rev_message_id,ns_own_meshid_H,ns_own_meshid_L);
+					//if(ret == IIC_SUCCESS)	sicp_receipt_Done(0x05,rev_message_id,ns_own_meshid_H,ns_own_meshid_L,0x01,rev_mdid);
 				break;
 				case 0x55://打开或关闭开关
-					rev_mdid = (sicp_buf[7]&0xf0)>>4;
-					rev_channel = (sicp_buf[7]&0x0f);
+					rev_ad_mdid = (sicp_buf[7]&0xf0)>>4;
+					rev_ad_channel = (sicp_buf[7]&0x0f);
 					//I2C发送调节开关指令并发送读取调节开关结果指令
 					ret = i2c_action_plug(sicp_buf[6],sicp_buf[7],sicp_buf[8],sicp_buf[9]);
-					if(ret == IIC_SUCCESS) sicp_receipt_Done(0x05,rev_message_id,ns_own_meshid_H,ns_own_meshid_L,0x02,rev_mdid);
+					if(ret == IIC_SUCCESS) sicp_receipt_Done(0x05,rev_message_id,ns_own_meshid_H,ns_own_meshid_L,0x02,rev_ad_mdid);
 				break;
 				case 0x57://一个SC下多个SLC多个通道调光
 					action_dimmer_num = sicp_buf[7];
@@ -289,13 +291,13 @@ void rev_anaylze(void)
 						receipt.payload[1] = 0x05;
 						i = 0;
 						while(action_dimmer_num--){
-							rev_mdid = (sicp_buf[8]&0xf0)>>4;
-							rev_channel = (sicp_buf[8]&0x0f);
-							receipt.payload[2+i*5] = rev_mdid;
-							receipt.payload[3+i*5] = sc.slc[rev_mdid].ch1_status;
-							receipt.payload[4+i*5] = sc.slc[rev_mdid].ch2_status;
-							receipt.payload[5+i*5] = sc.slc[rev_mdid].ch3_status;
-							receipt.payload[6+i*5] = sc.slc[rev_mdid].ch4_status;
+							rev_ad_mdid = (sicp_buf[8]&0xf0)>>4;
+							rev_ad_channel = (sicp_buf[8]&0x0f);
+							receipt.payload[2+i*5] = rev_ad_mdid;
+							receipt.payload[3+i*5] = sc.slc[rev_ad_mdid].ch1_status;
+							receipt.payload[4+i*5] = sc.slc[rev_ad_mdid].ch2_status;
+							receipt.payload[5+i*5] = sc.slc[rev_ad_mdid].ch3_status;
+							receipt.payload[6+i*5] = sc.slc[rev_ad_mdid].ch4_status;
 						}
 						sicp_send_message(&receipt,7+i*5);
 					}
@@ -388,7 +390,7 @@ void sicp_receipt_OK(u8 type,u8 send_message_id,u8 send_mesh_id_H,u8 send_mesh_i
 //发送执行回执
 void sicp_receipt_Done(u8 type,u8 send_message_id,u8 send_mesh_id_H,u8 send_mesh_id_L,u8 method,u8 mdid)
 {
-	u8 i;
+	u8 i = 0;
 	SICP_Message receipt;
 	receipt.frame_h1 = 0xEE;
 	receipt.frame_h2 = 0xAA;
@@ -403,9 +405,9 @@ void sicp_receipt_Done(u8 type,u8 send_message_id,u8 send_mesh_id_H,u8 send_mesh
 		for(i = 0;i < 15;i++){
 			if(sc.slc[i].MDID == mdid){
 				receipt.payload[3] = sc.slc[i].ch1_status;
-				receipt.payload[4] = sc.slc[i].ch1_status;
-				receipt.payload[5] = sc.slc[i].ch1_status;
-				receipt.payload[6] = sc.slc[i].ch1_status;
+				receipt.payload[4] = sc.slc[i].ch2_status;
+				receipt.payload[5] = sc.slc[i].ch3_status;
+				receipt.payload[6] = sc.slc[i].ch4_status;
 				sicp_send_message(&receipt,7);
 				break;
 			}
@@ -416,13 +418,16 @@ void sicp_receipt_Done(u8 type,u8 send_message_id,u8 send_mesh_id_H,u8 send_mesh
 		for(i = 0;i < 15;i++){
 			if(sc.spc[i].MDID == mdid){
 				receipt.payload[3] = sc.spc[i].ch1_status;
-				receipt.payload[4] = sc.spc[i].ch1_status;
-				receipt.payload[5] = sc.spc[i].ch1_status;
-				receipt.payload[6] = sc.spc[i].ch1_status;
+				receipt.payload[4] = sc.spc[i].ch2_status;
+				receipt.payload[5] = sc.spc[i].ch3_status;
+				receipt.payload[6] = sc.spc[i].ch4_status;
 				sicp_send_message(&receipt,7);
 				break;
 			}
 		}
+		break;
+		default:
+		break;
 	}
 }
 
@@ -553,7 +558,7 @@ void send_slc_device_info(u8 i)
 	di.payload[5] =	sc.slc[i].model;
 	di.payload[6] = sc.slc[i].firmware;
 	di.payload[7] = sc.slc[i].HWTtest;
-	di.payload[8] = 0x00;
+	di.payload[8] = sc.slc[i].MDID;
 	sicp_send_message(&di,9);
 }
 //SPC上电汇报信息
@@ -573,7 +578,7 @@ void send_spc_device_info(u8 i)
 	di.payload[5] =	sc.spc[i].model;
 	di.payload[6] = sc.spc[i].firmware;
 	di.payload[7] = sc.spc[i].HWTtest;
-	di.payload[8] = 0x00;
+	di.payload[8] = sc.spc[i].MDID;
 	sicp_send_message(&di,9);
 }
 //SC发送device info，在上电检查到device id等信息后发送
@@ -603,7 +608,7 @@ void send_malfunction(void)
 	u8 i;
 	SICP_Message mal;
 	//SC type--0xB1
-	if(sc.HWTtest){
+	if((sc.HWTtest & 0xC0)!=0xC0){
 		mal.frame_h1 = 0xEE;
 		mal.frame_h2 = 0xEE;
 		mal.message_id = 17;
@@ -617,7 +622,7 @@ void send_malfunction(void)
 	}
 	//SLC type--0xB2
 	for(i = 0; i < 15;i++){
-		if((sc.slc[i].MDID)&&(sc.slc[i].HWTtest)){	//send_slc_malfunction(i);
+		if((sc.slc[i].MDID)&&((sc.slc[i].HWTtest& 0xC0)!=0xC0)){	//send_slc_malfunction(i);
 			mal.frame_h1 = 0xEE;
 			mal.frame_h2 = 0xEE;
 			mal.message_id = 51+i;
@@ -632,7 +637,7 @@ void send_malfunction(void)
 	}
 	//SPC type--0xB3
 	for(i = 0; i < 15;i++){
-		if((sc.spc[i].MDID)&&(sc.spc[i].HWTtest)){	//send_spc_malfunction(i);
+		if((sc.spc[i].MDID)&&((sc.spc[i].HWTtest& 0xC0)!=0xC0)){	//send_spc_malfunction(i);
 			mal.frame_h1 = 0xEE;
 			mal.frame_h2 = 0xEE;
 			mal.message_id = 66+i;

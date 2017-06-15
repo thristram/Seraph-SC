@@ -4,7 +4,7 @@
 #include "uart.h"
 #include "i2c_master_poll.h"
 #include <stdio.h>
-
+u8 test;
 u8 i2c_send_message(u8 type,I2C_Message *tx,u8 payload_len,u8 mdid,u8 nreadbytes)
 {
 	i2c_tx_buf[0] = tx->frame_h1;
@@ -27,7 +27,8 @@ void scan_device(void)
 	for(i=1;i <= 0x0F;i++){
 		ret = I2C_WriteBytes(i,NULL,0,10);
 		if(ret == IIC_SUCCESS){
-			device_flag |= i;
+			test = i;
+			device_flag |= (1<<(i-1));
 		}
 	}
 }
@@ -38,17 +39,18 @@ void i2c_device_info(void)
 	u8 i,ret;
 	u8 mdid = 0;
 	I2C_Message di;
+	u16 temp = device_flag;
 	for(i = 1;i <= 15;i++){
 		mdid++;
-		if(device_flag & 0x01){
+		if((temp & 0x0001) == 0x0001){
 			di.frame_h1 = 0x7E;
 			di.frame_h2 = 0x7E;
 			di.message_id = mdid;
 			di.payload[0] = 0xFE;//自己定义
 			di.payload[1] = 0x01;//自己定义
-			ret = i2c_send_message(0x01,&di,2,mdid,13);
+			ret = i2c_send_message(0x01,&di,2,mdid,14);
 			if (ret == IIC_SUCCESS){
-				if(Check_Sum(&i2c_rx_buf[2],i2c_rx_buf[3]) == i2c_rx_buf[12]){//校验正确
+				if(Check_Sum(&i2c_rx_buf[2],i2c_rx_buf[3]) == i2c_rx_buf[13]){//校验正确
 					if(i2c_rx_buf[4] == 0xB2){//此为SLC
 						sc.slc[mdid-1].MDID = mdid;
 						sc.slc[mdid-1].deviceid[0] = i2c_rx_buf[5];
@@ -71,8 +73,9 @@ void i2c_device_info(void)
 					}
 				}
 			}
-			device_flag = device_flag>>1;
+			
 		}
+		temp = temp>>1;
 	}
 }
 
@@ -175,7 +178,7 @@ u8 i2c_single_action_dimmer(u8 action,u8 mdid_channel,u8 value,u8 ext)
 	sad.payload[1] = mdid_channel;
 	sad.payload[2] = value;
 	sad.payload[3] = ext;
-	ret = i2c_send_message(0x01,&sad,4,mdid,12);
+	/*ret = i2c_send_message(0x01,&sad,4,mdid,12);
 	if (ret == IIC_SUCCESS){
 		if(Check_Sum(&i2c_rx_buf[2],i2c_rx_buf[3]) == i2c_rx_buf[11]){//校验正确
 			if((i2c_rx_buf[4] == 0xAA)&&(i2c_rx_buf[5]==0x05)){
@@ -185,9 +188,40 @@ u8 i2c_single_action_dimmer(u8 action,u8 mdid_channel,u8 value,u8 ext)
 				sc.slc[i2c_rx_buf[6]].ch4_status = i2c_rx_buf[10];
 			}
 		}
+	}*/
+	//读取slc是否发送来接收回执AA 02
+	ret = i2c_send_message(0x01,&sad,4,mdid,8);
+	if(Check_Sum(&i2c_rx_buf[2],i2c_rx_buf[3]) == i2c_rx_buf[7]){//校验正确
+		if((i2c_rx_buf[4] == 0xAA)&&(i2c_rx_buf[5]==0x02)){
+			action_dimmer_MDID = i2c_rx_buf[6];
+		}
 	}
 	return ret;
 }
+//发送查询action dimmer执行结果
+u8 i2c_single_action_dimmer_result(u8 mdid)
+{
+	u8 ret;
+	I2C_Message sad;
+	sad.frame_h1 = 0x7E;
+	sad.frame_h2 = 0x7E;
+	sad.message_id = 66;
+	sad.payload[0] = 0x59;
+	sad.payload[1] = mdid;
+	ret = i2c_send_message(0x01,&sad,2,mdid,12);
+	if (ret == IIC_SUCCESS){
+		if(Check_Sum(&i2c_rx_buf[2],i2c_rx_buf[3]) == i2c_rx_buf[11]){//校验正确
+			if((i2c_rx_buf[4] == 0xAA)&&(i2c_rx_buf[5]==0x05)){
+				sc.slc[i2c_rx_buf[6]-1].ch1_status = i2c_rx_buf[7];
+				sc.slc[i2c_rx_buf[6]-1].ch2_status = i2c_rx_buf[8];
+				sc.slc[i2c_rx_buf[6]-1].ch3_status = i2c_rx_buf[9];
+				sc.slc[i2c_rx_buf[6]-1].ch4_status = i2c_rx_buf[10];
+			}
+		}
+	}
+	return ret;
+}
+
 
 //SC收到SIDP的action plug switch后转发送SPC
 u8 i2c_action_plug(u8 action,u8 mdid_channel,u8 value,u8 ext)

@@ -141,10 +141,11 @@ UART_EXT u8		ns_host_meshid_L;
 UART_EXT u8   rev_message_id;
 UART_EXT u8   rev_mesh_id_H;
 UART_EXT u8   rev_mesh_id_L;
-UART_EXT u8   rev_mdid;
-UART_EXT u8   rev_channel;
-UART_EXT u8   rev_mdid2;
-UART_EXT u8   rev_channel2;
+//接收到action dimmer指令暂存，main函数中用到
+UART_EXT u8   rev_ad_message_id;
+UART_EXT u8   rev_ad_mdid;
+UART_EXT u8   rev_ad_channel;
+
 
 
 UART_EXT u8 UART2_Send_Buf[Uart2_Send_Len];
