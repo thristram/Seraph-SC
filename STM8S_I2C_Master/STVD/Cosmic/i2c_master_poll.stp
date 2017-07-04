@@ -54,7 +54,7 @@ Settings.1.7=Root.Config.1.Settings.7
 Settings.1.8=Root.Config.1.Settings.8
 
 [Root.Config.0.Settings.0]
-String.6.0=2017,4,20,10,7,59
+String.6.0=2017,6,28,19,51,25
 String.100.0=ST Assembler Linker
 String.100.1=ST7 Cosmic
 String.100.2=STM8 Cosmic

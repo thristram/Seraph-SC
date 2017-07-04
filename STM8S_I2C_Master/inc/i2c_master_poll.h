@@ -47,7 +47,7 @@
 #define	IIC_ERROR_NOT_ACK		3
 // ************************* Function Declaration ***************************
 
-
+extern void delay(u16 Count);
 uint8_t I2C_Config(void);
 void TIM3_Init(void);
 //void I2C_RandomRead(u8 u8_NumByteToRead, u8 *u8_ReadBuffer);

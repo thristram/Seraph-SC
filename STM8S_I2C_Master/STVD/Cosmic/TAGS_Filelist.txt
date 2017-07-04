@@ -48,6 +48,5 @@ stm8_interrupt_vector.c
 ..\..\inc\stm8s_type.h
 ..\..\inc\timer.h
 ..\..\inc\uart.h
-..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\modsl0.h
-..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdio.h
-..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h
+..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\modsl0.h
+..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdio.h

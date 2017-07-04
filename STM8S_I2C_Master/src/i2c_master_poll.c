@@ -19,6 +19,7 @@
   */ 
 
 #include "i2c_master_poll.h"
+
 volatile u16 TIM4_tout;
 /******************************************************************************
 * Function name : I2C_Init
@@ -32,7 +33,7 @@ uint8_t I2C_Config(void) {
 	enableInterrupts();
 	//GPIO_Init(GPIOB,GPIO_PIN_4,GPIO_MODE_OUT_OD_HIZ_SLOW);
 	//GPIO_Init(GPIOB,GPIO_PIN_5,GPIO_MODE_OUT_OD_HIZ_SLOW);
-
+	I2C_SoftwareResetCmd(ENABLE); 
 	I2C_DeInit();
 	//CLK_PeripheralClockConfig(CLK_PERIPHERAL_I2C, ENABLE);
 	I2C_Init(100000,0x50,I2C_DUTYCYCLE_2,I2C_ACK_CURR,I2C_ADDMODE_7BIT,CLK_GetClockFreq()/1000000);
@@ -255,7 +256,10 @@ uint8_t I2C_WriteReadBytes(uint16_t SlaveAddr, uint8_t *pWriteDataBuffer, uint8_
 		}
 		while((I2C->SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) != (I2C_SR1_TXE | I2C_SR1_BTF)  &&  tout()); 
 		dead_time();  
-	}                                				// clearing sequence
+	}
+	//	º”—” ±
+	delay(10);
+// clearing sequence
   /*-------------- Stop/Restart communication -------------------*/  
   #ifndef TEN_BITS_ADDRESS
     #ifdef NO_RESTART																		// if 7bit address and NO_RESTART setted

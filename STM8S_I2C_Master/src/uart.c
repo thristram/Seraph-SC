@@ -318,6 +318,13 @@ void rev_anaylze(void)
 				break;
 				case 0x05://Alert Command,SC接收到该条指令不用做任何处理
 				break;
+				case 0xB0://Gateway	Mesh	ID	Broadcasting
+					if(rev_message_id == 0x9E){
+						ns_host_meshid_H = rev_mesh_id_H;
+						ns_host_meshid_L = rev_mesh_id_L;
+						sicp_receipt_OK(0x02,rev_message_id,ns_host_meshid_H,ns_host_meshid_L);
+					}
+				break;
 			}
 		}
 		else if (ble_ctrl_frame){
@@ -329,8 +336,12 @@ void rev_anaylze(void)
 				ns_phonenum = sicp_buf[7];
 				ns_own_meshid_H = sicp_buf[8];
 				ns_own_meshid_L = sicp_buf[9];
-				ns_host_meshid_H = sicp_buf[10];
-				ns_host_meshid_L = sicp_buf[11];
+				//ns_host_meshid_H = sicp_buf[10];
+				//ns_host_meshid_L = sicp_buf[11];
+				//ns_own_meshid_H = 0x80;
+				//ns_own_meshid_L = 0x04;
+				//ns_host_meshid_H = 0x80;
+				//ns_host_meshid_L = 0x05;
 				break;
 			case 0x02://重置芯片，清空串口缓存，保留mesh连接
 				sys_init();

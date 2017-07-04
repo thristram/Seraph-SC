@@ -37,7 +37,16 @@ extern void delay(u16 Count);
 void sys_init(void)
 {
 	u8 i,j;
+	ns_own_meshid_H = 0x80;
+	ns_own_meshid_L = 0x04;
+	ns_host_meshid_H = 0x80;
+	ns_host_meshid_L = 0x05;
+	
 	sc.HWTtest = 0xC0;
+	sc.deviceid[0] = 0xAA;
+	sc.deviceid[1] = 0x55;
+	sc.deviceid[2] = 0xAB;
+	sc.deviceid[3] = 0x56;
 	for(i = 0; i < 15; i++){
 		for(j = 0; j < 4;j++){
 			sc.slc[i].deviceid[j] = 0x00;
@@ -94,189 +103,9 @@ void main (void) {
 	//I2C初始化
 	I2C_Config();
 	sys_init();
-	//UART_Init(57600);
-	//printf("Hello World!\n");
-	// Initialize I2C for communication
-	/*
-	ret = I2C_Config();                     
-  if(ret != IIC_SUCCESS){
-		printf("Initialize I2C Faild!\n");
-	}else{
-		printf("Initialize I2C Success!\n");
-	}
-	printf("Scan Device:\n");
-	for(i=0;i<0x80;i++){
-		ret = I2C_WriteBytes(i,NULL,0,10);
-		if(ret == IIC_SUCCESS){
-			printf("%02X ",i&0xFF);
-			slave_addrs[slave_num++] = (uint8_t)i;
-		}else{
-			//printf("%02X --> %d\n",i,ret);
-		}
-	}
-	printf("\n");
-	//依次向每个从设备写读数据
-	for(i=0;i<slave_num;i++){
-		//写数据
-		for(k=0;k<sizeof(write_buffer);k++){
-			write_buffer[k] = (slave_addrs[i]<<4)|k;
-		}
-		printf("-------------------Write Teast[%02X]-------------------\n",slave_addrs[i]&0xFF);
-		ret = I2C_WriteBytes(slave_addrs[i],write_buffer,sizeof(write_buffer),50);
-		if(ret != IIC_SUCCESS){
-			printf("Write Data To %02X Failed![%s]\n",slave_addrs[i],IIC_ErrorStr[ret]);
-		}else{
-			printf("Write Data To %02X Succeeded!\n",slave_addrs[i]&0xFF);
-			printf("Write Data:");
-			for(k=0;k<sizeof(write_buffer);k++){
-				printf("%02X ",write_buffer[k]&0xFF);
-			}
-			printf("\n");
-		}
-		printf("-----------------Write&Read Teast[%02X]----------------\n",slave_addrs[i]&0xFF);
-		//写读数据
-		for(j=0;j<3;j++){
-			write_buffer[0] = 0;
-			write_buffer[1] = (uint8_t)j;
-			ret = I2C_WriteReadBytes(slave_addrs[i],write_buffer,2,read_buffer,8,50);
-			if(ret != IIC_SUCCESS){
-				printf("Write&Read Data To %02X Failed![%s]\n",slave_addrs[i],IIC_ErrorStr[ret]);
-			}else{
-				printf("Write&Read Data To %02X Succeeded!\n",slave_addrs[i]&0xFF);
-				printf("Write Data:");
-				for(k=0;k<2;k++){
-					printf("%02X ",write_buffer[k]&0xFF);
-				}
-				printf("\n");
-				printf("Read Data:");
-				for(k=0;k<8;k++){
-					printf("%02X ",read_buffer[k]&0xFF);
-				}
-				printf("\n");
-			}
-		}
-		printf("\n");
-	}*/
-  // initialization of dummy field for test purpose    
-  //memcpy(Dummy, DUMMY_INIT, MAX_DUMMY);
-  /*
-	#ifndef _COSMIC_
-  err_save= 0;
-  TIM4_tout= loop_count= 0;
-	#endif
-  */
-	// Enable all interrupts
-	/*
-	#if 0
-
-	ret = I2C_WriteBytes(0x50,DUMMY_INIT,0,100);
-	if(ret != IIC_SUCCESS){
-		printf("I2C_WriteBytes Error:%d\n",ret);
-	}else{
-		printf("I2C_WriteBytes Success\n");
-	}
-	
-	ret = I2C_WriteBytes(0x50,DUMMY_INIT,9,100);
-	if(ret != IIC_SUCCESS){
-		printf("I2C_WriteBytes Error:%d\n",ret);
-	}else{
-		printf("I2C_WriteBytes Success\n");
-	}
-	delay_ms(10);
-	ret = I2C_ReadBytes(0x60,Dummy,1,100);
-	if(ret != IIC_SUCCESS){
-		printf("I2C_ReadBytes Error:%d\n",ret);
-	}else{
-		printf("I2C Read 1Byte Success\n");
-	}
-	ret = I2C_ReadBytes(0x50,Dummy,2,100);
-	if(ret != IIC_SUCCESS){
-		printf("I2C_ReadBytes Error:%d\n",ret);
-	}else{
-		printf("I2C Read 2Byte Success\n");
-	}
-	ret = I2C_ReadBytes(0x50,Dummy,3,100);
-	if(ret != IIC_SUCCESS){
-		printf("I2C_ReadBytes Error:%d\n",ret);
-	}else{
-		printf("I2C Read 3Byte Success\n");
-	}
-	//set_tout_ms(10);
-	//I2C_ReadRegister(0,5,Dummy);
-	ret = I2C_ReadBytes(0x50,Dummy,4,100);
-	if(ret != IIC_SUCCESS){
-		printf("I2C_ReadBytes Error:%d\n",ret);
-	}else{
-		printf("I2C Read 4Byte Success\n");
-	}
-	ret = I2C_WriteReadBytes(0x50,DUMMY_INIT,1,Dummy,8,100);
-	if(ret != IIC_SUCCESS){
-		printf("I2C_WriteReadBytes Error:%d\n",ret);
-	}else{
-		printf("I2C Read Success:");
-		for(i=0;i<8;i++){
-			printf("%02X ",Dummy[i]&0xFF);
-		}
-		printf("\n");
-	}
-	#endif
-	*/
-  /* main test loop */
-	
-	
   while(1) {
 		
-		/*
-		// switch on LED1 at the beginning of test
-    switch_on(LED1);
-		// write 1 data bytes with offset 8 from Dummy filed to slave memory
-    set_tout_ms(10);
-    I2C_WriteRegister(8, 1, &Dummy[8]);
-    // read 1 byte with offset 8 back from the image at slave memory
-    if(tout()) {
-      set_tout_ms(10);
-      I2C_ReadRegister(8, 1, &Dummy[8]);
-    }
-    // write 6 bytes with offset 2 from Dummy filed to slave memory
-    if(tout()) {
-      set_tout_ms(10);
-      I2C_WriteRegister(2, 6, &Dummy[2]);
-    }
-    // read 6 bytes with offset 2 back from the image at slave memory
-    if(tout()) {
-      set_tout_ms(10);
-      I2C_ReadRegister(2, 6, &Dummy[2]);
-    }
-    // write 1 byte with offset 9 from Dummy filed to slave memory
-    if(tout()) {
-      set_tout_ms(10);
-      I2C_WriteRegister(9, 1, &Dummy[9]);
-    }
-    // read 1 byte with offset 9 back from the image at slave memory
-    if(tout()) {
-      set_tout_ms(10);
-      I2C_ReadRegister(9, 1, &Dummy[9]);
-    }
-    // write 2 bytes with offset 0 from Dummy filed to slave memory
-    if(tout()) {
-      set_tout_ms(10);
-      I2C_WriteRegister(0, 2, &Dummy[0]);
-    }
-    // read 2 bytes with offset 0 back from the image at slave memory
-    if(tout()) {
-      set_tout_ms(10);
-      I2C_ReadRegister(0, 2, &Dummy[0]);
-    }
-    // if a timout error occures switch on LED2 
-    if(!tout())
-      switch_on(LED1);
-		// switch off LED1 at the end of test
-    switch_off(LED1);
-    // check if dummy field is not corrupted => switch on LED 4 if test not successful   
-    if(memcmp(Dummy, DUMMY_INIT, MAX_DUMMY) != 0)
-      switch_on(LED1);
-    delay(1);
-		*/
+		
 		if(!init_slc_spc_done){
 		scan_device();
 		i2c_device_info();
