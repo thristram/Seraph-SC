@@ -37,10 +37,10 @@ extern void delay(u16 Count);
 void sys_init(void)
 {
 	u8 i,j;
-	ns_own_meshid_H = 0x80;
-	ns_own_meshid_L = 0x04;
-	ns_host_meshid_H = 0x80;
-	ns_host_meshid_L = 0x05;
+	//ns_own_meshid_H = 0x80;
+	//ns_own_meshid_L = 0x04;
+	//ns_host_meshid_H = 0x80;
+	//ns_host_meshid_L = 0x05;
 	
 	sc.HWTtest = 0xC0;
 	sc.deviceid[0] = 0xAA;
@@ -103,14 +103,15 @@ void main (void) {
 	//I2C初始化
 	I2C_Config();
 	sys_init();
+	delay(2500);//等待SLC SPC上电完成初始化。10s
   while(1) {
-		
-		
-		if(!init_slc_spc_done){
-		scan_device();
-		i2c_device_info();
-		send_device_info();
-		init_slc_spc_done = 1;
+
+		if((!init_slc_spc_done)&&(rev_bleheartbeat)){
+			rev_bleheartbeat = 0;
+			scan_device();
+			i2c_device_info();
+			send_device_info();
+			init_slc_spc_done = 1;
 		}
 		
 		if(f_100ms){
@@ -123,7 +124,7 @@ void main (void) {
 					if(ret == IIC_SUCCESS) {
 						action_dimmer_MDID = 0x00;
 						delay(10);
-						sicp_receipt_Done(0x05,rev_ad_message_id,ns_own_meshid_H,ns_own_meshid_L,0x01,rev_ad_mdid);
+						sicp_receipt_Done(0x05,rev_ad_message_id,ns_host_meshid_H,ns_host_meshid_L,0x01,rev_ad_mdid);
 					}
 				}
 			}
@@ -163,6 +164,7 @@ void assert_failed(uint8_t* file, uint32_t line)
   /* Infinite loop */
   while (1)
   {
+		
   }
 }
 #endif

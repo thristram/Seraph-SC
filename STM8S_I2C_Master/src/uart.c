@@ -274,7 +274,7 @@ void rev_anaylze(void)
 					rev_ad_channel = (sicp_buf[7]&0x0f);
 					//I2C发送调节开关指令并发送读取调节开关结果指令
 					ret = i2c_action_plug(sicp_buf[6],sicp_buf[7],sicp_buf[8],sicp_buf[9]);
-					if(ret == IIC_SUCCESS) sicp_receipt_Done(0x05,rev_message_id,ns_own_meshid_H,ns_own_meshid_L,0x02,rev_ad_mdid);
+					if(ret == IIC_SUCCESS) sicp_receipt_Done(0x05,rev_message_id,ns_host_meshid_H,ns_host_meshid_L,0x02,rev_ad_mdid);
 				break;
 				case 0x57://一个SC下多个SLC多个通道调光
 					action_dimmer_num = sicp_buf[7];
@@ -331,6 +331,7 @@ void rev_anaylze(void)
 			ble_ctrl_frame = 0;
 			switch(sicp_buf[4]){
 				case 0x01://网络状态帧
+				rev_bleheartbeat = 1;
 				ns_signal = sicp_buf[5];
 				ns_status = sicp_buf[6];
 				ns_phonenum = sicp_buf[7];
@@ -357,8 +358,8 @@ void rev_anaylze(void)
 				ns_phonenum = 0x00;
 				ns_own_meshid_H = 0x00;
 				ns_own_meshid_L = 0x00;
-				ns_host_meshid_H = 0x00;
-				ns_host_meshid_L = 0x00;
+				ns_host_meshid_H = 0x80;
+				ns_host_meshid_L = 0xFF;
 				break;
 			}
 		}	
@@ -392,8 +393,8 @@ void sicp_receipt_OK(u8 type,u8 send_message_id,u8 send_mesh_id_H,u8 send_mesh_i
 	receipt.frame_h1 = 0xEE;
 	receipt.frame_h2 = 0xAA;
 	receipt.message_id = send_message_id;
-	receipt.mesh_id_H = send_mesh_id_H;
-	receipt.mesh_id_L = send_mesh_id_L;
+	receipt.mesh_id_H = ns_host_meshid_H;
+	receipt.mesh_id_L = ns_host_meshid_L;
 	receipt.payload[0] = 0xAA;
 	receipt.payload[1] = type;
 	sicp_send_message(&receipt,2);
@@ -406,8 +407,8 @@ void sicp_receipt_Done(u8 type,u8 send_message_id,u8 send_mesh_id_H,u8 send_mesh
 	receipt.frame_h1 = 0xEE;
 	receipt.frame_h2 = 0xAA;
 	receipt.message_id = send_message_id;
-	receipt.mesh_id_H = send_mesh_id_H;
-	receipt.mesh_id_L = send_mesh_id_L;
+	receipt.mesh_id_H = ns_host_meshid_H;
+	receipt.mesh_id_L = ns_host_meshid_L;
 	receipt.payload[0] = 0xAA;
 	receipt.payload[1] = type;
 	switch(method){
@@ -451,8 +452,8 @@ void rev_cmd_data(u8 moduleid){
 			cmd_data.frame_h1 = 0xEE;
 			cmd_data.frame_h2 = 0xAA;
 			cmd_data.message_id = rev_message_id;
-			cmd_data.mesh_id_H = ns_own_meshid_H;
-			cmd_data.mesh_id_L = ns_own_meshid_L;
+			cmd_data.mesh_id_H = ns_host_meshid_H;
+			cmd_data.mesh_id_L = ns_host_meshid_L;
 			cmd_data.payload[0] = 0x06;
 			cmd_data.payload[1] = moduleid;
 			cmd_data.payload[2] = sc.slc[i].ch1_status;
@@ -466,8 +467,8 @@ void rev_cmd_data(u8 moduleid){
 			cmd_data.frame_h1 = 0xEE;
 			cmd_data.frame_h2 = 0xAA;
 			cmd_data.message_id = rev_message_id;
-			cmd_data.mesh_id_H = ns_own_meshid_H;
-			cmd_data.mesh_id_L = ns_own_meshid_L;
+			cmd_data.mesh_id_H = ns_host_meshid_H;
+			cmd_data.mesh_id_L = ns_host_meshid_L;
 			cmd_data.payload[0] = 0x06;
 			cmd_data.payload[1] = moduleid;
 			cmd_data.payload[2] = sc.spc[i].ch1_status;
@@ -497,8 +498,8 @@ void report_energy_consum(void){
 				ec.frame_h1 = 0xEE;
 				ec.frame_h2 = 0xEE;
 				ec.message_id = i+1;
-				ec.mesh_id_H = ns_own_meshid_H;
-				ec.mesh_id_L = ns_own_meshid_L;
+				ec.mesh_id_H = ns_host_meshid_H;
+				ec.mesh_id_L = ns_host_meshid_L;
 				ec.payload[0] = 0x2A;
 				ec.payload[1] =	(u8)((sc.spc[i].energy_consum&0xff00)>>8);
 				ec.payload[2] =	(u8)(sc.spc[i].energy_consum&0x00ff);
@@ -517,8 +518,8 @@ void report_energy_consum(void){
 				ec.frame_h1 = 0xEE;
 				ec.frame_h2 = 0xEE;
 				ec.message_id = random(TIM4->CNTR);
-				ec.mesh_id_H = ns_own_meshid_H;
-				ec.mesh_id_L = ns_own_meshid_L;
+				ec.mesh_id_H = ns_host_meshid_H;
+				ec.mesh_id_L = ns_host_meshid_L;
 				ec.payload[0] = 0x2A;
 				ec.payload[1] =	(u8)((sc.spc[i].energy_consum&0xff00)>>8);
 				ec.payload[2] =	(u8)(sc.spc[i].energy_consum&0x00ff);
@@ -539,13 +540,13 @@ void send_sc_device_info(void)
 	di.frame_h1 = 0xEE;
 	di.frame_h2 = 0xEE;
 	di.message_id = 16;
-	di.mesh_id_H = ns_own_meshid_H;
-	di.mesh_id_L = ns_own_meshid_L;
+	di.mesh_id_H = ns_host_meshid_H;
+	di.mesh_id_L = ns_host_meshid_L;
 	di.payload[0] = 0xB1;
 	di.payload[1] =	sc.deviceid[0];
-	di.payload[2] =	sc.deviceid[0];
-	di.payload[3] =	sc.deviceid[0];
-	di.payload[4] =	sc.deviceid[0];
+	di.payload[2] =	sc.deviceid[1];
+	di.payload[3] =	sc.deviceid[2];
+	di.payload[4] =	sc.deviceid[3];
 	di.payload[5] =	sc.model;
 	di.payload[6] = sc.firmware;
 	di.payload[7] = sc.HWTtest;
@@ -559,13 +560,13 @@ void send_slc_device_info(u8 i)
 	di.frame_h1 = 0xEE;
 	di.frame_h2 = 0xEE;
 	di.message_id = 21+i;
-	di.mesh_id_H = ns_own_meshid_H;
-	di.mesh_id_L = ns_own_meshid_L;
+	di.mesh_id_H = ns_host_meshid_H;
+	di.mesh_id_L = ns_host_meshid_L;
 	di.payload[0] = 0xB2;
 	di.payload[1] =	sc.slc[i].deviceid[0];
-	di.payload[2] =	sc.slc[i].deviceid[0];
-	di.payload[3] =	sc.slc[i].deviceid[0];
-	di.payload[4] =	sc.slc[i].deviceid[0];
+	di.payload[2] =	sc.slc[i].deviceid[1];
+	di.payload[3] =	sc.slc[i].deviceid[2];
+	di.payload[4] =	sc.slc[i].deviceid[3];
 	di.payload[5] =	sc.slc[i].model;
 	di.payload[6] = sc.slc[i].firmware;
 	di.payload[7] = sc.slc[i].HWTtest;
@@ -579,13 +580,13 @@ void send_spc_device_info(u8 i)
 	di.frame_h1 = 0xEE;
 	di.frame_h2 = 0xEE;
 	di.message_id = 36+i;
-	di.mesh_id_H = ns_own_meshid_H;
-	di.mesh_id_L = ns_own_meshid_L;
+	di.mesh_id_H = ns_host_meshid_H;
+	di.mesh_id_L = ns_host_meshid_L;
 	di.payload[0] = 0xB3;
 	di.payload[1] =	sc.spc[i].deviceid[0];
-	di.payload[2] =	sc.spc[i].deviceid[0];
-	di.payload[3] =	sc.spc[i].deviceid[0];
-	di.payload[4] =	sc.spc[i].deviceid[0];
+	di.payload[2] =	sc.spc[i].deviceid[1];
+	di.payload[3] =	sc.spc[i].deviceid[2];
+	di.payload[4] =	sc.spc[i].deviceid[3];
 	di.payload[5] =	sc.spc[i].model;
 	di.payload[6] = sc.spc[i].firmware;
 	di.payload[7] = sc.spc[i].HWTtest;
@@ -623,8 +624,8 @@ void send_malfunction(void)
 		mal.frame_h1 = 0xEE;
 		mal.frame_h2 = 0xEE;
 		mal.message_id = 17;
-		mal.mesh_id_H = ns_own_meshid_H;
-		mal.mesh_id_L = ns_own_meshid_L;
+		mal.mesh_id_H = ns_host_meshid_H;
+		mal.mesh_id_L = ns_host_meshid_L;
 		mal.payload[0] = 0x0A;
 		mal.payload[1] = 0xB1;
 		mal.payload[2] =	0x00;
@@ -637,8 +638,8 @@ void send_malfunction(void)
 			mal.frame_h1 = 0xEE;
 			mal.frame_h2 = 0xEE;
 			mal.message_id = 51+i;
-			mal.mesh_id_H = ns_own_meshid_H;
-			mal.mesh_id_L = ns_own_meshid_L;
+			mal.mesh_id_H = ns_host_meshid_H;
+			mal.mesh_id_L = ns_host_meshid_L;
 			mal.payload[0] = 0x0A;
 			mal.payload[1] = 0xB2;
 			mal.payload[2] =	sc.slc[i].MDID;
@@ -652,8 +653,8 @@ void send_malfunction(void)
 			mal.frame_h1 = 0xEE;
 			mal.frame_h2 = 0xEE;
 			mal.message_id = 66+i;
-			mal.mesh_id_H = ns_own_meshid_H;
-			mal.mesh_id_L = ns_own_meshid_L;
+			mal.mesh_id_H = ns_host_meshid_H;
+			mal.mesh_id_L = ns_host_meshid_L;
 			mal.payload[0] = 0x0A;
 			mal.payload[1] = 0xB2;
 			mal.payload[2] =	sc.spc[i].MDID;

@@ -952,157 +952,161 @@
 1804  003c 6b01          	ld	(OFST-33,sp),a
 1805                     ; 240 	if (ret == IIC_SUCCESS){
 1807  003e 0d01          	tnz	(OFST-33,sp)
-1808  0040 2652          	jrne	L705
+1808  0040 265e          	jrne	L705
 1809                     ; 241 		if(Check_Sum(&i2c_rx_buf[2],i2c_rx_buf[3]) == i2c_rx_buf[11]){//校验正确
 1811  0042 3b0018        	push	_i2c_rx_buf+3
 1812  0045 ae0017        	ldw	x,#_i2c_rx_buf+2
 1813  0048 cd0000        	call	_Check_Sum
 1815  004b 5b01          	addw	sp,#1
 1816  004d c10020        	cp	a,_i2c_rx_buf+11
-1817  0050 2642          	jrne	L705
+1817  0050 264e          	jrne	L705
 1818                     ; 242 			if((i2c_rx_buf[4] == 0xAA)&&(i2c_rx_buf[5]==0x05)){
 1820  0052 c60019        	ld	a,_i2c_rx_buf+4
 1821  0055 a1aa          	cp	a,#170
-1822  0057 263b          	jrne	L705
+1822  0057 2647          	jrne	L705
 1824  0059 c6001a        	ld	a,_i2c_rx_buf+5
 1825  005c a105          	cp	a,#5
-1826  005e 2634          	jrne	L705
-1827                     ; 243 				sc.spc[i2c_rx_buf[6]].ch1_status = i2c_rx_buf[7];
+1826  005e 2640          	jrne	L705
+1827                     ; 243 				sc.spc[i2c_rx_buf[6]-1].ch1_status = i2c_rx_buf[7];
 1829  0060 c6001b        	ld	a,_i2c_rx_buf+6
 1830  0063 97            	ld	xl,a
 1831  0064 a61c          	ld	a,#28
 1832  0066 42            	mul	x,a
-1833  0067 c6001c        	ld	a,_i2c_rx_buf+7
-1834  006a d7002e        	ld	(_sc+46,x),a
-1835                     ; 244 				sc.spc[i2c_rx_buf[6]].ch2_status = i2c_rx_buf[8];
-1837  006d c6001b        	ld	a,_i2c_rx_buf+6
-1838  0070 97            	ld	xl,a
-1839  0071 a61c          	ld	a,#28
-1840  0073 42            	mul	x,a
-1841  0074 c6001d        	ld	a,_i2c_rx_buf+8
-1842  0077 d7002f        	ld	(_sc+47,x),a
-1843                     ; 245 				sc.spc[i2c_rx_buf[6]].ch3_status = i2c_rx_buf[9];
-1845  007a c6001b        	ld	a,_i2c_rx_buf+6
-1846  007d 97            	ld	xl,a
-1847  007e a61c          	ld	a,#28
-1848  0080 42            	mul	x,a
-1849  0081 c6001e        	ld	a,_i2c_rx_buf+9
-1850  0084 d70030        	ld	(_sc+48,x),a
-1851                     ; 246 				sc.spc[i2c_rx_buf[6]].ch4_status = i2c_rx_buf[10];
-1853  0087 c6001b        	ld	a,_i2c_rx_buf+6
-1854  008a 97            	ld	xl,a
-1855  008b a61c          	ld	a,#28
-1856  008d 42            	mul	x,a
-1857  008e c6001f        	ld	a,_i2c_rx_buf+10
-1858  0091 d70031        	ld	(_sc+49,x),a
-1859  0094               L705:
-1860                     ; 250 	return ret;
-1862  0094 7b01          	ld	a,(OFST-33,sp)
-1865  0096 5b24          	addw	sp,#36
-1866  0098 81            	ret
-1932                     ; 255 u8 i2c_multiple_action_dimmer(u8 action_dimmer_num)
-1932                     ; 256 {
-1933                     .text:	section	.text,new
-1934  0000               _i2c_multiple_action_dimmer:
-1936  0000 5224          	subw	sp,#36
-1937       00000024      OFST:	set	36
-1940                     ; 257 	u8 temp,i=0;
-1942  0002 0f24          	clr	(OFST+0,sp)
-1943                     ; 260 	temp = action_dimmer_num;
-1945  0004 6b23          	ld	(OFST-1,sp),a
-1947  0006 203a          	jra	L745
-1948  0008               L345:
-1949                     ; 262 		mad.payload[2+i] = sicp_buf[8+i];
-1951  0008 96            	ldw	x,sp
-1952  0009 1c0006        	addw	x,#OFST-30
-1953  000c 9f            	ld	a,xl
-1954  000d 5e            	swapw	x
-1955  000e 1b24          	add	a,(OFST+0,sp)
-1956  0010 2401          	jrnc	L46
-1957  0012 5c            	incw	x
-1958  0013               L46:
-1959  0013 02            	rlwa	x,a
-1960  0014 7b24          	ld	a,(OFST+0,sp)
-1961  0016 905f          	clrw	y
-1962  0018 9097          	ld	yl,a
-1963  001a 90d60008      	ld	a,(_sicp_buf+8,y)
-1964  001e f7            	ld	(x),a
-1965                     ; 263 		ret = i2c_single_action_dimmer(0x51,sicp_buf[8+i],sicp_buf[8+temp],sicp_buf[9+temp]);
-1967  001f 7b23          	ld	a,(OFST-1,sp)
-1968  0021 5f            	clrw	x
-1969  0022 97            	ld	xl,a
-1970  0023 d60009        	ld	a,(_sicp_buf+9,x)
-1971  0026 88            	push	a
-1972  0027 7b24          	ld	a,(OFST+0,sp)
-1973  0029 5f            	clrw	x
-1974  002a 97            	ld	xl,a
-1975  002b d60008        	ld	a,(_sicp_buf+8,x)
-1976  002e 88            	push	a
-1977  002f 7b26          	ld	a,(OFST+2,sp)
-1978  0031 5f            	clrw	x
-1979  0032 97            	ld	xl,a
-1980  0033 d60008        	ld	a,(_sicp_buf+8,x)
-1981  0036 97            	ld	xl,a
-1982  0037 a651          	ld	a,#81
-1983  0039 95            	ld	xh,a
-1984  003a cd0000        	call	_i2c_single_action_dimmer
-1986  003d 85            	popw	x
-1987  003e 6b22          	ld	(OFST-2,sp),a
-1988                     ; 264 		i++;
-1990  0040 0c24          	inc	(OFST+0,sp)
-1991  0042               L745:
-1992                     ; 261 	while(temp--){
-1994  0042 7b23          	ld	a,(OFST-1,sp)
-1995  0044 0a23          	dec	(OFST-1,sp)
-1996  0046 4d            	tnz	a
-1997  0047 26bf          	jrne	L345
-1998                     ; 266 	return ret;
-2000  0049 7b22          	ld	a,(OFST-2,sp)
-2003  004b 5b24          	addw	sp,#36
-2004  004d 81            	ret
-2026                     	xdef	_i2c_send_message
-2027                     	switch	.bss
-2028  0000               _test:
-2029  0000 00            	ds.b	1
-2030                     	xdef	_test
-2031                     	xref	_I2C_WriteReadBytes
-2032                     	xref	_I2C_WriteBytes
-2033                     	xref	_Check_Sum
-2034                     	xref	_mymemcpy
-2035                     	xref	_sicp_buf
-2036                     	xref	_sc
-2037                     	xdef	_i2c_single_action_dimmer_result
-2038                     	xdef	_i2c_multiple_action_dimmer
-2039                     	xdef	_i2c_action_plug
-2040                     	xdef	_i2c_single_action_dimmer
-2041                     	xdef	_i2c_get_energy_consum
-2042                     	xdef	_i2c_heartbeat
-2043                     	xdef	_i2c_device_info
-2044                     	xdef	_scan_device
-2045  0001               _action_dimmer_ext:
-2046  0001 00            	ds.b	1
-2047                     	xdef	_action_dimmer_ext
-2048  0002               _action_dimmer_MDID:
-2049  0002 00            	ds.b	1
-2050                     	xdef	_action_dimmer_MDID
-2051  0003               _hb_fail_mdid_cnt:
-2052  0003 000000000000  	ds.b	15
-2053                     	xdef	_hb_fail_mdid_cnt
-2054  0012               _device_flag:
-2055  0012 0000          	ds.b	2
-2056                     	xdef	_device_flag
-2057  0014               _i2c_rx_len:
-2058  0014 00            	ds.b	1
-2059                     	xdef	_i2c_rx_len
-2060  0015               _i2c_rx_buf:
-2061  0015 000000000000  	ds.b	30
-2062                     	xdef	_i2c_rx_buf
-2063  0033               _i2c_tx_len:
-2064  0033 00            	ds.b	1
-2065                     	xdef	_i2c_tx_len
-2066  0034               _i2c_tx_buf:
-2067  0034 000000000000  	ds.b	30
-2068                     	xdef	_i2c_tx_buf
-2069                     	xref.b	c_lreg
-2070                     	xref.b	c_y
-2090                     	end
+1833  0067 1d001c        	subw	x,#28
+1834  006a c6001c        	ld	a,_i2c_rx_buf+7
+1835  006d d7002e        	ld	(_sc+46,x),a
+1836                     ; 244 				sc.spc[i2c_rx_buf[6]-1].ch2_status = i2c_rx_buf[8];
+1838  0070 c6001b        	ld	a,_i2c_rx_buf+6
+1839  0073 97            	ld	xl,a
+1840  0074 a61c          	ld	a,#28
+1841  0076 42            	mul	x,a
+1842  0077 1d001c        	subw	x,#28
+1843  007a c6001d        	ld	a,_i2c_rx_buf+8
+1844  007d d7002f        	ld	(_sc+47,x),a
+1845                     ; 245 				sc.spc[i2c_rx_buf[6]-1].ch3_status = i2c_rx_buf[9];
+1847  0080 c6001b        	ld	a,_i2c_rx_buf+6
+1848  0083 97            	ld	xl,a
+1849  0084 a61c          	ld	a,#28
+1850  0086 42            	mul	x,a
+1851  0087 1d001c        	subw	x,#28
+1852  008a c6001e        	ld	a,_i2c_rx_buf+9
+1853  008d d70030        	ld	(_sc+48,x),a
+1854                     ; 246 				sc.spc[i2c_rx_buf[6]-1].ch4_status = i2c_rx_buf[10];
+1856  0090 c6001b        	ld	a,_i2c_rx_buf+6
+1857  0093 97            	ld	xl,a
+1858  0094 a61c          	ld	a,#28
+1859  0096 42            	mul	x,a
+1860  0097 1d001c        	subw	x,#28
+1861  009a c6001f        	ld	a,_i2c_rx_buf+10
+1862  009d d70031        	ld	(_sc+49,x),a
+1863  00a0               L705:
+1864                     ; 250 	return ret;
+1866  00a0 7b01          	ld	a,(OFST-33,sp)
+1869  00a2 5b24          	addw	sp,#36
+1870  00a4 81            	ret
+1936                     ; 255 u8 i2c_multiple_action_dimmer(u8 action_dimmer_num)
+1936                     ; 256 {
+1937                     .text:	section	.text,new
+1938  0000               _i2c_multiple_action_dimmer:
+1940  0000 5224          	subw	sp,#36
+1941       00000024      OFST:	set	36
+1944                     ; 257 	u8 temp,i=0;
+1946  0002 0f24          	clr	(OFST+0,sp)
+1947                     ; 260 	temp = action_dimmer_num;
+1949  0004 6b23          	ld	(OFST-1,sp),a
+1951  0006 203a          	jra	L745
+1952  0008               L345:
+1953                     ; 262 		mad.payload[2+i] = sicp_buf[8+i];
+1955  0008 96            	ldw	x,sp
+1956  0009 1c0006        	addw	x,#OFST-30
+1957  000c 9f            	ld	a,xl
+1958  000d 5e            	swapw	x
+1959  000e 1b24          	add	a,(OFST+0,sp)
+1960  0010 2401          	jrnc	L46
+1961  0012 5c            	incw	x
+1962  0013               L46:
+1963  0013 02            	rlwa	x,a
+1964  0014 7b24          	ld	a,(OFST+0,sp)
+1965  0016 905f          	clrw	y
+1966  0018 9097          	ld	yl,a
+1967  001a 90d60008      	ld	a,(_sicp_buf+8,y)
+1968  001e f7            	ld	(x),a
+1969                     ; 263 		ret = i2c_single_action_dimmer(0x51,sicp_buf[8+i],sicp_buf[8+temp],sicp_buf[9+temp]);
+1971  001f 7b23          	ld	a,(OFST-1,sp)
+1972  0021 5f            	clrw	x
+1973  0022 97            	ld	xl,a
+1974  0023 d60009        	ld	a,(_sicp_buf+9,x)
+1975  0026 88            	push	a
+1976  0027 7b24          	ld	a,(OFST+0,sp)
+1977  0029 5f            	clrw	x
+1978  002a 97            	ld	xl,a
+1979  002b d60008        	ld	a,(_sicp_buf+8,x)
+1980  002e 88            	push	a
+1981  002f 7b26          	ld	a,(OFST+2,sp)
+1982  0031 5f            	clrw	x
+1983  0032 97            	ld	xl,a
+1984  0033 d60008        	ld	a,(_sicp_buf+8,x)
+1985  0036 97            	ld	xl,a
+1986  0037 a651          	ld	a,#81
+1987  0039 95            	ld	xh,a
+1988  003a cd0000        	call	_i2c_single_action_dimmer
+1990  003d 85            	popw	x
+1991  003e 6b22          	ld	(OFST-2,sp),a
+1992                     ; 264 		i++;
+1994  0040 0c24          	inc	(OFST+0,sp)
+1995  0042               L745:
+1996                     ; 261 	while(temp--){
+1998  0042 7b23          	ld	a,(OFST-1,sp)
+1999  0044 0a23          	dec	(OFST-1,sp)
+2000  0046 4d            	tnz	a
+2001  0047 26bf          	jrne	L345
+2002                     ; 266 	return ret;
+2004  0049 7b22          	ld	a,(OFST-2,sp)
+2007  004b 5b24          	addw	sp,#36
+2008  004d 81            	ret
+2030                     	xdef	_i2c_send_message
+2031                     	switch	.bss
+2032  0000               _test:
+2033  0000 00            	ds.b	1
+2034                     	xdef	_test
+2035                     	xref	_I2C_WriteReadBytes
+2036                     	xref	_I2C_WriteBytes
+2037                     	xref	_Check_Sum
+2038                     	xref	_mymemcpy
+2039                     	xref	_sicp_buf
+2040                     	xref	_sc
+2041                     	xdef	_i2c_single_action_dimmer_result
+2042                     	xdef	_i2c_multiple_action_dimmer
+2043                     	xdef	_i2c_action_plug
+2044                     	xdef	_i2c_single_action_dimmer
+2045                     	xdef	_i2c_get_energy_consum
+2046                     	xdef	_i2c_heartbeat
+2047                     	xdef	_i2c_device_info
+2048                     	xdef	_scan_device
+2049  0001               _action_dimmer_ext:
+2050  0001 00            	ds.b	1
+2051                     	xdef	_action_dimmer_ext
+2052  0002               _action_dimmer_MDID:
+2053  0002 00            	ds.b	1
+2054                     	xdef	_action_dimmer_MDID
+2055  0003               _hb_fail_mdid_cnt:
+2056  0003 000000000000  	ds.b	15
+2057                     	xdef	_hb_fail_mdid_cnt
+2058  0012               _device_flag:
+2059  0012 0000          	ds.b	2
+2060                     	xdef	_device_flag
+2061  0014               _i2c_rx_len:
+2062  0014 00            	ds.b	1
+2063                     	xdef	_i2c_rx_len
+2064  0015               _i2c_rx_buf:
+2065  0015 000000000000  	ds.b	30
+2066                     	xdef	_i2c_rx_buf
+2067  0033               _i2c_tx_len:
+2068  0033 00            	ds.b	1
+2069                     	xdef	_i2c_tx_len
+2070  0034               _i2c_tx_buf:
+2071  0034 000000000000  	ds.b	30
+2072                     	xdef	_i2c_tx_buf
+2073                     	xref.b	c_lreg
+2074                     	xref.b	c_y
+2094                     	end

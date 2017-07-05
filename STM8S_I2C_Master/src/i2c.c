@@ -240,10 +240,10 @@ u8 i2c_action_plug(u8 action,u8 mdid_channel,u8 value,u8 ext)
 	if (ret == IIC_SUCCESS){
 		if(Check_Sum(&i2c_rx_buf[2],i2c_rx_buf[3]) == i2c_rx_buf[11]){//校验正确
 			if((i2c_rx_buf[4] == 0xAA)&&(i2c_rx_buf[5]==0x05)){
-				sc.spc[i2c_rx_buf[6]].ch1_status = i2c_rx_buf[7];
-				sc.spc[i2c_rx_buf[6]].ch2_status = i2c_rx_buf[8];
-				sc.spc[i2c_rx_buf[6]].ch3_status = i2c_rx_buf[9];
-				sc.spc[i2c_rx_buf[6]].ch4_status = i2c_rx_buf[10];
+				sc.spc[i2c_rx_buf[6]-1].ch1_status = i2c_rx_buf[7];
+				sc.spc[i2c_rx_buf[6]-1].ch2_status = i2c_rx_buf[8];
+				sc.spc[i2c_rx_buf[6]-1].ch3_status = i2c_rx_buf[9];
+				sc.spc[i2c_rx_buf[6]-1].ch4_status = i2c_rx_buf[10];
 			}
 		}
 	}
