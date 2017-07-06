@@ -999,8 +999,6 @@ ERROR	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	255;"	enumerator	enu
 ERROR	..\..\inc\stm8s_type.h	82;"	enumerator	enum:__anon250
 ESR	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2306;"	member	struct:__anon6::__anon7::__anon13
 ETR	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	630;"	member	struct:TIM1_struct
-EXIT_FAILURE	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	7;"	macro
-EXIT_SUCCESS	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	8;"	macro
 EXTI	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2638;"	macro
 EXTI_BaseAddress	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2584;"	macro
 EXTI_CR1_PAIS	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	1511;"	macro
@@ -1927,7 +1925,6 @@ LTRH	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	344;"	member	struct:A
 LTRL	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	345;"	member	struct:ADC1_struct
 MAX	..\..\inc\uart.h	10;"	macro
 MAX_DUMMY	..\..\inc\i2c_master_poll.h	80;"	macro
-MB_CUR_MAX	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	9;"	macro
 MCR	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2189;"	member	struct:__anon6
 MCSR	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2202;"	member	struct:__anon6::__anon7::__anon8
 MDAR1	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2208;"	member	struct:__anon6::__anon7::__anon8
@@ -1982,7 +1979,6 @@ NOPT4	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	1607;"	member	struct
 NOPT5	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	1609;"	member	struct:OPT_struct
 NOPT7	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	1613;"	member	struct:OPT_struct
 NULL	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdio.h	28;"	macro
-NULL	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	10;"	macro
 Ndevice	..\..\inc\uart.h	85;"	member	struct:__anon256
 NonHandledInterrupt	..\..\inc\stm8s_it.h	41;"	prototype	signature:(void)
 NonHandledInterrupt	stm8_interrupt_vector.c	16;"	function	signature:(void)
@@ -2021,7 +2017,6 @@ PUKR	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	1537;"	member	struct:
 Page	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2340;"	member	struct:__anon6	typeref:union:__anon6::__anon7
 PointerAttr	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	155;"	macro
 PointerAttr	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	159;"	macro
-RAND_MAX	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	11;"	macro
 RCR	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	647;"	member	struct:TIM1_struct
 RECR	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2309;"	member	struct:__anon6::__anon7::__anon13
 REGISTER_Mask	..\..\..\libraries\stm8s_stdperiph_driver\src\stm8s_i2c.c	40;"	macro	file:
@@ -4181,9 +4176,7 @@ __IO	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	207;"	macro
 __MODSL0__	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\modsl0.h	8;"	macro
 __O	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	206;"	macro
 __SIZE_T__	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdio.h	9;"	macro
-__SIZE_T__	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	14;"	macro
 __STDIO__	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdio.h	6;"	macro
-__STDLIB__	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	5;"	macro
 __STM8S_ADC1_H	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s_adc1.h	29;"	macro
 __STM8S_ADC2_H	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s_adc2.h	31;"	macro
 __STM8S_AWU_H	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s_awu.h	30;"	macro
@@ -4220,23 +4213,17 @@ __STM8S_UART4_H	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s_uart4.h	30;"
 __STM8S_WWDG_H	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s_wwdg.h	30;"	macro
 __TIMER_H	..\..\inc\timer.h	2;"	macro
 __UART_H	..\..\inc\uart.h	2;"	macro
-__WCHAR_T__	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	19;"	macro
 _flag_bit	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	244;"	member	union:FLAG	typeref:struct:FLAG::__anon1
 _flag_byte	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	245;"	member	union:FLAG
 _stext	..\..\inc\stm8s_it.h	40;"	prototype	signature:(void)
 _stext	stm8_interrupt_vector.c	24;"	prototype	file:
 _vectab	stm8_interrupt_vector.c	26;"	variable
-abort	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	53;"	macro
-abs	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	33;"	prototype	signature:(int i)
 action_dimmer_MDID	..\..\inc\i2c.h	34;"	variable
 action_dimmer_ext	..\..\inc\i2c.h	35;"	variable
 assert_failed	..\..\inc\stm8s_conf.h	105;"	prototype	signature:(uint8_t* file, uint32_t line)
-assert_failed	..\..\src\main.c	159;"	function	signature:(uint8_t* file, uint32_t line)
+assert_failed	..\..\src\main.c	167;"	function	signature:(uint8_t* file, uint32_t line)
 assert_param	..\..\inc\stm8s_conf.h	103;"	macro
 assert_param	..\..\inc\stm8s_conf.h	107;"	macro
-atof	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	34;"	prototype	signature:(char *nptr)
-atoi	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	35;"	prototype	signature:(char *nptr)
-atol	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	36;"	prototype	signature:(char *nptr)
 bit0	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	236;"	member	struct:FLAG::__anon1
 bit1	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	237;"	member	struct:FLAG::__anon1
 bit2	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	238;"	member	struct:FLAG::__anon1
@@ -4250,7 +4237,6 @@ ble_ctrl_frame	..\..\inc\uart.h	100;"	macro
 ble_data_frame	..\..\inc\uart.h	99;"	macro
 bool	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	248;"	typedef	typeref:enum:__anon2
 bool	..\..\inc\stm8s_type.h	65;"	typedef	typeref:enum:__anon247
-calloc	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	37;"	prototype	signature:(unsigned int nelem, unsigned int elsize)
 ch1_status	..\..\inc\uart.h	34;"	member	struct:__anon252
 ch1_status	..\..\inc\uart.h	60;"	member	struct:__anon254
 ch2_status	..\..\inc\uart.h	35;"	member	struct:__anon252
@@ -4278,14 +4264,11 @@ di_timeout	..\..\inc\uart.h	175;"	variable
 disableInterrupts	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2734;"	macro
 disableInterrupts	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2743;"	macro
 disableInterrupts	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2753;"	macro
-div	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	38;"	prototype	signature:(int numer, int denom)
-div_t	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	26;"	typedef	typeref:struct:__anon257
 duration	..\..\inc\uart.h	46;"	member	struct:__anon253
 enableInterrupts	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2733;"	macro
 enableInterrupts	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2742;"	macro
 enableInterrupts	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2752;"	macro
 energy_consum	..\..\inc\uart.h	64;"	member	struct:__anon254
-exit	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	39;"	prototype	signature:(int status)
 f_100ms	..\..\inc\timer.h	13;"	macro
 f_1ms	..\..\inc\timer.h	12;"	macro
 f_1s	..\..\inc\timer.h	15;"	macro
@@ -4300,7 +4283,6 @@ frame_h1	..\..\inc\i2c.h	14;"	member	struct:__anon246
 frame_h1	..\..\inc\uart.h	17;"	member	struct:__anon251
 frame_h2	..\..\inc\i2c.h	15;"	member	struct:__anon246
 frame_h2	..\..\inc\uart.h	18;"	member	struct:__anon251
-free	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	40;"	prototype	signature:(void *ptr)
 getchar	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdio.h	15;"	prototype	signature:(void)
 gets	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdio.h	16;"	prototype	signature:(char *s)
 halt	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2740;"	macro
@@ -4335,14 +4317,8 @@ interrupt_handler	stm8_interrupt_vector.c	13;"	member	struct:interrupt_vector	fi
 interrupt_handler_t	stm8_interrupt_vector.c	9;"	typedef	file:
 interrupt_instruction	stm8_interrupt_vector.c	12;"	member	struct:interrupt_vector	file:
 interrupt_vector	stm8_interrupt_vector.c	11;"	struct	file:
-isqrt	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	50;"	prototype	signature:(unsigned int)
-labs	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	41;"	prototype	signature:(long l)
-ldiv	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	42;"	prototype	signature:(long numer, long denom)
-ldiv_t	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	31;"	typedef	typeref:struct:__anon258
-lsqrt	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	51;"	prototype	signature:(unsigned long)
-main	..\..\src\main.c	85;"	function	signature:(void)
+main	..\..\src\main.c	93;"	function	signature:(void)
 mal_timeout	..\..\inc\uart.h	176;"	variable
-malloc	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	43;"	prototype	signature:(unsigned int size)
 mesh_id_H	..\..\inc\uart.h	20;"	member	struct:__anon251
 mesh_id_L	..\..\inc\uart.h	21;"	member	struct:__anon251
 meshid	..\..\inc\uart.h	27;"	member	struct:__anon252
@@ -4371,16 +4347,10 @@ payload	..\..\inc\uart.h	22;"	member	struct:__anon251
 printf	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdio.h	17;"	prototype	signature:(char *format, ...)
 putchar	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdio.h	18;"	prototype	signature:(char c)
 puts	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdio.h	19;"	prototype	signature:(char *s)
-quot	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	24;"	member	struct:__anon257
-quot	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	29;"	member	struct:__anon258
-rand	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	44;"	prototype	signature:(void)
 random	..\..\inc\uart.h	187;"	prototype	signature:(u8 xxx)
 random	..\..\src\uart.c	50;"	function	signature:(u8 xxx)
 read_buffer	..\..\src\main.c	32;"	variable
-realloc	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	45;"	prototype	signature:(void *ptr, unsigned int size)
 receipt_eg	..\..\inc\uart.h	104;"	macro
-rem	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	25;"	member	struct:__anon257
-rem	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	30;"	member	struct:__anon258
 report_energy_consum	..\..\inc\uart.h	196;"	prototype	signature:(void)
 report_energy_consum	..\..\src\uart.c	485;"	function	signature:(void)
 rev_ad_channel	..\..\inc\uart.h	148;"	variable
@@ -4435,15 +4405,10 @@ sim	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2736;"	macro
 sim	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2745;"	macro
 sim	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2755;"	macro
 size_t	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdio.h	10;"	typedef
-size_t	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	15;"	typedef
 slc	..\..\inc\uart.h	88;"	member	struct:__anon256
 spc	..\..\inc\uart.h	87;"	member	struct:__anon256
 sprintf	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdio.h	22;"	prototype	signature:(char *s, char *format, ...)
-srand	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	46;"	prototype	signature:(unsigned int seed)
 sscanf	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdio.h	21;"	prototype	signature:(char *s, char *format, ...)
-strtod	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	47;"	prototype	signature:(char *s, char **endptr)
-strtol	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	48;"	prototype	signature:(char *s, char **endptr, int base)
-strtoul	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	54;"	macro
 sys_init	..\..\inc\uart.h	201;"	prototype	signature:(void)
 sys_init	..\..\src\main.c	37;"	function	signature:(void)
 systime_count	..\..\inc\timer.h	17;"	variable

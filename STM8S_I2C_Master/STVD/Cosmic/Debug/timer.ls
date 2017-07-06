@@ -34,83 +34,69 @@
  253  0011 5f            	clrw	x
  254  0012 cf0000        	ldw	_systime_count,x
  255                     ; 47 		f_100ms = 1;
- 257  0015 72120008      	bset	_Flag1_,#1
+ 257  0015 7212000a      	bset	_Flag1_,#1
  258  0019               L721:
- 259                     ; 49 	systime_count[1]++;
- 261  0019 ce0002        	ldw	x,_systime_count+2
+ 259                     ; 55 	systime_count[2]++;
+ 261  0019 ce0004        	ldw	x,_systime_count+4
  262  001c 1c0001        	addw	x,#1
- 263  001f cf0002        	ldw	_systime_count+2,x
- 264                     ; 50 	if (systime_count[1] >= 300)
- 266  0022 ce0002        	ldw	x,_systime_count+2
- 267  0025 a3012c        	cpw	x,#300
+ 263  001f cf0004        	ldw	_systime_count+4,x
+ 264                     ; 56 	if (systime_count[2] >= 1000)
+ 266  0022 ce0004        	ldw	x,_systime_count+4
+ 267  0025 a303e8        	cpw	x,#1000
  268  0028 2508          	jrult	L131
- 269                     ; 52 		systime_count[1] = 0;
+ 269                     ; 58 		systime_count[2] = 0;
  271  002a 5f            	clrw	x
- 272  002b cf0002        	ldw	_systime_count+2,x
- 273                     ; 53 		f_300ms = 1;
- 275  002e 72140008      	bset	_Flag1_,#2
+ 272  002b cf0004        	ldw	_systime_count+4,x
+ 273                     ; 59 		f_1s = 1;
+ 275  002e 7216000a      	bset	_Flag1_,#3
  276  0032               L131:
- 277                     ; 55 	systime_count[2]++;
- 279  0032 ce0004        	ldw	x,_systime_count+4
- 280  0035 1c0001        	addw	x,#1
- 281  0038 cf0004        	ldw	_systime_count+4,x
- 282                     ; 56 	if (systime_count[2] >= 1000)
- 284  003b ce0004        	ldw	x,_systime_count+4
- 285  003e a303e8        	cpw	x,#1000
- 286  0041 2508          	jrult	L331
- 287                     ; 58 		systime_count[2] = 0;
- 289  0043 5f            	clrw	x
- 290  0044 cf0004        	ldw	_systime_count+4,x
- 291                     ; 59 		f_1s = 1;
- 293  0047 72160008      	bset	_Flag1_,#3
- 294  004b               L331:
- 295                     ; 61 }
- 298  004b 81            	ret
- 326                     ; 64 @far @interrupt void TIM4InterruptHandle (void) {
- 328                     .text:	section	.text,new
- 329  0000               f_TIM4InterruptHandle:
- 332  0000 3b0002        	push	c_x+2
- 333  0003 be00          	ldw	x,c_x
- 334  0005 89            	pushw	x
- 335  0006 3b0002        	push	c_y+2
- 336  0009 be00          	ldw	x,c_y
- 337  000b 89            	pushw	x
- 340                     ; 68   f_1ms = 1;
- 342  000c 72100008      	bset	_Flag1_,#0
- 343                     ; 69   TIM4->SR1= 0;
- 345  0010 725f5342      	clr	21314
- 346                     ; 70 	Sys_Time_Manage();
- 348  0014 cd0000        	call	_Sys_Time_Manage
- 350                     ; 71 	 if(TIM4_tout)
- 352  0017 ce0000        	ldw	x,_TIM4_tout
- 353  001a 270c          	jreq	L541
- 354                     ; 72     if(--TIM4_tout == 0)
- 356  001c ce0000        	ldw	x,_TIM4_tout
- 357  001f 1d0001        	subw	x,#1
- 358  0022 cf0000        	ldw	_TIM4_tout,x
- 359  0025 2601          	jrne	L541
- 360                     ; 74       _asm("nop");
- 363  0027 9d            nop
- 365  0028               L541:
- 366                     ; 78 }
- 369  0028 85            	popw	x
- 370  0029 bf00          	ldw	c_y,x
- 371  002b 320002        	pop	c_y+2
- 372  002e 85            	popw	x
- 373  002f bf00          	ldw	c_x,x
- 374  0031 320002        	pop	c_x+2
- 375  0034 80            	iret
- 387                     	xref	_TIM4_tout
- 388                     	xdef	f_TIM4InterruptHandle
- 389                     	xdef	_Sys_Time_Manage
- 390                     	xdef	_Init_Time4
- 391                     	switch	.bss
- 392  0000               _systime_count:
- 393  0000 000000000000  	ds.b	8
- 394                     	xdef	_systime_count
- 395  0008               _Flag1_:
- 396  0008 00            	ds.b	1
- 397                     	xdef	_Flag1_
- 398                     	xref.b	c_x
- 399                     	xref.b	c_y
- 419                     	end
+ 277                     ; 61 }
+ 280  0032 81            	ret
+ 308                     ; 64 @far @interrupt void TIM4InterruptHandle (void) {
+ 310                     .text:	section	.text,new
+ 311  0000               f_TIM4InterruptHandle:
+ 314  0000 3b0002        	push	c_x+2
+ 315  0003 be00          	ldw	x,c_x
+ 316  0005 89            	pushw	x
+ 317  0006 3b0002        	push	c_y+2
+ 318  0009 be00          	ldw	x,c_y
+ 319  000b 89            	pushw	x
+ 322                     ; 68   f_1ms = 1;
+ 324  000c 7210000a      	bset	_Flag1_,#0
+ 325                     ; 69   TIM4->SR1= 0;
+ 327  0010 725f5342      	clr	21314
+ 328                     ; 70 	Sys_Time_Manage();
+ 330  0014 cd0000        	call	_Sys_Time_Manage
+ 332                     ; 71 	 if(TIM4_tout)
+ 334  0017 ce0000        	ldw	x,_TIM4_tout
+ 335  001a 270c          	jreq	L341
+ 336                     ; 72     if(--TIM4_tout == 0)
+ 338  001c ce0000        	ldw	x,_TIM4_tout
+ 339  001f 1d0001        	subw	x,#1
+ 340  0022 cf0000        	ldw	_TIM4_tout,x
+ 341  0025 2601          	jrne	L341
+ 342                     ; 74       _asm("nop");
+ 345  0027 9d            nop
+ 347  0028               L341:
+ 348                     ; 78 }
+ 351  0028 85            	popw	x
+ 352  0029 bf00          	ldw	c_y,x
+ 353  002b 320002        	pop	c_y+2
+ 354  002e 85            	popw	x
+ 355  002f bf00          	ldw	c_x,x
+ 356  0031 320002        	pop	c_x+2
+ 357  0034 80            	iret
+ 369                     	xref	_TIM4_tout
+ 370                     	xdef	f_TIM4InterruptHandle
+ 371                     	xdef	_Sys_Time_Manage
+ 372                     	xdef	_Init_Time4
+ 373                     	switch	.bss
+ 374  0000               _systime_count:
+ 375  0000 000000000000  	ds.b	10
+ 376                     	xdef	_systime_count
+ 377  000a               _Flag1_:
+ 378  000a 00            	ds.b	1
+ 379                     	xdef	_Flag1_
+ 380                     	xref.b	c_x
+ 381                     	xref.b	c_y
+ 401                     	end

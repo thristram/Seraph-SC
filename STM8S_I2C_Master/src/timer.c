@@ -46,12 +46,12 @@ void Sys_Time_Manage(void)
 		systime_count[0] = 0;
 		f_100ms = 1;
 	}
-	systime_count[1]++;
+	/*systime_count[1]++;
 	if (systime_count[1] >= 300)
 	{
 		systime_count[1] = 0;
 		f_300ms = 1;
-	}
+	}*/
 	systime_count[2]++;
 	if (systime_count[2] >= 1000)
 	{

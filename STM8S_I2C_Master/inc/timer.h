@@ -14,7 +14,7 @@ TIEMR_EXT union  FLAG 		Flag1_;
 #define f_300ms					Flag1_._flag_bit.bit2
 #define f_1s						Flag1_._flag_bit.bit3
 
-TIEMR_EXT uint16_t systime_count[4];
+TIEMR_EXT uint16_t systime_count[5];
 
 
 TIEMR_EXT void Init_Time4(void);

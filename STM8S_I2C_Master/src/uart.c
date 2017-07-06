@@ -181,7 +181,7 @@ void rev_deal(void)
 				if (Uart2_Rec_Cnt > Uart2_Rece_Buf[5] + 2)//接收数据完成
 				{
 					Uart2_Rec_Cnt = 0;
-					check_sum = Check_Sum(Uart2_Rece_Buf,Uart2_Rece_Buf[5] + 2);
+					check_sum = Check_Sum(Uart2_Rece_Buf+2,Uart2_Rece_Buf[5]);
 					
 					if (check_sum == Uart2_Rece_Buf[Uart2_Rece_Buf[5] + 2])//校验正确	
 					{
@@ -199,7 +199,7 @@ void rev_deal(void)
 			}
 			else if((Uart2_Rece_Buf[0] == 0xDD)&&(Uart2_Rece_Buf[1] == 0xDD))
 			{
-				if (Uart2_Rec_Cnt > Uart2_Rece_Buf[3] + 1)//接收数据完成
+				if (Uart2_Rec_Cnt > Uart2_Rece_Buf[3] + 2)//接收数据完成
 				{
 					Uart2_Rec_Cnt = 0;
 					rev_success = 1;
@@ -599,16 +599,19 @@ void send_device_info(void)
 	u8 i;
 	//SC -- 0xB1
 	send_sc_device_info();
+	delay(100);
 	//SLC -- 0xB2
 	for(i = 0; i < 15;i++){
 		if(sc.slc[i].MDID){//MDID不为零说明I2C收到回复
 			send_slc_device_info(i);
+			delay(100);
 		}
 	}
 	//SPC -- 0xB3
 	for(i = 0; i < 15;i++){
 		if(sc.spc[i].MDID){//MDID不为零说明I2C收到回复
 			send_spc_device_info(i);
+			delay(100);
 		}
 	}
 	di_timeout = 5;

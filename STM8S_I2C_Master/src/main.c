@@ -47,10 +47,18 @@ void sys_init(void)
 	sc.deviceid[1] = 0x55;
 	sc.deviceid[2] = 0xAB;
 	sc.deviceid[3] = 0x56;
+	sc.slc[0].deviceid[0] = 0xAA;
+	sc.slc[0].deviceid[1] = 0x55;
+	sc.slc[0].deviceid[2] = 0xAB;
+	sc.slc[0].deviceid[3] = 0x57;
+	sc.spc[1].deviceid[0] = 0xAA;
+	sc.spc[1].deviceid[1] = 0x55;
+	sc.spc[1].deviceid[2] = 0xAB;
+	sc.spc[1].deviceid[3] = 0x58;
 	for(i = 0; i < 15; i++){
 		for(j = 0; j < 4;j++){
-			sc.slc[i].deviceid[j] = 0x00;
-			sc.spc[i].deviceid[j] = 0x00;
+			//sc.slc[i].deviceid[j] = 0x00;
+			//sc.spc[i].deviceid[j] = 0x00;
 		}
 		sc.slc[i].firmware = 0x00;
 		sc.slc[i].HWTtest = 0xC0;
