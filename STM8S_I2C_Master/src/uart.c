@@ -303,7 +303,7 @@ void rev_anaylze(void)
 					}
 					break;
 				case 0xAA:
-					if(sicp_buf[7] == 0x02){
+					if(sicp_buf[7] == 0x02)	{
 						//收到汇报电量接收回执
 						if((rev_message_id >= 1)&&(rev_message_id <= 15))	sc.spc[rev_message_id-1].flag._flag_bit.bit0 = 1;
 						//接收到汇报device info接收回执
@@ -514,19 +514,19 @@ void report_energy_consum(void){
 	if(eg_timeout){
 		if(--eg_timeout == 0){
 			for(i = 0;i < 15;i++){
-			if((sc.spc[i].MDID!=0) && !sc.spc[i].flag._flag_bit.bit0){//5s后判断sc.spc[i].flag._flag_bit.bit0还是为0，则重发1次
-				ec.frame_h1 = 0xEE;
-				ec.frame_h2 = 0xEE;
-				ec.message_id = random(TIM4->CNTR);
-				ec.mesh_id_H = ns_host_meshid_H;
-				ec.mesh_id_L = ns_host_meshid_L;
-				ec.payload[0] = 0x2A;
-				ec.payload[1] =	(u8)((sc.spc[i].energy_consum&0xff00)>>8);
-				ec.payload[2] =	(u8)(sc.spc[i].energy_consum&0x00ff);
-				ec.payload[3] =	sc.spc[i].MDID;
-				sicp_send_message(&ec,4);
-				eg_timeout = 5;//每5s重发1次直到接收到回执为止
-			}
+				if((sc.spc[i].MDID!=0) && (!sc.spc[i].flag._flag_bit.bit0)){//5s后判断sc.spc[i].flag._flag_bit.bit0还是为0，则重发1次
+					ec.frame_h1 = 0xEE;
+					ec.frame_h2 = 0xEE;
+					ec.message_id = i+1;
+					ec.mesh_id_H = ns_host_meshid_H;
+					ec.mesh_id_L = ns_host_meshid_L;
+					ec.payload[0] = 0x2A;
+					ec.payload[1] =	(u8)((sc.spc[i].energy_consum&0xff00)>>8);
+					ec.payload[2] =	(u8)(sc.spc[i].energy_consum&0x00ff);
+					ec.payload[3] =	sc.spc[i].MDID;
+					sicp_send_message(&ec,4);
+					eg_timeout = 5;//每5s重发1次直到接收到回执为止
+				}
 			}
 		}
 	}

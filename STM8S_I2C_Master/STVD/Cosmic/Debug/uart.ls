@@ -802,7 +802,7 @@
 2299  0235 acb103b1      	jpf	L7011
 2300  0239               L5201:
 2301                     ; 305 				case 0xAA:
-2301                     ; 306 					if(sicp_buf[7] == 0x02){
+2301                     ; 306 					if(sicp_buf[7] == 0x02)	{
 2303  0239 c6000d        	ld	a,_sicp_buf+7
 2304  023c a102          	cp	a,#2
 2305  023e 2703          	jreq	L67
@@ -1452,895 +1452,895 @@
 3350                     	switch	.data
 3351  0000               L5041_eg_timeout:
 3352  0000 0000          	dc.w	0
-3407                     ; 485 void report_energy_consum(void){
-3408                     .text:	section	.text,new
-3409  0000               _report_energy_consum:
-3411  0000 5238          	subw	sp,#56
-3412       00000038      OFST:	set	56
-3415                     ; 489 	systime_count[3]++;
-3417  0002 ce0006        	ldw	x,_systime_count+6
-3418  0005 1c0001        	addw	x,#1
-3419  0008 cf0006        	ldw	_systime_count+6,x
-3420                     ; 490 	if(systime_count[3] >= 60){
-3422  000b ce0006        	ldw	x,_systime_count+6
-3423  000e a3003c        	cpw	x,#60
-3424  0011 2403          	jruge	L221
-3425  0013 cc00a2        	jp	L1341
-3426  0016               L221:
-3427                     ; 491 		systime_count[3] = 0;
-3429  0016 5f            	clrw	x
-3430  0017 cf0006        	ldw	_systime_count+6,x
-3431                     ; 492 		systime_count[4]++;
-3433  001a ce0008        	ldw	x,_systime_count+8
-3434  001d 1c0001        	addw	x,#1
-3435  0020 cf0008        	ldw	_systime_count+8,x
-3436                     ; 493 		if(systime_count[4] >= 30){
-3438  0023 ce0008        	ldw	x,_systime_count+8
-3439  0026 a3001e        	cpw	x,#30
-3440  0029 2577          	jrult	L1341
-3441                     ; 494 			systime_count[4] = 0;
-3443  002b 5f            	clrw	x
-3444  002c cf0008        	ldw	_systime_count+8,x
-3445                     ; 495 			i2c_get_energy_consum();
-3447  002f cd0000        	call	_i2c_get_energy_consum
-3449                     ; 496 			for(i = 0; i < 15; i++){
-3451  0032 0f01          	clr	(OFST-55,sp)
-3452  0034               L5341:
-3453                     ; 497 				if(sc.spc[i].MDID){//有ID说明SPC存在
-3455  0034 7b01          	ld	a,(OFST-55,sp)
-3456  0036 97            	ld	xl,a
-3457  0037 a61c          	ld	a,#28
-3458  0039 42            	mul	x,a
-3459  003a d600bc        	ld	a,(_sc+45,x)
-3460  003d da00bb        	or	a,(_sc+44,x)
-3461  0040 2758          	jreq	L3441
-3462                     ; 498 				ec.frame_h1 = 0xEE;
-3464  0042 a6ee          	ld	a,#238
-3465  0044 6b02          	ld	(OFST-54,sp),a
-3466                     ; 499 				ec.frame_h2 = 0xEE;
-3468  0046 a6ee          	ld	a,#238
-3469  0048 6b03          	ld	(OFST-53,sp),a
-3470                     ; 500 				ec.message_id = i+1;
-3472  004a 7b01          	ld	a,(OFST-55,sp)
-3473  004c 4c            	inc	a
-3474  004d 6b04          	ld	(OFST-52,sp),a
-3475                     ; 501 				ec.mesh_id_H = ns_host_meshid_H;
-3477  004f c60089        	ld	a,_ns_host_meshid_H
-3478  0052 6b05          	ld	(OFST-51,sp),a
-3479                     ; 502 				ec.mesh_id_L = ns_host_meshid_L;
-3481  0054 c60088        	ld	a,_ns_host_meshid_L
-3482  0057 6b06          	ld	(OFST-50,sp),a
-3483                     ; 503 				ec.payload[0] = 0x2A;
-3485  0059 a62a          	ld	a,#42
-3486  005b 6b07          	ld	(OFST-49,sp),a
-3487                     ; 504 				ec.payload[1] =	(u8)((sc.spc[i].energy_consum&0xff00)>>8);
-3489  005d 7b01          	ld	a,(OFST-55,sp)
-3490  005f 97            	ld	xl,a
-3491  0060 a61c          	ld	a,#28
-3492  0062 42            	mul	x,a
-3493  0063 de00c1        	ldw	x,(_sc+50,x)
-3494  0066 01            	rrwa	x,a
-3495  0067 9f            	ld	a,xl
-3496  0068 a4ff          	and	a,#255
-3497  006a 97            	ld	xl,a
-3498  006b 4f            	clr	a
-3499  006c 02            	rlwa	x,a
-3500  006d 4f            	clr	a
-3501  006e 01            	rrwa	x,a
-3502  006f 9f            	ld	a,xl
-3503  0070 6b08          	ld	(OFST-48,sp),a
-3504                     ; 505 				ec.payload[2] =	(u8)(sc.spc[i].energy_consum&0x00ff);
-3506  0072 7b01          	ld	a,(OFST-55,sp)
-3507  0074 97            	ld	xl,a
-3508  0075 a61c          	ld	a,#28
-3509  0077 42            	mul	x,a
-3510  0078 d600c2        	ld	a,(_sc+51,x)
-3511  007b a4ff          	and	a,#255
-3512  007d 6b09          	ld	(OFST-47,sp),a
-3513                     ; 506 				ec.payload[3] =	sc.spc[i].MDID;
-3515  007f 7b01          	ld	a,(OFST-55,sp)
-3516  0081 97            	ld	xl,a
-3517  0082 a61c          	ld	a,#28
-3518  0084 42            	mul	x,a
-3519  0085 d600bc        	ld	a,(_sc+45,x)
-3520  0088 6b0a          	ld	(OFST-46,sp),a
-3521                     ; 507 				sicp_send_message(&ec,4);
-3523  008a 4b04          	push	#4
-3524  008c 96            	ldw	x,sp
-3525  008d 1c0003        	addw	x,#OFST-53
-3526  0090 cd0000        	call	_sicp_send_message
-3528  0093 84            	pop	a
-3529                     ; 508 				eg_timeout = 5;
-3531  0094 ae0005        	ldw	x,#5
-3532  0097 cf0000        	ldw	L5041_eg_timeout,x
-3533  009a               L3441:
-3534                     ; 496 			for(i = 0; i < 15; i++){
-3536  009a 0c01          	inc	(OFST-55,sp)
-3539  009c 7b01          	ld	a,(OFST-55,sp)
-3540  009e a10f          	cp	a,#15
-3541  00a0 2592          	jrult	L5341
-3542  00a2               L1341:
-3543                     ; 514 	if(eg_timeout){
-3545  00a2 ce0000        	ldw	x,L5041_eg_timeout
-3546  00a5 2603          	jrne	L421
-3547  00a7 cc0135        	jp	L5441
-3548  00aa               L421:
-3549                     ; 515 		if(--eg_timeout == 0){
-3551  00aa ce0000        	ldw	x,L5041_eg_timeout
-3552  00ad 1d0001        	subw	x,#1
-3553  00b0 cf0000        	ldw	L5041_eg_timeout,x
-3554  00b3 26f2          	jrne	L5441
-3555                     ; 516 			for(i = 0;i < 15;i++){
-3557  00b5 0f01          	clr	(OFST-55,sp)
-3558  00b7               L1541:
-3559                     ; 517 			if((sc.spc[i].MDID!=0) && !sc.spc[i].flag._flag_bit.bit0){//5s后判断sc.spc[i].flag._flag_bit.bit0还是为0，则重发1次
-3561  00b7 7b01          	ld	a,(OFST-55,sp)
-3562  00b9 97            	ld	xl,a
-3563  00ba a61c          	ld	a,#28
-3564  00bc 42            	mul	x,a
-3565  00bd d600bc        	ld	a,(_sc+45,x)
-3566  00c0 da00bb        	or	a,(_sc+44,x)
-3567  00c3 2768          	jreq	L7541
-3569  00c5 7b01          	ld	a,(OFST-55,sp)
-3570  00c7 97            	ld	xl,a
-3571  00c8 a61c          	ld	a,#28
-3572  00ca 42            	mul	x,a
-3573  00cb d600c3        	ld	a,(_sc+52,x)
-3574  00ce a501          	bcp	a,#1
-3575  00d0 265b          	jrne	L7541
-3576                     ; 518 				ec.frame_h1 = 0xEE;
-3578  00d2 a6ee          	ld	a,#238
-3579  00d4 6b02          	ld	(OFST-54,sp),a
-3580                     ; 519 				ec.frame_h2 = 0xEE;
-3582  00d6 a6ee          	ld	a,#238
-3583  00d8 6b03          	ld	(OFST-53,sp),a
-3584                     ; 520 				ec.message_id = random(TIM4->CNTR);
-3586  00da c65344        	ld	a,21316
-3587  00dd cd0000        	call	_random
-3589  00e0 6b04          	ld	(OFST-52,sp),a
-3590                     ; 521 				ec.mesh_id_H = ns_host_meshid_H;
-3592  00e2 c60089        	ld	a,_ns_host_meshid_H
-3593  00e5 6b05          	ld	(OFST-51,sp),a
-3594                     ; 522 				ec.mesh_id_L = ns_host_meshid_L;
-3596  00e7 c60088        	ld	a,_ns_host_meshid_L
-3597  00ea 6b06          	ld	(OFST-50,sp),a
-3598                     ; 523 				ec.payload[0] = 0x2A;
-3600  00ec a62a          	ld	a,#42
-3601  00ee 6b07          	ld	(OFST-49,sp),a
-3602                     ; 524 				ec.payload[1] =	(u8)((sc.spc[i].energy_consum&0xff00)>>8);
-3604  00f0 7b01          	ld	a,(OFST-55,sp)
-3605  00f2 97            	ld	xl,a
-3606  00f3 a61c          	ld	a,#28
-3607  00f5 42            	mul	x,a
-3608  00f6 de00c1        	ldw	x,(_sc+50,x)
-3609  00f9 01            	rrwa	x,a
-3610  00fa 9f            	ld	a,xl
-3611  00fb a4ff          	and	a,#255
-3612  00fd 97            	ld	xl,a
-3613  00fe 4f            	clr	a
-3614  00ff 02            	rlwa	x,a
-3615  0100 4f            	clr	a
-3616  0101 01            	rrwa	x,a
-3617  0102 9f            	ld	a,xl
-3618  0103 6b08          	ld	(OFST-48,sp),a
-3619                     ; 525 				ec.payload[2] =	(u8)(sc.spc[i].energy_consum&0x00ff);
-3621  0105 7b01          	ld	a,(OFST-55,sp)
-3622  0107 97            	ld	xl,a
-3623  0108 a61c          	ld	a,#28
-3624  010a 42            	mul	x,a
-3625  010b d600c2        	ld	a,(_sc+51,x)
-3626  010e a4ff          	and	a,#255
-3627  0110 6b09          	ld	(OFST-47,sp),a
-3628                     ; 526 				ec.payload[3] =	sc.spc[i].MDID;
-3630  0112 7b01          	ld	a,(OFST-55,sp)
-3631  0114 97            	ld	xl,a
-3632  0115 a61c          	ld	a,#28
-3633  0117 42            	mul	x,a
-3634  0118 d600bc        	ld	a,(_sc+45,x)
-3635  011b 6b0a          	ld	(OFST-46,sp),a
-3636                     ; 527 				sicp_send_message(&ec,4);
-3638  011d 4b04          	push	#4
-3639  011f 96            	ldw	x,sp
-3640  0120 1c0003        	addw	x,#OFST-53
-3641  0123 cd0000        	call	_sicp_send_message
-3643  0126 84            	pop	a
-3644                     ; 528 				eg_timeout = 5;//每5s重发1次直到接收到回执为止
-3646  0127 ae0005        	ldw	x,#5
-3647  012a cf0000        	ldw	L5041_eg_timeout,x
-3648  012d               L7541:
-3649                     ; 516 			for(i = 0;i < 15;i++){
-3651  012d 0c01          	inc	(OFST-55,sp)
-3654  012f 7b01          	ld	a,(OFST-55,sp)
-3655  0131 a10f          	cp	a,#15
-3656  0133 2582          	jrult	L1541
-3657  0135               L5441:
-3658                     ; 533 }
-3661  0135 5b38          	addw	sp,#56
-3662  0137 81            	ret
-3702                     ; 536 void send_sc_device_info(void)
-3702                     ; 537 {
-3703                     .text:	section	.text,new
-3704  0000               _send_sc_device_info:
-3706  0000 5237          	subw	sp,#55
-3707       00000037      OFST:	set	55
-3710                     ; 540 	di.frame_h1 = 0xEE;
-3712  0002 a6ee          	ld	a,#238
-3713  0004 6b01          	ld	(OFST-54,sp),a
-3714                     ; 541 	di.frame_h2 = 0xEE;
-3716  0006 a6ee          	ld	a,#238
-3717  0008 6b02          	ld	(OFST-53,sp),a
-3718                     ; 542 	di.message_id = 16;
-3720  000a a610          	ld	a,#16
-3721  000c 6b03          	ld	(OFST-52,sp),a
-3722                     ; 543 	di.mesh_id_H = ns_host_meshid_H;
-3724  000e c60089        	ld	a,_ns_host_meshid_H
-3725  0011 6b04          	ld	(OFST-51,sp),a
-3726                     ; 544 	di.mesh_id_L = ns_host_meshid_L;
-3728  0013 c60088        	ld	a,_ns_host_meshid_L
-3729  0016 6b05          	ld	(OFST-50,sp),a
-3730                     ; 545 	di.payload[0] = 0xB1;
-3732  0018 a6b1          	ld	a,#177
-3733  001a 6b06          	ld	(OFST-49,sp),a
-3734                     ; 546 	di.payload[1] =	sc.deviceid[0];
-3736  001c c60091        	ld	a,_sc+2
-3737  001f 6b07          	ld	(OFST-48,sp),a
-3738                     ; 547 	di.payload[2] =	sc.deviceid[1];
-3740  0021 c60092        	ld	a,_sc+3
-3741  0024 6b08          	ld	(OFST-47,sp),a
-3742                     ; 548 	di.payload[3] =	sc.deviceid[2];
-3744  0026 c60093        	ld	a,_sc+4
-3745  0029 6b09          	ld	(OFST-46,sp),a
-3746                     ; 549 	di.payload[4] =	sc.deviceid[3];
-3748  002b c60094        	ld	a,_sc+5
-3749  002e 6b0a          	ld	(OFST-45,sp),a
-3750                     ; 550 	di.payload[5] =	sc.model;
-3752  0030 c60097        	ld	a,_sc+8
-3753  0033 6b0b          	ld	(OFST-44,sp),a
-3754                     ; 551 	di.payload[6] = sc.firmware;
-3756  0035 c60095        	ld	a,_sc+6
-3757  0038 6b0c          	ld	(OFST-43,sp),a
-3758                     ; 552 	di.payload[7] = sc.HWTtest;
-3760  003a c60096        	ld	a,_sc+7
-3761  003d 6b0d          	ld	(OFST-42,sp),a
-3762                     ; 553 	di.payload[8] = sc.Ndevice;
-3764  003f c600a2        	ld	a,_sc+19
-3765  0042 6b0e          	ld	(OFST-41,sp),a
-3766                     ; 554 	sicp_send_message(&di,9);
-3768  0044 4b09          	push	#9
-3769  0046 96            	ldw	x,sp
-3770  0047 1c0002        	addw	x,#OFST-53
-3771  004a cd0000        	call	_sicp_send_message
-3773  004d 84            	pop	a
-3774                     ; 555 }
-3777  004e 5b37          	addw	sp,#55
-3778  0050 81            	ret
-3825                     ; 557 void send_slc_device_info(u8 i)
-3825                     ; 558 {
-3826                     .text:	section	.text,new
-3827  0000               _send_slc_device_info:
-3829  0000 88            	push	a
-3830  0001 5237          	subw	sp,#55
-3831       00000037      OFST:	set	55
-3834                     ; 560 	di.frame_h1 = 0xEE;
-3836  0003 a6ee          	ld	a,#238
-3837  0005 6b01          	ld	(OFST-54,sp),a
-3838                     ; 561 	di.frame_h2 = 0xEE;
-3840  0007 a6ee          	ld	a,#238
-3841  0009 6b02          	ld	(OFST-53,sp),a
-3842                     ; 562 	di.message_id = 21+i;
-3844  000b 7b38          	ld	a,(OFST+1,sp)
-3845  000d ab15          	add	a,#21
-3846  000f 6b03          	ld	(OFST-52,sp),a
-3847                     ; 563 	di.mesh_id_H = ns_host_meshid_H;
-3849  0011 c60089        	ld	a,_ns_host_meshid_H
-3850  0014 6b04          	ld	(OFST-51,sp),a
-3851                     ; 564 	di.mesh_id_L = ns_host_meshid_L;
-3853  0016 c60088        	ld	a,_ns_host_meshid_L
-3854  0019 6b05          	ld	(OFST-50,sp),a
-3855                     ; 565 	di.payload[0] = 0xB2;
-3857  001b a6b2          	ld	a,#178
-3858  001d 6b06          	ld	(OFST-49,sp),a
-3859                     ; 566 	di.payload[1] =	sc.slc[i].deviceid[0];
-3861  001f 7b38          	ld	a,(OFST+1,sp)
-3862  0021 97            	ld	xl,a
-3863  0022 a61a          	ld	a,#26
-3864  0024 42            	mul	x,a
-3865  0025 d6024e        	ld	a,(_sc+447,x)
-3866  0028 6b07          	ld	(OFST-48,sp),a
-3867                     ; 567 	di.payload[2] =	sc.slc[i].deviceid[1];
-3869  002a 7b38          	ld	a,(OFST+1,sp)
-3870  002c 97            	ld	xl,a
-3871  002d a61a          	ld	a,#26
-3872  002f 42            	mul	x,a
-3873  0030 d6024f        	ld	a,(_sc+448,x)
-3874  0033 6b08          	ld	(OFST-47,sp),a
-3875                     ; 568 	di.payload[3] =	sc.slc[i].deviceid[2];
-3877  0035 7b38          	ld	a,(OFST+1,sp)
-3878  0037 97            	ld	xl,a
-3879  0038 a61a          	ld	a,#26
-3880  003a 42            	mul	x,a
-3881  003b d60250        	ld	a,(_sc+449,x)
-3882  003e 6b09          	ld	(OFST-46,sp),a
-3883                     ; 569 	di.payload[4] =	sc.slc[i].deviceid[3];
-3885  0040 7b38          	ld	a,(OFST+1,sp)
-3886  0042 97            	ld	xl,a
-3887  0043 a61a          	ld	a,#26
-3888  0045 42            	mul	x,a
-3889  0046 d60251        	ld	a,(_sc+450,x)
-3890  0049 6b0a          	ld	(OFST-45,sp),a
-3891                     ; 570 	di.payload[5] =	sc.slc[i].model;
-3893  004b 7b38          	ld	a,(OFST+1,sp)
-3894  004d 97            	ld	xl,a
-3895  004e a61a          	ld	a,#26
-3896  0050 42            	mul	x,a
-3897  0051 d60254        	ld	a,(_sc+453,x)
-3898  0054 6b0b          	ld	(OFST-44,sp),a
-3899                     ; 571 	di.payload[6] = sc.slc[i].firmware;
-3901  0056 7b38          	ld	a,(OFST+1,sp)
-3902  0058 97            	ld	xl,a
-3903  0059 a61a          	ld	a,#26
-3904  005b 42            	mul	x,a
-3905  005c d60252        	ld	a,(_sc+451,x)
-3906  005f 6b0c          	ld	(OFST-43,sp),a
-3907                     ; 572 	di.payload[7] = sc.slc[i].HWTtest;
-3909  0061 7b38          	ld	a,(OFST+1,sp)
-3910  0063 97            	ld	xl,a
-3911  0064 a61a          	ld	a,#26
-3912  0066 42            	mul	x,a
-3913  0067 d60253        	ld	a,(_sc+452,x)
-3914  006a 6b0d          	ld	(OFST-42,sp),a
-3915                     ; 573 	di.payload[8] = sc.slc[i].MDID;
-3917  006c 7b38          	ld	a,(OFST+1,sp)
-3918  006e 97            	ld	xl,a
-3919  006f a61a          	ld	a,#26
-3920  0071 42            	mul	x,a
-3921  0072 d60260        	ld	a,(_sc+465,x)
-3922  0075 6b0e          	ld	(OFST-41,sp),a
-3923                     ; 574 	sicp_send_message(&di,9);
-3925  0077 4b09          	push	#9
-3926  0079 96            	ldw	x,sp
-3927  007a 1c0002        	addw	x,#OFST-53
-3928  007d cd0000        	call	_sicp_send_message
-3930  0080 84            	pop	a
-3931                     ; 575 }
-3934  0081 5b38          	addw	sp,#56
-3935  0083 81            	ret
-3982                     ; 577 void send_spc_device_info(u8 i)
-3982                     ; 578 {
-3983                     .text:	section	.text,new
-3984  0000               _send_spc_device_info:
-3986  0000 88            	push	a
-3987  0001 5237          	subw	sp,#55
-3988       00000037      OFST:	set	55
-3991                     ; 580 	di.frame_h1 = 0xEE;
-3993  0003 a6ee          	ld	a,#238
-3994  0005 6b01          	ld	(OFST-54,sp),a
-3995                     ; 581 	di.frame_h2 = 0xEE;
-3997  0007 a6ee          	ld	a,#238
-3998  0009 6b02          	ld	(OFST-53,sp),a
-3999                     ; 582 	di.message_id = 36+i;
-4001  000b 7b38          	ld	a,(OFST+1,sp)
-4002  000d ab24          	add	a,#36
-4003  000f 6b03          	ld	(OFST-52,sp),a
-4004                     ; 583 	di.mesh_id_H = ns_host_meshid_H;
-4006  0011 c60089        	ld	a,_ns_host_meshid_H
-4007  0014 6b04          	ld	(OFST-51,sp),a
-4008                     ; 584 	di.mesh_id_L = ns_host_meshid_L;
-4010  0016 c60088        	ld	a,_ns_host_meshid_L
-4011  0019 6b05          	ld	(OFST-50,sp),a
-4012                     ; 585 	di.payload[0] = 0xB3;
-4014  001b a6b3          	ld	a,#179
-4015  001d 6b06          	ld	(OFST-49,sp),a
-4016                     ; 586 	di.payload[1] =	sc.spc[i].deviceid[0];
-4018  001f 7b38          	ld	a,(OFST+1,sp)
-4019  0021 97            	ld	xl,a
-4020  0022 a61c          	ld	a,#28
-4021  0024 42            	mul	x,a
-4022  0025 d600aa        	ld	a,(_sc+27,x)
-4023  0028 6b07          	ld	(OFST-48,sp),a
-4024                     ; 587 	di.payload[2] =	sc.spc[i].deviceid[1];
-4026  002a 7b38          	ld	a,(OFST+1,sp)
-4027  002c 97            	ld	xl,a
-4028  002d a61c          	ld	a,#28
-4029  002f 42            	mul	x,a
-4030  0030 d600ab        	ld	a,(_sc+28,x)
-4031  0033 6b08          	ld	(OFST-47,sp),a
-4032                     ; 588 	di.payload[3] =	sc.spc[i].deviceid[2];
-4034  0035 7b38          	ld	a,(OFST+1,sp)
-4035  0037 97            	ld	xl,a
-4036  0038 a61c          	ld	a,#28
-4037  003a 42            	mul	x,a
-4038  003b d600ac        	ld	a,(_sc+29,x)
-4039  003e 6b09          	ld	(OFST-46,sp),a
-4040                     ; 589 	di.payload[4] =	sc.spc[i].deviceid[3];
-4042  0040 7b38          	ld	a,(OFST+1,sp)
-4043  0042 97            	ld	xl,a
-4044  0043 a61c          	ld	a,#28
-4045  0045 42            	mul	x,a
-4046  0046 d600ad        	ld	a,(_sc+30,x)
-4047  0049 6b0a          	ld	(OFST-45,sp),a
-4048                     ; 590 	di.payload[5] =	sc.spc[i].model;
-4050  004b 7b38          	ld	a,(OFST+1,sp)
-4051  004d 97            	ld	xl,a
-4052  004e a61c          	ld	a,#28
-4053  0050 42            	mul	x,a
-4054  0051 d600b0        	ld	a,(_sc+33,x)
-4055  0054 6b0b          	ld	(OFST-44,sp),a
-4056                     ; 591 	di.payload[6] = sc.spc[i].firmware;
-4058  0056 7b38          	ld	a,(OFST+1,sp)
-4059  0058 97            	ld	xl,a
-4060  0059 a61c          	ld	a,#28
-4061  005b 42            	mul	x,a
-4062  005c d600ae        	ld	a,(_sc+31,x)
-4063  005f 6b0c          	ld	(OFST-43,sp),a
-4064                     ; 592 	di.payload[7] = sc.spc[i].HWTtest;
-4066  0061 7b38          	ld	a,(OFST+1,sp)
-4067  0063 97            	ld	xl,a
-4068  0064 a61c          	ld	a,#28
-4069  0066 42            	mul	x,a
-4070  0067 d600af        	ld	a,(_sc+32,x)
-4071  006a 6b0d          	ld	(OFST-42,sp),a
-4072                     ; 593 	di.payload[8] = sc.spc[i].MDID;
-4074  006c 7b38          	ld	a,(OFST+1,sp)
-4075  006e 97            	ld	xl,a
-4076  006f a61c          	ld	a,#28
-4077  0071 42            	mul	x,a
-4078  0072 d600bc        	ld	a,(_sc+45,x)
-4079  0075 6b0e          	ld	(OFST-41,sp),a
-4080                     ; 594 	sicp_send_message(&di,9);
-4082  0077 4b09          	push	#9
-4083  0079 96            	ldw	x,sp
-4084  007a 1c0002        	addw	x,#OFST-53
-4085  007d cd0000        	call	_sicp_send_message
-4087  0080 84            	pop	a
-4088                     ; 595 }
-4091  0081 5b38          	addw	sp,#56
-4092  0083 81            	ret
-4130                     ; 597 void send_device_info(void)
-4130                     ; 598 {
-4131                     .text:	section	.text,new
-4132  0000               _send_device_info:
-4134  0000 88            	push	a
-4135       00000001      OFST:	set	1
-4138                     ; 601 	send_sc_device_info();
-4140  0001 cd0000        	call	_send_sc_device_info
-4142                     ; 602 	delay(100);
-4144  0004 ae0064        	ldw	x,#100
-4145  0007 cd0000        	call	_delay
-4147                     ; 604 	for(i = 0; i < 15;i++){
-4149  000a 0f01          	clr	(OFST+0,sp)
-4150  000c               L3551:
-4151                     ; 605 		if(sc.slc[i].MDID){//MDID不为零说明I2C收到回复
-4153  000c 7b01          	ld	a,(OFST+0,sp)
-4154  000e 97            	ld	xl,a
-4155  000f a61a          	ld	a,#26
-4156  0011 42            	mul	x,a
-4157  0012 d60260        	ld	a,(_sc+465,x)
-4158  0015 da025f        	or	a,(_sc+464,x)
-4159  0018 270b          	jreq	L1651
-4160                     ; 606 			send_slc_device_info(i);
-4162  001a 7b01          	ld	a,(OFST+0,sp)
-4163  001c cd0000        	call	_send_slc_device_info
-4165                     ; 607 			delay(100);
-4167  001f ae0064        	ldw	x,#100
-4168  0022 cd0000        	call	_delay
-4170  0025               L1651:
-4171                     ; 604 	for(i = 0; i < 15;i++){
-4173  0025 0c01          	inc	(OFST+0,sp)
-4176  0027 7b01          	ld	a,(OFST+0,sp)
-4177  0029 a10f          	cp	a,#15
-4178  002b 25df          	jrult	L3551
-4179                     ; 611 	for(i = 0; i < 15;i++){
-4181  002d 0f01          	clr	(OFST+0,sp)
-4182  002f               L3651:
-4183                     ; 612 		if(sc.spc[i].MDID){//MDID不为零说明I2C收到回复
-4185  002f 7b01          	ld	a,(OFST+0,sp)
-4186  0031 97            	ld	xl,a
-4187  0032 a61c          	ld	a,#28
-4188  0034 42            	mul	x,a
-4189  0035 d600bc        	ld	a,(_sc+45,x)
-4190  0038 da00bb        	or	a,(_sc+44,x)
-4191  003b 270b          	jreq	L1751
-4192                     ; 613 			send_spc_device_info(i);
-4194  003d 7b01          	ld	a,(OFST+0,sp)
-4195  003f cd0000        	call	_send_spc_device_info
-4197                     ; 614 			delay(100);
-4199  0042 ae0064        	ldw	x,#100
-4200  0045 cd0000        	call	_delay
-4202  0048               L1751:
-4203                     ; 611 	for(i = 0; i < 15;i++){
-4205  0048 0c01          	inc	(OFST+0,sp)
-4208  004a 7b01          	ld	a,(OFST+0,sp)
-4209  004c a10f          	cp	a,#15
-4210  004e 25df          	jrult	L3651
-4211                     ; 617 	di_timeout = 5;
-4213  0050 35050001      	mov	_di_timeout,#5
-4214                     ; 618 }
-4217  0054 84            	pop	a
-4218  0055 81            	ret
-4264                     ; 621 void send_malfunction(void)
-4264                     ; 622 {
-4265                     .text:	section	.text,new
-4266  0000               _send_malfunction:
-4268  0000 5238          	subw	sp,#56
-4269       00000038      OFST:	set	56
-4272                     ; 626 	if((sc.HWTtest & 0xC0)!=0xC0){
-4274  0002 c60096        	ld	a,_sc+7
-4275  0005 a4c0          	and	a,#192
-4276  0007 a1c0          	cp	a,#192
-4277  0009 272f          	jreq	L3161
-4278                     ; 627 		mal.frame_h1 = 0xEE;
-4280  000b a6ee          	ld	a,#238
-4281  000d 6b02          	ld	(OFST-54,sp),a
-4282                     ; 628 		mal.frame_h2 = 0xEE;
-4284  000f a6ee          	ld	a,#238
-4285  0011 6b03          	ld	(OFST-53,sp),a
-4286                     ; 629 		mal.message_id = 17;
-4288  0013 a611          	ld	a,#17
-4289  0015 6b04          	ld	(OFST-52,sp),a
-4290                     ; 630 		mal.mesh_id_H = ns_host_meshid_H;
-4292  0017 c60089        	ld	a,_ns_host_meshid_H
-4293  001a 6b05          	ld	(OFST-51,sp),a
-4294                     ; 631 		mal.mesh_id_L = ns_host_meshid_L;
-4296  001c c60088        	ld	a,_ns_host_meshid_L
-4297  001f 6b06          	ld	(OFST-50,sp),a
-4298                     ; 632 		mal.payload[0] = 0x0A;
-4300  0021 a60a          	ld	a,#10
-4301  0023 6b07          	ld	(OFST-49,sp),a
-4302                     ; 633 		mal.payload[1] = 0xB1;
-4304  0025 a6b1          	ld	a,#177
-4305  0027 6b08          	ld	(OFST-48,sp),a
-4306                     ; 634 		mal.payload[2] =	0x00;
-4308  0029 0f09          	clr	(OFST-47,sp)
-4309                     ; 635 		mal.payload[3] =	sc.HWTtest;
-4311  002b c60096        	ld	a,_sc+7
-4312  002e 6b0a          	ld	(OFST-46,sp),a
-4313                     ; 636 		sicp_send_message(&mal,4);
-4315  0030 4b04          	push	#4
-4316  0032 96            	ldw	x,sp
-4317  0033 1c0003        	addw	x,#OFST-53
-4318  0036 cd0000        	call	_sicp_send_message
-4320  0039 84            	pop	a
-4321  003a               L3161:
-4322                     ; 639 	for(i = 0; i < 15;i++){
-4324  003a 0f01          	clr	(OFST-55,sp)
-4325  003c               L5161:
-4326                     ; 640 		if((sc.slc[i].MDID)&&((sc.slc[i].HWTtest& 0xC0)!=0xC0)){	//send_slc_malfunction(i);
-4328  003c 7b01          	ld	a,(OFST-55,sp)
-4329  003e 97            	ld	xl,a
-4330  003f a61a          	ld	a,#26
-4331  0041 42            	mul	x,a
-4332  0042 d60260        	ld	a,(_sc+465,x)
-4333  0045 da025f        	or	a,(_sc+464,x)
-4334  0048 274f          	jreq	L3261
-4336  004a 7b01          	ld	a,(OFST-55,sp)
-4337  004c 97            	ld	xl,a
-4338  004d a61a          	ld	a,#26
-4339  004f 42            	mul	x,a
-4340  0050 d60253        	ld	a,(_sc+452,x)
-4341  0053 a4c0          	and	a,#192
-4342  0055 a1c0          	cp	a,#192
-4343  0057 2740          	jreq	L3261
-4344                     ; 641 			mal.frame_h1 = 0xEE;
-4346  0059 a6ee          	ld	a,#238
-4347  005b 6b02          	ld	(OFST-54,sp),a
-4348                     ; 642 			mal.frame_h2 = 0xEE;
-4350  005d a6ee          	ld	a,#238
-4351  005f 6b03          	ld	(OFST-53,sp),a
-4352                     ; 643 			mal.message_id = 51+i;
-4354  0061 7b01          	ld	a,(OFST-55,sp)
-4355  0063 ab33          	add	a,#51
-4356  0065 6b04          	ld	(OFST-52,sp),a
-4357                     ; 644 			mal.mesh_id_H = ns_host_meshid_H;
-4359  0067 c60089        	ld	a,_ns_host_meshid_H
-4360  006a 6b05          	ld	(OFST-51,sp),a
-4361                     ; 645 			mal.mesh_id_L = ns_host_meshid_L;
-4363  006c c60088        	ld	a,_ns_host_meshid_L
-4364  006f 6b06          	ld	(OFST-50,sp),a
-4365                     ; 646 			mal.payload[0] = 0x0A;
-4367  0071 a60a          	ld	a,#10
-4368  0073 6b07          	ld	(OFST-49,sp),a
-4369                     ; 647 			mal.payload[1] = 0xB2;
-4371  0075 a6b2          	ld	a,#178
-4372  0077 6b08          	ld	(OFST-48,sp),a
-4373                     ; 648 			mal.payload[2] =	sc.slc[i].MDID;
-4375  0079 7b01          	ld	a,(OFST-55,sp)
-4376  007b 97            	ld	xl,a
-4377  007c a61a          	ld	a,#26
-4378  007e 42            	mul	x,a
-4379  007f d60260        	ld	a,(_sc+465,x)
-4380  0082 6b09          	ld	(OFST-47,sp),a
-4381                     ; 649 			mal.payload[3] =	sc.slc[i].HWTtest;
-4383  0084 7b01          	ld	a,(OFST-55,sp)
-4384  0086 97            	ld	xl,a
-4385  0087 a61a          	ld	a,#26
-4386  0089 42            	mul	x,a
-4387  008a d60253        	ld	a,(_sc+452,x)
-4388  008d 6b0a          	ld	(OFST-46,sp),a
-4389                     ; 650 			sicp_send_message(&mal,4);
-4391  008f 4b04          	push	#4
-4392  0091 96            	ldw	x,sp
-4393  0092 1c0003        	addw	x,#OFST-53
-4394  0095 cd0000        	call	_sicp_send_message
-4396  0098 84            	pop	a
-4397  0099               L3261:
-4398                     ; 639 	for(i = 0; i < 15;i++){
-4400  0099 0c01          	inc	(OFST-55,sp)
-4403  009b 7b01          	ld	a,(OFST-55,sp)
-4404  009d a10f          	cp	a,#15
-4405  009f 259b          	jrult	L5161
-4406                     ; 654 	for(i = 0; i < 15;i++){
-4408  00a1 0f01          	clr	(OFST-55,sp)
-4409  00a3               L5261:
-4410                     ; 655 		if((sc.spc[i].MDID)&&((sc.spc[i].HWTtest& 0xC0)!=0xC0)){	//send_spc_malfunction(i);
-4412  00a3 7b01          	ld	a,(OFST-55,sp)
-4413  00a5 97            	ld	xl,a
-4414  00a6 a61c          	ld	a,#28
-4415  00a8 42            	mul	x,a
-4416  00a9 d600bc        	ld	a,(_sc+45,x)
-4417  00ac da00bb        	or	a,(_sc+44,x)
-4418  00af 274f          	jreq	L3361
-4420  00b1 7b01          	ld	a,(OFST-55,sp)
-4421  00b3 97            	ld	xl,a
-4422  00b4 a61c          	ld	a,#28
-4423  00b6 42            	mul	x,a
-4424  00b7 d600af        	ld	a,(_sc+32,x)
-4425  00ba a4c0          	and	a,#192
-4426  00bc a1c0          	cp	a,#192
-4427  00be 2740          	jreq	L3361
-4428                     ; 656 			mal.frame_h1 = 0xEE;
-4430  00c0 a6ee          	ld	a,#238
-4431  00c2 6b02          	ld	(OFST-54,sp),a
-4432                     ; 657 			mal.frame_h2 = 0xEE;
-4434  00c4 a6ee          	ld	a,#238
-4435  00c6 6b03          	ld	(OFST-53,sp),a
-4436                     ; 658 			mal.message_id = 66+i;
-4438  00c8 7b01          	ld	a,(OFST-55,sp)
-4439  00ca ab42          	add	a,#66
-4440  00cc 6b04          	ld	(OFST-52,sp),a
-4441                     ; 659 			mal.mesh_id_H = ns_host_meshid_H;
-4443  00ce c60089        	ld	a,_ns_host_meshid_H
-4444  00d1 6b05          	ld	(OFST-51,sp),a
-4445                     ; 660 			mal.mesh_id_L = ns_host_meshid_L;
-4447  00d3 c60088        	ld	a,_ns_host_meshid_L
-4448  00d6 6b06          	ld	(OFST-50,sp),a
-4449                     ; 661 			mal.payload[0] = 0x0A;
-4451  00d8 a60a          	ld	a,#10
-4452  00da 6b07          	ld	(OFST-49,sp),a
-4453                     ; 662 			mal.payload[1] = 0xB2;
-4455  00dc a6b2          	ld	a,#178
-4456  00de 6b08          	ld	(OFST-48,sp),a
-4457                     ; 663 			mal.payload[2] =	sc.spc[i].MDID;
-4459  00e0 7b01          	ld	a,(OFST-55,sp)
-4460  00e2 97            	ld	xl,a
-4461  00e3 a61c          	ld	a,#28
-4462  00e5 42            	mul	x,a
-4463  00e6 d600bc        	ld	a,(_sc+45,x)
-4464  00e9 6b09          	ld	(OFST-47,sp),a
-4465                     ; 664 			mal.payload[3] =	sc.spc[i].HWTtest;
-4467  00eb 7b01          	ld	a,(OFST-55,sp)
-4468  00ed 97            	ld	xl,a
-4469  00ee a61c          	ld	a,#28
-4470  00f0 42            	mul	x,a
-4471  00f1 d600af        	ld	a,(_sc+32,x)
-4472  00f4 6b0a          	ld	(OFST-46,sp),a
-4473                     ; 665 			sicp_send_message(&mal,4);
-4475  00f6 4b04          	push	#4
-4476  00f8 96            	ldw	x,sp
-4477  00f9 1c0003        	addw	x,#OFST-53
-4478  00fc cd0000        	call	_sicp_send_message
-4480  00ff 84            	pop	a
-4481  0100               L3361:
-4482                     ; 654 	for(i = 0; i < 15;i++){
-4484  0100 0c01          	inc	(OFST-55,sp)
-4487  0102 7b01          	ld	a,(OFST-55,sp)
-4488  0104 a10f          	cp	a,#15
-4489  0106 259b          	jrult	L5261
-4490                     ; 668 }
-4493  0108 5b38          	addw	sp,#56
-4494  010a 81            	ret
-4532                     ; 671 void check_send_repeatedly(void){
-4533                     .text:	section	.text,new
-4534  0000               _check_send_repeatedly:
-4536  0000 88            	push	a
-4537       00000001      OFST:	set	1
-4540                     ; 674 	if(di_timeout){
-4542  0001 725d0001      	tnz	_di_timeout
-4543  0005 2766          	jreq	L1561
-4544                     ; 675 		if(--di_timeout == 0){
-4546  0007 725a0001      	dec	_di_timeout
-4547  000b 2660          	jrne	L1561
-4548                     ; 676 			if(!sc.flag._flag_bit.bit1)	{send_sc_device_info();di_timeout = 5;}
-4550  000d c603d2        	ld	a,_sc+835
-4551  0010 a502          	bcp	a,#2
-4552  0012 2607          	jrne	L5561
-4555  0014 cd0000        	call	_send_sc_device_info
-4559  0017 35050001      	mov	_di_timeout,#5
-4560  001b               L5561:
-4561                     ; 677 			for(i = 0; i < 15; i++){
-4563  001b 0f01          	clr	(OFST+0,sp)
-4564  001d               L7561:
-4565                     ; 678 				if((sc.slc[i].MDID) && !sc.slc[i].flag._flag_bit.bit1){send_slc_device_info(i);di_timeout = 5;}
-4567  001d 7b01          	ld	a,(OFST+0,sp)
-4568  001f 97            	ld	xl,a
-4569  0020 a61a          	ld	a,#26
-4570  0022 42            	mul	x,a
-4571  0023 d60260        	ld	a,(_sc+465,x)
-4572  0026 da025f        	or	a,(_sc+464,x)
-4573  0029 2716          	jreq	L5661
-4575  002b 7b01          	ld	a,(OFST+0,sp)
-4576  002d 97            	ld	xl,a
-4577  002e a61a          	ld	a,#26
-4578  0030 42            	mul	x,a
-4579  0031 d60265        	ld	a,(_sc+470,x)
-4580  0034 a502          	bcp	a,#2
-4581  0036 2609          	jrne	L5661
-4584  0038 7b01          	ld	a,(OFST+0,sp)
-4585  003a cd0000        	call	_send_slc_device_info
-4589  003d 35050001      	mov	_di_timeout,#5
-4590  0041               L5661:
-4591                     ; 679 				if((sc.spc[i].MDID) && !sc.spc[i].flag._flag_bit.bit1){send_spc_device_info(i);di_timeout = 5;}
-4593  0041 7b01          	ld	a,(OFST+0,sp)
-4594  0043 97            	ld	xl,a
-4595  0044 a61c          	ld	a,#28
-4596  0046 42            	mul	x,a
-4597  0047 d600bc        	ld	a,(_sc+45,x)
-4598  004a da00bb        	or	a,(_sc+44,x)
-4599  004d 2716          	jreq	L7661
-4601  004f 7b01          	ld	a,(OFST+0,sp)
-4602  0051 97            	ld	xl,a
-4603  0052 a61c          	ld	a,#28
-4604  0054 42            	mul	x,a
-4605  0055 d600c3        	ld	a,(_sc+52,x)
-4606  0058 a502          	bcp	a,#2
-4607  005a 2609          	jrne	L7661
-4610  005c 7b01          	ld	a,(OFST+0,sp)
-4611  005e cd0000        	call	_send_spc_device_info
-4615  0061 35050001      	mov	_di_timeout,#5
-4616  0065               L7661:
-4617                     ; 677 			for(i = 0; i < 15; i++){
-4619  0065 0c01          	inc	(OFST+0,sp)
-4622  0067 7b01          	ld	a,(OFST+0,sp)
-4623  0069 a10f          	cp	a,#15
-4624  006b 25b0          	jrult	L7561
-4625  006d               L1561:
-4626                     ; 683 }
-4629  006d 84            	pop	a
-4630  006e 81            	ret
-4643                     	xdef	_send_spc_device_info
-4644                     	xdef	_send_slc_device_info
-4645                     	xdef	_send_sc_device_info
-4646                     	xdef	_clear_uart_buf
-4647                     	xdef	_Uart2_Send
-4648                     	xref	_rand
-4649                     	xref	_i2c_multiple_action_dimmer
-4650                     	xref	_i2c_action_plug
-4651                     	xref	_i2c_single_action_dimmer
-4652                     	xref	_i2c_get_energy_consum
-4653                     	xref	_action_dimmer_ext
-4654                     	xdef	_delay
-4655                     	xref	_systime_count
-4656                     	xref	_init_slc_spc_done
-4657                     	xref	_sys_init
-4658                     	xdef	_check_send_repeatedly
-4659                     	xdef	_send_malfunction
-4660                     	xdef	_send_device_info
-4661                     	xdef	_report_energy_consum
-4662                     	xdef	_rev_cmd_data
-4663                     	xdef	_sicp_receipt_Done
-4664                     	xdef	_sicp_receipt_OK
-4665                     	xdef	_sicp_send_message
-4666                     	xdef	_random
-4667                     	xdef	_rev_deal
-4668                     	xdef	_Check_Sum
-4669                     	xdef	_rev_anaylze
-4670                     	xdef	_UART2_RX_ISR
-4671                     	xdef	_UART2_TX_ISR
-4672                     	xdef	_Init_uart2
-4673                     	xdef	_mymemcpy
-4674                     	switch	.bss
-4675  0000               _mal_timeout:
-4676  0000 00            	ds.b	1
-4677                     	xdef	_mal_timeout
-4678  0001               _di_timeout:
-4679  0001 00            	ds.b	1
-4680                     	xdef	_di_timeout
-4681  0002               _send_failed_count:
-4682  0002 0000          	ds.b	2
-4683                     	xdef	_send_failed_count
-4684  0004               _send_fault_count:
-4685  0004 0000          	ds.b	2
-4686                     	xdef	_send_fault_count
-4687  0006               _sicp_buf:
-4688  0006 000000000000  	ds.b	40
-4689                     	xdef	_sicp_buf
-4690  002e               _Uart2_Rec_Cnt:
-4691  002e 00            	ds.b	1
-4692                     	xdef	_Uart2_Rec_Cnt
-4693  002f               _Uart2_Rece_Buf:
-4694  002f 000000000000  	ds.b	40
-4695                     	xdef	_Uart2_Rece_Buf
-4696  0057               _Uart2_Send_Done:
-4697  0057 00            	ds.b	1
-4698                     	xdef	_Uart2_Send_Done
-4699  0058               _Uart2_Send_Cnt:
-4700  0058 00            	ds.b	1
-4701                     	xdef	_Uart2_Send_Cnt
-4702  0059               _Uart2_Send_Length:
-4703  0059 00            	ds.b	1
-4704                     	xdef	_Uart2_Send_Length
-4705  005a               _UART2_Send_Buf:
-4706  005a 000000000000  	ds.b	40
-4707                     	xdef	_UART2_Send_Buf
-4708  0082               _rev_ad_channel:
-4709  0082 00            	ds.b	1
-4710                     	xdef	_rev_ad_channel
-4711  0083               _rev_ad_mdid:
-4712  0083 00            	ds.b	1
-4713                     	xdef	_rev_ad_mdid
-4714  0084               _rev_ad_message_id:
-4715  0084 00            	ds.b	1
-4716                     	xdef	_rev_ad_message_id
-4717  0085               _rev_mesh_id_L:
-4718  0085 00            	ds.b	1
-4719                     	xdef	_rev_mesh_id_L
-4720  0086               _rev_mesh_id_H:
-4721  0086 00            	ds.b	1
-4722                     	xdef	_rev_mesh_id_H
-4723  0087               _rev_message_id:
-4724  0087 00            	ds.b	1
-4725                     	xdef	_rev_message_id
-4726  0088               _ns_host_meshid_L:
-4727  0088 00            	ds.b	1
-4728                     	xdef	_ns_host_meshid_L
-4729  0089               _ns_host_meshid_H:
-4730  0089 00            	ds.b	1
-4731                     	xdef	_ns_host_meshid_H
-4732  008a               _ns_own_meshid_L:
-4733  008a 00            	ds.b	1
-4734                     	xdef	_ns_own_meshid_L
-4735  008b               _ns_own_meshid_H:
-4736  008b 00            	ds.b	1
-4737                     	xdef	_ns_own_meshid_H
-4738  008c               _ns_phonenum:
-4739  008c 00            	ds.b	1
-4740                     	xdef	_ns_phonenum
-4741  008d               _ns_status:
-4742  008d 00            	ds.b	1
-4743                     	xdef	_ns_status
-4744  008e               _ns_signal:
-4745  008e 00            	ds.b	1
-4746                     	xdef	_ns_signal
-4747  008f               _sc:
-4748  008f 000000000000  	ds.b	836
-4749                     	xdef	_sc
-4750  03d3               _UART1Flag6_:
-4751  03d3 00            	ds.b	1
-4752                     	xdef	_UART1Flag6_
-4753  03d4               _UART1Flag5_:
-4754  03d4 00            	ds.b	1
-4755                     	xdef	_UART1Flag5_
-4756  03d5               _UART1Flag4_:
-4757  03d5 00            	ds.b	1
-4758                     	xdef	_UART1Flag4_
-4759  03d6               _UART1Flag3_:
-4760  03d6 00            	ds.b	1
-4761                     	xdef	_UART1Flag3_
-4762  03d7               _UART1Flag2_:
-4763  03d7 00            	ds.b	1
-4764                     	xdef	_UART1Flag2_
-4765  03d8               _UART1Flag1_:
-4766  03d8 00            	ds.b	1
-4767                     	xdef	_UART1Flag1_
-4768                     	xref	_UART2_ITConfig
-4769                     	xref	_UART2_Cmd
-4770                     	xref	_UART2_Init
-4771                     	xref	_UART2_DeInit
-4772                     	xref.b	c_lreg
-4773                     	xref.b	c_x
-4774                     	xref.b	c_y
-4794                     	xref	c_idiv
-4795                     	xref	c_lrzmp
-4796                     	xref	c_lgsbc
-4797                     	xref	c_ltor
-4798                     	end
+3406                     ; 485 void report_energy_consum(void){
+3407                     .text:	section	.text,new
+3408  0000               _report_energy_consum:
+3410  0000 5238          	subw	sp,#56
+3411       00000038      OFST:	set	56
+3414                     ; 489 	systime_count[3]++;
+3416  0002 ce0006        	ldw	x,_systime_count+6
+3417  0005 1c0001        	addw	x,#1
+3418  0008 cf0006        	ldw	_systime_count+6,x
+3419                     ; 490 	if(systime_count[3] >= 60){
+3421  000b ce0006        	ldw	x,_systime_count+6
+3422  000e a3003c        	cpw	x,#60
+3423  0011 2403          	jruge	L221
+3424  0013 cc00a2        	jp	L1341
+3425  0016               L221:
+3426                     ; 491 		systime_count[3] = 0;
+3428  0016 5f            	clrw	x
+3429  0017 cf0006        	ldw	_systime_count+6,x
+3430                     ; 492 		systime_count[4]++;
+3432  001a ce0008        	ldw	x,_systime_count+8
+3433  001d 1c0001        	addw	x,#1
+3434  0020 cf0008        	ldw	_systime_count+8,x
+3435                     ; 493 		if(systime_count[4] >= 30){
+3437  0023 ce0008        	ldw	x,_systime_count+8
+3438  0026 a3001e        	cpw	x,#30
+3439  0029 2577          	jrult	L1341
+3440                     ; 494 			systime_count[4] = 0;
+3442  002b 5f            	clrw	x
+3443  002c cf0008        	ldw	_systime_count+8,x
+3444                     ; 495 			i2c_get_energy_consum();
+3446  002f cd0000        	call	_i2c_get_energy_consum
+3448                     ; 496 			for(i = 0; i < 15; i++){
+3450  0032 0f01          	clr	(OFST-55,sp)
+3451  0034               L5341:
+3452                     ; 497 				if(sc.spc[i].MDID){//有ID说明SPC存在
+3454  0034 7b01          	ld	a,(OFST-55,sp)
+3455  0036 97            	ld	xl,a
+3456  0037 a61c          	ld	a,#28
+3457  0039 42            	mul	x,a
+3458  003a d600bc        	ld	a,(_sc+45,x)
+3459  003d da00bb        	or	a,(_sc+44,x)
+3460  0040 2758          	jreq	L3441
+3461                     ; 498 				ec.frame_h1 = 0xEE;
+3463  0042 a6ee          	ld	a,#238
+3464  0044 6b02          	ld	(OFST-54,sp),a
+3465                     ; 499 				ec.frame_h2 = 0xEE;
+3467  0046 a6ee          	ld	a,#238
+3468  0048 6b03          	ld	(OFST-53,sp),a
+3469                     ; 500 				ec.message_id = i+1;
+3471  004a 7b01          	ld	a,(OFST-55,sp)
+3472  004c 4c            	inc	a
+3473  004d 6b04          	ld	(OFST-52,sp),a
+3474                     ; 501 				ec.mesh_id_H = ns_host_meshid_H;
+3476  004f c60089        	ld	a,_ns_host_meshid_H
+3477  0052 6b05          	ld	(OFST-51,sp),a
+3478                     ; 502 				ec.mesh_id_L = ns_host_meshid_L;
+3480  0054 c60088        	ld	a,_ns_host_meshid_L
+3481  0057 6b06          	ld	(OFST-50,sp),a
+3482                     ; 503 				ec.payload[0] = 0x2A;
+3484  0059 a62a          	ld	a,#42
+3485  005b 6b07          	ld	(OFST-49,sp),a
+3486                     ; 504 				ec.payload[1] =	(u8)((sc.spc[i].energy_consum&0xff00)>>8);
+3488  005d 7b01          	ld	a,(OFST-55,sp)
+3489  005f 97            	ld	xl,a
+3490  0060 a61c          	ld	a,#28
+3491  0062 42            	mul	x,a
+3492  0063 de00c1        	ldw	x,(_sc+50,x)
+3493  0066 01            	rrwa	x,a
+3494  0067 9f            	ld	a,xl
+3495  0068 a4ff          	and	a,#255
+3496  006a 97            	ld	xl,a
+3497  006b 4f            	clr	a
+3498  006c 02            	rlwa	x,a
+3499  006d 4f            	clr	a
+3500  006e 01            	rrwa	x,a
+3501  006f 9f            	ld	a,xl
+3502  0070 6b08          	ld	(OFST-48,sp),a
+3503                     ; 505 				ec.payload[2] =	(u8)(sc.spc[i].energy_consum&0x00ff);
+3505  0072 7b01          	ld	a,(OFST-55,sp)
+3506  0074 97            	ld	xl,a
+3507  0075 a61c          	ld	a,#28
+3508  0077 42            	mul	x,a
+3509  0078 d600c2        	ld	a,(_sc+51,x)
+3510  007b a4ff          	and	a,#255
+3511  007d 6b09          	ld	(OFST-47,sp),a
+3512                     ; 506 				ec.payload[3] =	sc.spc[i].MDID;
+3514  007f 7b01          	ld	a,(OFST-55,sp)
+3515  0081 97            	ld	xl,a
+3516  0082 a61c          	ld	a,#28
+3517  0084 42            	mul	x,a
+3518  0085 d600bc        	ld	a,(_sc+45,x)
+3519  0088 6b0a          	ld	(OFST-46,sp),a
+3520                     ; 507 				sicp_send_message(&ec,4);
+3522  008a 4b04          	push	#4
+3523  008c 96            	ldw	x,sp
+3524  008d 1c0003        	addw	x,#OFST-53
+3525  0090 cd0000        	call	_sicp_send_message
+3527  0093 84            	pop	a
+3528                     ; 508 				eg_timeout = 5;
+3530  0094 ae0005        	ldw	x,#5
+3531  0097 cf0000        	ldw	L5041_eg_timeout,x
+3532  009a               L3441:
+3533                     ; 496 			for(i = 0; i < 15; i++){
+3535  009a 0c01          	inc	(OFST-55,sp)
+3538  009c 7b01          	ld	a,(OFST-55,sp)
+3539  009e a10f          	cp	a,#15
+3540  00a0 2592          	jrult	L5341
+3541  00a2               L1341:
+3542                     ; 514 	if(eg_timeout){
+3544  00a2 ce0000        	ldw	x,L5041_eg_timeout
+3545  00a5 2603          	jrne	L421
+3546  00a7 cc0132        	jp	L5441
+3547  00aa               L421:
+3548                     ; 515 		if(--eg_timeout == 0){
+3550  00aa ce0000        	ldw	x,L5041_eg_timeout
+3551  00ad 1d0001        	subw	x,#1
+3552  00b0 cf0000        	ldw	L5041_eg_timeout,x
+3553  00b3 267d          	jrne	L5441
+3554                     ; 516 			for(i = 0;i < 15;i++){
+3556  00b5 0f01          	clr	(OFST-55,sp)
+3557  00b7               L1541:
+3558                     ; 517 				if((sc.spc[i].MDID!=0) && (!sc.spc[i].flag._flag_bit.bit0)){//5s后判断sc.spc[i].flag._flag_bit.bit0还是为0，则重发1次
+3560  00b7 7b01          	ld	a,(OFST-55,sp)
+3561  00b9 97            	ld	xl,a
+3562  00ba a61c          	ld	a,#28
+3563  00bc 42            	mul	x,a
+3564  00bd d600bc        	ld	a,(_sc+45,x)
+3565  00c0 da00bb        	or	a,(_sc+44,x)
+3566  00c3 2765          	jreq	L7541
+3568  00c5 7b01          	ld	a,(OFST-55,sp)
+3569  00c7 97            	ld	xl,a
+3570  00c8 a61c          	ld	a,#28
+3571  00ca 42            	mul	x,a
+3572  00cb d600c3        	ld	a,(_sc+52,x)
+3573  00ce a501          	bcp	a,#1
+3574  00d0 2658          	jrne	L7541
+3575                     ; 518 					ec.frame_h1 = 0xEE;
+3577  00d2 a6ee          	ld	a,#238
+3578  00d4 6b02          	ld	(OFST-54,sp),a
+3579                     ; 519 					ec.frame_h2 = 0xEE;
+3581  00d6 a6ee          	ld	a,#238
+3582  00d8 6b03          	ld	(OFST-53,sp),a
+3583                     ; 520 					ec.message_id = i+1;
+3585  00da 7b01          	ld	a,(OFST-55,sp)
+3586  00dc 4c            	inc	a
+3587  00dd 6b04          	ld	(OFST-52,sp),a
+3588                     ; 521 					ec.mesh_id_H = ns_host_meshid_H;
+3590  00df c60089        	ld	a,_ns_host_meshid_H
+3591  00e2 6b05          	ld	(OFST-51,sp),a
+3592                     ; 522 					ec.mesh_id_L = ns_host_meshid_L;
+3594  00e4 c60088        	ld	a,_ns_host_meshid_L
+3595  00e7 6b06          	ld	(OFST-50,sp),a
+3596                     ; 523 					ec.payload[0] = 0x2A;
+3598  00e9 a62a          	ld	a,#42
+3599  00eb 6b07          	ld	(OFST-49,sp),a
+3600                     ; 524 					ec.payload[1] =	(u8)((sc.spc[i].energy_consum&0xff00)>>8);
+3602  00ed 7b01          	ld	a,(OFST-55,sp)
+3603  00ef 97            	ld	xl,a
+3604  00f0 a61c          	ld	a,#28
+3605  00f2 42            	mul	x,a
+3606  00f3 de00c1        	ldw	x,(_sc+50,x)
+3607  00f6 01            	rrwa	x,a
+3608  00f7 9f            	ld	a,xl
+3609  00f8 a4ff          	and	a,#255
+3610  00fa 97            	ld	xl,a
+3611  00fb 4f            	clr	a
+3612  00fc 02            	rlwa	x,a
+3613  00fd 4f            	clr	a
+3614  00fe 01            	rrwa	x,a
+3615  00ff 9f            	ld	a,xl
+3616  0100 6b08          	ld	(OFST-48,sp),a
+3617                     ; 525 					ec.payload[2] =	(u8)(sc.spc[i].energy_consum&0x00ff);
+3619  0102 7b01          	ld	a,(OFST-55,sp)
+3620  0104 97            	ld	xl,a
+3621  0105 a61c          	ld	a,#28
+3622  0107 42            	mul	x,a
+3623  0108 d600c2        	ld	a,(_sc+51,x)
+3624  010b a4ff          	and	a,#255
+3625  010d 6b09          	ld	(OFST-47,sp),a
+3626                     ; 526 					ec.payload[3] =	sc.spc[i].MDID;
+3628  010f 7b01          	ld	a,(OFST-55,sp)
+3629  0111 97            	ld	xl,a
+3630  0112 a61c          	ld	a,#28
+3631  0114 42            	mul	x,a
+3632  0115 d600bc        	ld	a,(_sc+45,x)
+3633  0118 6b0a          	ld	(OFST-46,sp),a
+3634                     ; 527 					sicp_send_message(&ec,4);
+3636  011a 4b04          	push	#4
+3637  011c 96            	ldw	x,sp
+3638  011d 1c0003        	addw	x,#OFST-53
+3639  0120 cd0000        	call	_sicp_send_message
+3641  0123 84            	pop	a
+3642                     ; 528 					eg_timeout = 5;//每5s重发1次直到接收到回执为止
+3644  0124 ae0005        	ldw	x,#5
+3645  0127 cf0000        	ldw	L5041_eg_timeout,x
+3646  012a               L7541:
+3647                     ; 516 			for(i = 0;i < 15;i++){
+3649  012a 0c01          	inc	(OFST-55,sp)
+3652  012c 7b01          	ld	a,(OFST-55,sp)
+3653  012e a10f          	cp	a,#15
+3654  0130 2585          	jrult	L1541
+3655  0132               L5441:
+3656                     ; 533 }
+3659  0132 5b38          	addw	sp,#56
+3660  0134 81            	ret
+3700                     ; 536 void send_sc_device_info(void)
+3700                     ; 537 {
+3701                     .text:	section	.text,new
+3702  0000               _send_sc_device_info:
+3704  0000 5237          	subw	sp,#55
+3705       00000037      OFST:	set	55
+3708                     ; 540 	di.frame_h1 = 0xEE;
+3710  0002 a6ee          	ld	a,#238
+3711  0004 6b01          	ld	(OFST-54,sp),a
+3712                     ; 541 	di.frame_h2 = 0xEE;
+3714  0006 a6ee          	ld	a,#238
+3715  0008 6b02          	ld	(OFST-53,sp),a
+3716                     ; 542 	di.message_id = 16;
+3718  000a a610          	ld	a,#16
+3719  000c 6b03          	ld	(OFST-52,sp),a
+3720                     ; 543 	di.mesh_id_H = ns_host_meshid_H;
+3722  000e c60089        	ld	a,_ns_host_meshid_H
+3723  0011 6b04          	ld	(OFST-51,sp),a
+3724                     ; 544 	di.mesh_id_L = ns_host_meshid_L;
+3726  0013 c60088        	ld	a,_ns_host_meshid_L
+3727  0016 6b05          	ld	(OFST-50,sp),a
+3728                     ; 545 	di.payload[0] = 0xB1;
+3730  0018 a6b1          	ld	a,#177
+3731  001a 6b06          	ld	(OFST-49,sp),a
+3732                     ; 546 	di.payload[1] =	sc.deviceid[0];
+3734  001c c60091        	ld	a,_sc+2
+3735  001f 6b07          	ld	(OFST-48,sp),a
+3736                     ; 547 	di.payload[2] =	sc.deviceid[1];
+3738  0021 c60092        	ld	a,_sc+3
+3739  0024 6b08          	ld	(OFST-47,sp),a
+3740                     ; 548 	di.payload[3] =	sc.deviceid[2];
+3742  0026 c60093        	ld	a,_sc+4
+3743  0029 6b09          	ld	(OFST-46,sp),a
+3744                     ; 549 	di.payload[4] =	sc.deviceid[3];
+3746  002b c60094        	ld	a,_sc+5
+3747  002e 6b0a          	ld	(OFST-45,sp),a
+3748                     ; 550 	di.payload[5] =	sc.model;
+3750  0030 c60097        	ld	a,_sc+8
+3751  0033 6b0b          	ld	(OFST-44,sp),a
+3752                     ; 551 	di.payload[6] = sc.firmware;
+3754  0035 c60095        	ld	a,_sc+6
+3755  0038 6b0c          	ld	(OFST-43,sp),a
+3756                     ; 552 	di.payload[7] = sc.HWTtest;
+3758  003a c60096        	ld	a,_sc+7
+3759  003d 6b0d          	ld	(OFST-42,sp),a
+3760                     ; 553 	di.payload[8] = sc.Ndevice;
+3762  003f c600a2        	ld	a,_sc+19
+3763  0042 6b0e          	ld	(OFST-41,sp),a
+3764                     ; 554 	sicp_send_message(&di,9);
+3766  0044 4b09          	push	#9
+3767  0046 96            	ldw	x,sp
+3768  0047 1c0002        	addw	x,#OFST-53
+3769  004a cd0000        	call	_sicp_send_message
+3771  004d 84            	pop	a
+3772                     ; 555 }
+3775  004e 5b37          	addw	sp,#55
+3776  0050 81            	ret
+3823                     ; 557 void send_slc_device_info(u8 i)
+3823                     ; 558 {
+3824                     .text:	section	.text,new
+3825  0000               _send_slc_device_info:
+3827  0000 88            	push	a
+3828  0001 5237          	subw	sp,#55
+3829       00000037      OFST:	set	55
+3832                     ; 560 	di.frame_h1 = 0xEE;
+3834  0003 a6ee          	ld	a,#238
+3835  0005 6b01          	ld	(OFST-54,sp),a
+3836                     ; 561 	di.frame_h2 = 0xEE;
+3838  0007 a6ee          	ld	a,#238
+3839  0009 6b02          	ld	(OFST-53,sp),a
+3840                     ; 562 	di.message_id = 21+i;
+3842  000b 7b38          	ld	a,(OFST+1,sp)
+3843  000d ab15          	add	a,#21
+3844  000f 6b03          	ld	(OFST-52,sp),a
+3845                     ; 563 	di.mesh_id_H = ns_host_meshid_H;
+3847  0011 c60089        	ld	a,_ns_host_meshid_H
+3848  0014 6b04          	ld	(OFST-51,sp),a
+3849                     ; 564 	di.mesh_id_L = ns_host_meshid_L;
+3851  0016 c60088        	ld	a,_ns_host_meshid_L
+3852  0019 6b05          	ld	(OFST-50,sp),a
+3853                     ; 565 	di.payload[0] = 0xB2;
+3855  001b a6b2          	ld	a,#178
+3856  001d 6b06          	ld	(OFST-49,sp),a
+3857                     ; 566 	di.payload[1] =	sc.slc[i].deviceid[0];
+3859  001f 7b38          	ld	a,(OFST+1,sp)
+3860  0021 97            	ld	xl,a
+3861  0022 a61a          	ld	a,#26
+3862  0024 42            	mul	x,a
+3863  0025 d6024e        	ld	a,(_sc+447,x)
+3864  0028 6b07          	ld	(OFST-48,sp),a
+3865                     ; 567 	di.payload[2] =	sc.slc[i].deviceid[1];
+3867  002a 7b38          	ld	a,(OFST+1,sp)
+3868  002c 97            	ld	xl,a
+3869  002d a61a          	ld	a,#26
+3870  002f 42            	mul	x,a
+3871  0030 d6024f        	ld	a,(_sc+448,x)
+3872  0033 6b08          	ld	(OFST-47,sp),a
+3873                     ; 568 	di.payload[3] =	sc.slc[i].deviceid[2];
+3875  0035 7b38          	ld	a,(OFST+1,sp)
+3876  0037 97            	ld	xl,a
+3877  0038 a61a          	ld	a,#26
+3878  003a 42            	mul	x,a
+3879  003b d60250        	ld	a,(_sc+449,x)
+3880  003e 6b09          	ld	(OFST-46,sp),a
+3881                     ; 569 	di.payload[4] =	sc.slc[i].deviceid[3];
+3883  0040 7b38          	ld	a,(OFST+1,sp)
+3884  0042 97            	ld	xl,a
+3885  0043 a61a          	ld	a,#26
+3886  0045 42            	mul	x,a
+3887  0046 d60251        	ld	a,(_sc+450,x)
+3888  0049 6b0a          	ld	(OFST-45,sp),a
+3889                     ; 570 	di.payload[5] =	sc.slc[i].model;
+3891  004b 7b38          	ld	a,(OFST+1,sp)
+3892  004d 97            	ld	xl,a
+3893  004e a61a          	ld	a,#26
+3894  0050 42            	mul	x,a
+3895  0051 d60254        	ld	a,(_sc+453,x)
+3896  0054 6b0b          	ld	(OFST-44,sp),a
+3897                     ; 571 	di.payload[6] = sc.slc[i].firmware;
+3899  0056 7b38          	ld	a,(OFST+1,sp)
+3900  0058 97            	ld	xl,a
+3901  0059 a61a          	ld	a,#26
+3902  005b 42            	mul	x,a
+3903  005c d60252        	ld	a,(_sc+451,x)
+3904  005f 6b0c          	ld	(OFST-43,sp),a
+3905                     ; 572 	di.payload[7] = sc.slc[i].HWTtest;
+3907  0061 7b38          	ld	a,(OFST+1,sp)
+3908  0063 97            	ld	xl,a
+3909  0064 a61a          	ld	a,#26
+3910  0066 42            	mul	x,a
+3911  0067 d60253        	ld	a,(_sc+452,x)
+3912  006a 6b0d          	ld	(OFST-42,sp),a
+3913                     ; 573 	di.payload[8] = sc.slc[i].MDID;
+3915  006c 7b38          	ld	a,(OFST+1,sp)
+3916  006e 97            	ld	xl,a
+3917  006f a61a          	ld	a,#26
+3918  0071 42            	mul	x,a
+3919  0072 d60260        	ld	a,(_sc+465,x)
+3920  0075 6b0e          	ld	(OFST-41,sp),a
+3921                     ; 574 	sicp_send_message(&di,9);
+3923  0077 4b09          	push	#9
+3924  0079 96            	ldw	x,sp
+3925  007a 1c0002        	addw	x,#OFST-53
+3926  007d cd0000        	call	_sicp_send_message
+3928  0080 84            	pop	a
+3929                     ; 575 }
+3932  0081 5b38          	addw	sp,#56
+3933  0083 81            	ret
+3980                     ; 577 void send_spc_device_info(u8 i)
+3980                     ; 578 {
+3981                     .text:	section	.text,new
+3982  0000               _send_spc_device_info:
+3984  0000 88            	push	a
+3985  0001 5237          	subw	sp,#55
+3986       00000037      OFST:	set	55
+3989                     ; 580 	di.frame_h1 = 0xEE;
+3991  0003 a6ee          	ld	a,#238
+3992  0005 6b01          	ld	(OFST-54,sp),a
+3993                     ; 581 	di.frame_h2 = 0xEE;
+3995  0007 a6ee          	ld	a,#238
+3996  0009 6b02          	ld	(OFST-53,sp),a
+3997                     ; 582 	di.message_id = 36+i;
+3999  000b 7b38          	ld	a,(OFST+1,sp)
+4000  000d ab24          	add	a,#36
+4001  000f 6b03          	ld	(OFST-52,sp),a
+4002                     ; 583 	di.mesh_id_H = ns_host_meshid_H;
+4004  0011 c60089        	ld	a,_ns_host_meshid_H
+4005  0014 6b04          	ld	(OFST-51,sp),a
+4006                     ; 584 	di.mesh_id_L = ns_host_meshid_L;
+4008  0016 c60088        	ld	a,_ns_host_meshid_L
+4009  0019 6b05          	ld	(OFST-50,sp),a
+4010                     ; 585 	di.payload[0] = 0xB3;
+4012  001b a6b3          	ld	a,#179
+4013  001d 6b06          	ld	(OFST-49,sp),a
+4014                     ; 586 	di.payload[1] =	sc.spc[i].deviceid[0];
+4016  001f 7b38          	ld	a,(OFST+1,sp)
+4017  0021 97            	ld	xl,a
+4018  0022 a61c          	ld	a,#28
+4019  0024 42            	mul	x,a
+4020  0025 d600aa        	ld	a,(_sc+27,x)
+4021  0028 6b07          	ld	(OFST-48,sp),a
+4022                     ; 587 	di.payload[2] =	sc.spc[i].deviceid[1];
+4024  002a 7b38          	ld	a,(OFST+1,sp)
+4025  002c 97            	ld	xl,a
+4026  002d a61c          	ld	a,#28
+4027  002f 42            	mul	x,a
+4028  0030 d600ab        	ld	a,(_sc+28,x)
+4029  0033 6b08          	ld	(OFST-47,sp),a
+4030                     ; 588 	di.payload[3] =	sc.spc[i].deviceid[2];
+4032  0035 7b38          	ld	a,(OFST+1,sp)
+4033  0037 97            	ld	xl,a
+4034  0038 a61c          	ld	a,#28
+4035  003a 42            	mul	x,a
+4036  003b d600ac        	ld	a,(_sc+29,x)
+4037  003e 6b09          	ld	(OFST-46,sp),a
+4038                     ; 589 	di.payload[4] =	sc.spc[i].deviceid[3];
+4040  0040 7b38          	ld	a,(OFST+1,sp)
+4041  0042 97            	ld	xl,a
+4042  0043 a61c          	ld	a,#28
+4043  0045 42            	mul	x,a
+4044  0046 d600ad        	ld	a,(_sc+30,x)
+4045  0049 6b0a          	ld	(OFST-45,sp),a
+4046                     ; 590 	di.payload[5] =	sc.spc[i].model;
+4048  004b 7b38          	ld	a,(OFST+1,sp)
+4049  004d 97            	ld	xl,a
+4050  004e a61c          	ld	a,#28
+4051  0050 42            	mul	x,a
+4052  0051 d600b0        	ld	a,(_sc+33,x)
+4053  0054 6b0b          	ld	(OFST-44,sp),a
+4054                     ; 591 	di.payload[6] = sc.spc[i].firmware;
+4056  0056 7b38          	ld	a,(OFST+1,sp)
+4057  0058 97            	ld	xl,a
+4058  0059 a61c          	ld	a,#28
+4059  005b 42            	mul	x,a
+4060  005c d600ae        	ld	a,(_sc+31,x)
+4061  005f 6b0c          	ld	(OFST-43,sp),a
+4062                     ; 592 	di.payload[7] = sc.spc[i].HWTtest;
+4064  0061 7b38          	ld	a,(OFST+1,sp)
+4065  0063 97            	ld	xl,a
+4066  0064 a61c          	ld	a,#28
+4067  0066 42            	mul	x,a
+4068  0067 d600af        	ld	a,(_sc+32,x)
+4069  006a 6b0d          	ld	(OFST-42,sp),a
+4070                     ; 593 	di.payload[8] = sc.spc[i].MDID;
+4072  006c 7b38          	ld	a,(OFST+1,sp)
+4073  006e 97            	ld	xl,a
+4074  006f a61c          	ld	a,#28
+4075  0071 42            	mul	x,a
+4076  0072 d600bc        	ld	a,(_sc+45,x)
+4077  0075 6b0e          	ld	(OFST-41,sp),a
+4078                     ; 594 	sicp_send_message(&di,9);
+4080  0077 4b09          	push	#9
+4081  0079 96            	ldw	x,sp
+4082  007a 1c0002        	addw	x,#OFST-53
+4083  007d cd0000        	call	_sicp_send_message
+4085  0080 84            	pop	a
+4086                     ; 595 }
+4089  0081 5b38          	addw	sp,#56
+4090  0083 81            	ret
+4128                     ; 597 void send_device_info(void)
+4128                     ; 598 {
+4129                     .text:	section	.text,new
+4130  0000               _send_device_info:
+4132  0000 88            	push	a
+4133       00000001      OFST:	set	1
+4136                     ; 601 	send_sc_device_info();
+4138  0001 cd0000        	call	_send_sc_device_info
+4140                     ; 602 	delay(100);
+4142  0004 ae0064        	ldw	x,#100
+4143  0007 cd0000        	call	_delay
+4145                     ; 604 	for(i = 0; i < 15;i++){
+4147  000a 0f01          	clr	(OFST+0,sp)
+4148  000c               L3551:
+4149                     ; 605 		if(sc.slc[i].MDID){//MDID不为零说明I2C收到回复
+4151  000c 7b01          	ld	a,(OFST+0,sp)
+4152  000e 97            	ld	xl,a
+4153  000f a61a          	ld	a,#26
+4154  0011 42            	mul	x,a
+4155  0012 d60260        	ld	a,(_sc+465,x)
+4156  0015 da025f        	or	a,(_sc+464,x)
+4157  0018 270b          	jreq	L1651
+4158                     ; 606 			send_slc_device_info(i);
+4160  001a 7b01          	ld	a,(OFST+0,sp)
+4161  001c cd0000        	call	_send_slc_device_info
+4163                     ; 607 			delay(100);
+4165  001f ae0064        	ldw	x,#100
+4166  0022 cd0000        	call	_delay
+4168  0025               L1651:
+4169                     ; 604 	for(i = 0; i < 15;i++){
+4171  0025 0c01          	inc	(OFST+0,sp)
+4174  0027 7b01          	ld	a,(OFST+0,sp)
+4175  0029 a10f          	cp	a,#15
+4176  002b 25df          	jrult	L3551
+4177                     ; 611 	for(i = 0; i < 15;i++){
+4179  002d 0f01          	clr	(OFST+0,sp)
+4180  002f               L3651:
+4181                     ; 612 		if(sc.spc[i].MDID){//MDID不为零说明I2C收到回复
+4183  002f 7b01          	ld	a,(OFST+0,sp)
+4184  0031 97            	ld	xl,a
+4185  0032 a61c          	ld	a,#28
+4186  0034 42            	mul	x,a
+4187  0035 d600bc        	ld	a,(_sc+45,x)
+4188  0038 da00bb        	or	a,(_sc+44,x)
+4189  003b 270b          	jreq	L1751
+4190                     ; 613 			send_spc_device_info(i);
+4192  003d 7b01          	ld	a,(OFST+0,sp)
+4193  003f cd0000        	call	_send_spc_device_info
+4195                     ; 614 			delay(100);
+4197  0042 ae0064        	ldw	x,#100
+4198  0045 cd0000        	call	_delay
+4200  0048               L1751:
+4201                     ; 611 	for(i = 0; i < 15;i++){
+4203  0048 0c01          	inc	(OFST+0,sp)
+4206  004a 7b01          	ld	a,(OFST+0,sp)
+4207  004c a10f          	cp	a,#15
+4208  004e 25df          	jrult	L3651
+4209                     ; 617 	di_timeout = 5;
+4211  0050 35050001      	mov	_di_timeout,#5
+4212                     ; 618 }
+4215  0054 84            	pop	a
+4216  0055 81            	ret
+4262                     ; 621 void send_malfunction(void)
+4262                     ; 622 {
+4263                     .text:	section	.text,new
+4264  0000               _send_malfunction:
+4266  0000 5238          	subw	sp,#56
+4267       00000038      OFST:	set	56
+4270                     ; 626 	if((sc.HWTtest & 0xC0)!=0xC0){
+4272  0002 c60096        	ld	a,_sc+7
+4273  0005 a4c0          	and	a,#192
+4274  0007 a1c0          	cp	a,#192
+4275  0009 272f          	jreq	L3161
+4276                     ; 627 		mal.frame_h1 = 0xEE;
+4278  000b a6ee          	ld	a,#238
+4279  000d 6b02          	ld	(OFST-54,sp),a
+4280                     ; 628 		mal.frame_h2 = 0xEE;
+4282  000f a6ee          	ld	a,#238
+4283  0011 6b03          	ld	(OFST-53,sp),a
+4284                     ; 629 		mal.message_id = 17;
+4286  0013 a611          	ld	a,#17
+4287  0015 6b04          	ld	(OFST-52,sp),a
+4288                     ; 630 		mal.mesh_id_H = ns_host_meshid_H;
+4290  0017 c60089        	ld	a,_ns_host_meshid_H
+4291  001a 6b05          	ld	(OFST-51,sp),a
+4292                     ; 631 		mal.mesh_id_L = ns_host_meshid_L;
+4294  001c c60088        	ld	a,_ns_host_meshid_L
+4295  001f 6b06          	ld	(OFST-50,sp),a
+4296                     ; 632 		mal.payload[0] = 0x0A;
+4298  0021 a60a          	ld	a,#10
+4299  0023 6b07          	ld	(OFST-49,sp),a
+4300                     ; 633 		mal.payload[1] = 0xB1;
+4302  0025 a6b1          	ld	a,#177
+4303  0027 6b08          	ld	(OFST-48,sp),a
+4304                     ; 634 		mal.payload[2] =	0x00;
+4306  0029 0f09          	clr	(OFST-47,sp)
+4307                     ; 635 		mal.payload[3] =	sc.HWTtest;
+4309  002b c60096        	ld	a,_sc+7
+4310  002e 6b0a          	ld	(OFST-46,sp),a
+4311                     ; 636 		sicp_send_message(&mal,4);
+4313  0030 4b04          	push	#4
+4314  0032 96            	ldw	x,sp
+4315  0033 1c0003        	addw	x,#OFST-53
+4316  0036 cd0000        	call	_sicp_send_message
+4318  0039 84            	pop	a
+4319  003a               L3161:
+4320                     ; 639 	for(i = 0; i < 15;i++){
+4322  003a 0f01          	clr	(OFST-55,sp)
+4323  003c               L5161:
+4324                     ; 640 		if((sc.slc[i].MDID)&&((sc.slc[i].HWTtest& 0xC0)!=0xC0)){	//send_slc_malfunction(i);
+4326  003c 7b01          	ld	a,(OFST-55,sp)
+4327  003e 97            	ld	xl,a
+4328  003f a61a          	ld	a,#26
+4329  0041 42            	mul	x,a
+4330  0042 d60260        	ld	a,(_sc+465,x)
+4331  0045 da025f        	or	a,(_sc+464,x)
+4332  0048 274f          	jreq	L3261
+4334  004a 7b01          	ld	a,(OFST-55,sp)
+4335  004c 97            	ld	xl,a
+4336  004d a61a          	ld	a,#26
+4337  004f 42            	mul	x,a
+4338  0050 d60253        	ld	a,(_sc+452,x)
+4339  0053 a4c0          	and	a,#192
+4340  0055 a1c0          	cp	a,#192
+4341  0057 2740          	jreq	L3261
+4342                     ; 641 			mal.frame_h1 = 0xEE;
+4344  0059 a6ee          	ld	a,#238
+4345  005b 6b02          	ld	(OFST-54,sp),a
+4346                     ; 642 			mal.frame_h2 = 0xEE;
+4348  005d a6ee          	ld	a,#238
+4349  005f 6b03          	ld	(OFST-53,sp),a
+4350                     ; 643 			mal.message_id = 51+i;
+4352  0061 7b01          	ld	a,(OFST-55,sp)
+4353  0063 ab33          	add	a,#51
+4354  0065 6b04          	ld	(OFST-52,sp),a
+4355                     ; 644 			mal.mesh_id_H = ns_host_meshid_H;
+4357  0067 c60089        	ld	a,_ns_host_meshid_H
+4358  006a 6b05          	ld	(OFST-51,sp),a
+4359                     ; 645 			mal.mesh_id_L = ns_host_meshid_L;
+4361  006c c60088        	ld	a,_ns_host_meshid_L
+4362  006f 6b06          	ld	(OFST-50,sp),a
+4363                     ; 646 			mal.payload[0] = 0x0A;
+4365  0071 a60a          	ld	a,#10
+4366  0073 6b07          	ld	(OFST-49,sp),a
+4367                     ; 647 			mal.payload[1] = 0xB2;
+4369  0075 a6b2          	ld	a,#178
+4370  0077 6b08          	ld	(OFST-48,sp),a
+4371                     ; 648 			mal.payload[2] =	sc.slc[i].MDID;
+4373  0079 7b01          	ld	a,(OFST-55,sp)
+4374  007b 97            	ld	xl,a
+4375  007c a61a          	ld	a,#26
+4376  007e 42            	mul	x,a
+4377  007f d60260        	ld	a,(_sc+465,x)
+4378  0082 6b09          	ld	(OFST-47,sp),a
+4379                     ; 649 			mal.payload[3] =	sc.slc[i].HWTtest;
+4381  0084 7b01          	ld	a,(OFST-55,sp)
+4382  0086 97            	ld	xl,a
+4383  0087 a61a          	ld	a,#26
+4384  0089 42            	mul	x,a
+4385  008a d60253        	ld	a,(_sc+452,x)
+4386  008d 6b0a          	ld	(OFST-46,sp),a
+4387                     ; 650 			sicp_send_message(&mal,4);
+4389  008f 4b04          	push	#4
+4390  0091 96            	ldw	x,sp
+4391  0092 1c0003        	addw	x,#OFST-53
+4392  0095 cd0000        	call	_sicp_send_message
+4394  0098 84            	pop	a
+4395  0099               L3261:
+4396                     ; 639 	for(i = 0; i < 15;i++){
+4398  0099 0c01          	inc	(OFST-55,sp)
+4401  009b 7b01          	ld	a,(OFST-55,sp)
+4402  009d a10f          	cp	a,#15
+4403  009f 259b          	jrult	L5161
+4404                     ; 654 	for(i = 0; i < 15;i++){
+4406  00a1 0f01          	clr	(OFST-55,sp)
+4407  00a3               L5261:
+4408                     ; 655 		if((sc.spc[i].MDID)&&((sc.spc[i].HWTtest& 0xC0)!=0xC0)){	//send_spc_malfunction(i);
+4410  00a3 7b01          	ld	a,(OFST-55,sp)
+4411  00a5 97            	ld	xl,a
+4412  00a6 a61c          	ld	a,#28
+4413  00a8 42            	mul	x,a
+4414  00a9 d600bc        	ld	a,(_sc+45,x)
+4415  00ac da00bb        	or	a,(_sc+44,x)
+4416  00af 274f          	jreq	L3361
+4418  00b1 7b01          	ld	a,(OFST-55,sp)
+4419  00b3 97            	ld	xl,a
+4420  00b4 a61c          	ld	a,#28
+4421  00b6 42            	mul	x,a
+4422  00b7 d600af        	ld	a,(_sc+32,x)
+4423  00ba a4c0          	and	a,#192
+4424  00bc a1c0          	cp	a,#192
+4425  00be 2740          	jreq	L3361
+4426                     ; 656 			mal.frame_h1 = 0xEE;
+4428  00c0 a6ee          	ld	a,#238
+4429  00c2 6b02          	ld	(OFST-54,sp),a
+4430                     ; 657 			mal.frame_h2 = 0xEE;
+4432  00c4 a6ee          	ld	a,#238
+4433  00c6 6b03          	ld	(OFST-53,sp),a
+4434                     ; 658 			mal.message_id = 66+i;
+4436  00c8 7b01          	ld	a,(OFST-55,sp)
+4437  00ca ab42          	add	a,#66
+4438  00cc 6b04          	ld	(OFST-52,sp),a
+4439                     ; 659 			mal.mesh_id_H = ns_host_meshid_H;
+4441  00ce c60089        	ld	a,_ns_host_meshid_H
+4442  00d1 6b05          	ld	(OFST-51,sp),a
+4443                     ; 660 			mal.mesh_id_L = ns_host_meshid_L;
+4445  00d3 c60088        	ld	a,_ns_host_meshid_L
+4446  00d6 6b06          	ld	(OFST-50,sp),a
+4447                     ; 661 			mal.payload[0] = 0x0A;
+4449  00d8 a60a          	ld	a,#10
+4450  00da 6b07          	ld	(OFST-49,sp),a
+4451                     ; 662 			mal.payload[1] = 0xB2;
+4453  00dc a6b2          	ld	a,#178
+4454  00de 6b08          	ld	(OFST-48,sp),a
+4455                     ; 663 			mal.payload[2] =	sc.spc[i].MDID;
+4457  00e0 7b01          	ld	a,(OFST-55,sp)
+4458  00e2 97            	ld	xl,a
+4459  00e3 a61c          	ld	a,#28
+4460  00e5 42            	mul	x,a
+4461  00e6 d600bc        	ld	a,(_sc+45,x)
+4462  00e9 6b09          	ld	(OFST-47,sp),a
+4463                     ; 664 			mal.payload[3] =	sc.spc[i].HWTtest;
+4465  00eb 7b01          	ld	a,(OFST-55,sp)
+4466  00ed 97            	ld	xl,a
+4467  00ee a61c          	ld	a,#28
+4468  00f0 42            	mul	x,a
+4469  00f1 d600af        	ld	a,(_sc+32,x)
+4470  00f4 6b0a          	ld	(OFST-46,sp),a
+4471                     ; 665 			sicp_send_message(&mal,4);
+4473  00f6 4b04          	push	#4
+4474  00f8 96            	ldw	x,sp
+4475  00f9 1c0003        	addw	x,#OFST-53
+4476  00fc cd0000        	call	_sicp_send_message
+4478  00ff 84            	pop	a
+4479  0100               L3361:
+4480                     ; 654 	for(i = 0; i < 15;i++){
+4482  0100 0c01          	inc	(OFST-55,sp)
+4485  0102 7b01          	ld	a,(OFST-55,sp)
+4486  0104 a10f          	cp	a,#15
+4487  0106 259b          	jrult	L5261
+4488                     ; 668 }
+4491  0108 5b38          	addw	sp,#56
+4492  010a 81            	ret
+4530                     ; 671 void check_send_repeatedly(void){
+4531                     .text:	section	.text,new
+4532  0000               _check_send_repeatedly:
+4534  0000 88            	push	a
+4535       00000001      OFST:	set	1
+4538                     ; 674 	if(di_timeout){
+4540  0001 725d0001      	tnz	_di_timeout
+4541  0005 2766          	jreq	L1561
+4542                     ; 675 		if(--di_timeout == 0){
+4544  0007 725a0001      	dec	_di_timeout
+4545  000b 2660          	jrne	L1561
+4546                     ; 676 			if(!sc.flag._flag_bit.bit1)	{send_sc_device_info();di_timeout = 5;}
+4548  000d c603d2        	ld	a,_sc+835
+4549  0010 a502          	bcp	a,#2
+4550  0012 2607          	jrne	L5561
+4553  0014 cd0000        	call	_send_sc_device_info
+4557  0017 35050001      	mov	_di_timeout,#5
+4558  001b               L5561:
+4559                     ; 677 			for(i = 0; i < 15; i++){
+4561  001b 0f01          	clr	(OFST+0,sp)
+4562  001d               L7561:
+4563                     ; 678 				if((sc.slc[i].MDID) && !sc.slc[i].flag._flag_bit.bit1){send_slc_device_info(i);di_timeout = 5;}
+4565  001d 7b01          	ld	a,(OFST+0,sp)
+4566  001f 97            	ld	xl,a
+4567  0020 a61a          	ld	a,#26
+4568  0022 42            	mul	x,a
+4569  0023 d60260        	ld	a,(_sc+465,x)
+4570  0026 da025f        	or	a,(_sc+464,x)
+4571  0029 2716          	jreq	L5661
+4573  002b 7b01          	ld	a,(OFST+0,sp)
+4574  002d 97            	ld	xl,a
+4575  002e a61a          	ld	a,#26
+4576  0030 42            	mul	x,a
+4577  0031 d60265        	ld	a,(_sc+470,x)
+4578  0034 a502          	bcp	a,#2
+4579  0036 2609          	jrne	L5661
+4582  0038 7b01          	ld	a,(OFST+0,sp)
+4583  003a cd0000        	call	_send_slc_device_info
+4587  003d 35050001      	mov	_di_timeout,#5
+4588  0041               L5661:
+4589                     ; 679 				if((sc.spc[i].MDID) && !sc.spc[i].flag._flag_bit.bit1){send_spc_device_info(i);di_timeout = 5;}
+4591  0041 7b01          	ld	a,(OFST+0,sp)
+4592  0043 97            	ld	xl,a
+4593  0044 a61c          	ld	a,#28
+4594  0046 42            	mul	x,a
+4595  0047 d600bc        	ld	a,(_sc+45,x)
+4596  004a da00bb        	or	a,(_sc+44,x)
+4597  004d 2716          	jreq	L7661
+4599  004f 7b01          	ld	a,(OFST+0,sp)
+4600  0051 97            	ld	xl,a
+4601  0052 a61c          	ld	a,#28
+4602  0054 42            	mul	x,a
+4603  0055 d600c3        	ld	a,(_sc+52,x)
+4604  0058 a502          	bcp	a,#2
+4605  005a 2609          	jrne	L7661
+4608  005c 7b01          	ld	a,(OFST+0,sp)
+4609  005e cd0000        	call	_send_spc_device_info
+4613  0061 35050001      	mov	_di_timeout,#5
+4614  0065               L7661:
+4615                     ; 677 			for(i = 0; i < 15; i++){
+4617  0065 0c01          	inc	(OFST+0,sp)
+4620  0067 7b01          	ld	a,(OFST+0,sp)
+4621  0069 a10f          	cp	a,#15
+4622  006b 25b0          	jrult	L7561
+4623  006d               L1561:
+4624                     ; 683 }
+4627  006d 84            	pop	a
+4628  006e 81            	ret
+4641                     	xdef	_send_spc_device_info
+4642                     	xdef	_send_slc_device_info
+4643                     	xdef	_send_sc_device_info
+4644                     	xdef	_clear_uart_buf
+4645                     	xdef	_Uart2_Send
+4646                     	xref	_rand
+4647                     	xref	_i2c_multiple_action_dimmer
+4648                     	xref	_i2c_action_plug
+4649                     	xref	_i2c_single_action_dimmer
+4650                     	xref	_i2c_get_energy_consum
+4651                     	xref	_action_dimmer_ext
+4652                     	xdef	_delay
+4653                     	xref	_systime_count
+4654                     	xref	_init_slc_spc_done
+4655                     	xref	_sys_init
+4656                     	xdef	_check_send_repeatedly
+4657                     	xdef	_send_malfunction
+4658                     	xdef	_send_device_info
+4659                     	xdef	_report_energy_consum
+4660                     	xdef	_rev_cmd_data
+4661                     	xdef	_sicp_receipt_Done
+4662                     	xdef	_sicp_receipt_OK
+4663                     	xdef	_sicp_send_message
+4664                     	xdef	_random
+4665                     	xdef	_rev_deal
+4666                     	xdef	_Check_Sum
+4667                     	xdef	_rev_anaylze
+4668                     	xdef	_UART2_RX_ISR
+4669                     	xdef	_UART2_TX_ISR
+4670                     	xdef	_Init_uart2
+4671                     	xdef	_mymemcpy
+4672                     	switch	.bss
+4673  0000               _mal_timeout:
+4674  0000 00            	ds.b	1
+4675                     	xdef	_mal_timeout
+4676  0001               _di_timeout:
+4677  0001 00            	ds.b	1
+4678                     	xdef	_di_timeout
+4679  0002               _send_failed_count:
+4680  0002 0000          	ds.b	2
+4681                     	xdef	_send_failed_count
+4682  0004               _send_fault_count:
+4683  0004 0000          	ds.b	2
+4684                     	xdef	_send_fault_count
+4685  0006               _sicp_buf:
+4686  0006 000000000000  	ds.b	40
+4687                     	xdef	_sicp_buf
+4688  002e               _Uart2_Rec_Cnt:
+4689  002e 00            	ds.b	1
+4690                     	xdef	_Uart2_Rec_Cnt
+4691  002f               _Uart2_Rece_Buf:
+4692  002f 000000000000  	ds.b	40
+4693                     	xdef	_Uart2_Rece_Buf
+4694  0057               _Uart2_Send_Done:
+4695  0057 00            	ds.b	1
+4696                     	xdef	_Uart2_Send_Done
+4697  0058               _Uart2_Send_Cnt:
+4698  0058 00            	ds.b	1
+4699                     	xdef	_Uart2_Send_Cnt
+4700  0059               _Uart2_Send_Length:
+4701  0059 00            	ds.b	1
+4702                     	xdef	_Uart2_Send_Length
+4703  005a               _UART2_Send_Buf:
+4704  005a 000000000000  	ds.b	40
+4705                     	xdef	_UART2_Send_Buf
+4706  0082               _rev_ad_channel:
+4707  0082 00            	ds.b	1
+4708                     	xdef	_rev_ad_channel
+4709  0083               _rev_ad_mdid:
+4710  0083 00            	ds.b	1
+4711                     	xdef	_rev_ad_mdid
+4712  0084               _rev_ad_message_id:
+4713  0084 00            	ds.b	1
+4714                     	xdef	_rev_ad_message_id
+4715  0085               _rev_mesh_id_L:
+4716  0085 00            	ds.b	1
+4717                     	xdef	_rev_mesh_id_L
+4718  0086               _rev_mesh_id_H:
+4719  0086 00            	ds.b	1
+4720                     	xdef	_rev_mesh_id_H
+4721  0087               _rev_message_id:
+4722  0087 00            	ds.b	1
+4723                     	xdef	_rev_message_id
+4724  0088               _ns_host_meshid_L:
+4725  0088 00            	ds.b	1
+4726                     	xdef	_ns_host_meshid_L
+4727  0089               _ns_host_meshid_H:
+4728  0089 00            	ds.b	1
+4729                     	xdef	_ns_host_meshid_H
+4730  008a               _ns_own_meshid_L:
+4731  008a 00            	ds.b	1
+4732                     	xdef	_ns_own_meshid_L
+4733  008b               _ns_own_meshid_H:
+4734  008b 00            	ds.b	1
+4735                     	xdef	_ns_own_meshid_H
+4736  008c               _ns_phonenum:
+4737  008c 00            	ds.b	1
+4738                     	xdef	_ns_phonenum
+4739  008d               _ns_status:
+4740  008d 00            	ds.b	1
+4741                     	xdef	_ns_status
+4742  008e               _ns_signal:
+4743  008e 00            	ds.b	1
+4744                     	xdef	_ns_signal
+4745  008f               _sc:
+4746  008f 000000000000  	ds.b	836
+4747                     	xdef	_sc
+4748  03d3               _UART1Flag6_:
+4749  03d3 00            	ds.b	1
+4750                     	xdef	_UART1Flag6_
+4751  03d4               _UART1Flag5_:
+4752  03d4 00            	ds.b	1
+4753                     	xdef	_UART1Flag5_
+4754  03d5               _UART1Flag4_:
+4755  03d5 00            	ds.b	1
+4756                     	xdef	_UART1Flag4_
+4757  03d6               _UART1Flag3_:
+4758  03d6 00            	ds.b	1
+4759                     	xdef	_UART1Flag3_
+4760  03d7               _UART1Flag2_:
+4761  03d7 00            	ds.b	1
+4762                     	xdef	_UART1Flag2_
+4763  03d8               _UART1Flag1_:
+4764  03d8 00            	ds.b	1
+4765                     	xdef	_UART1Flag1_
+4766                     	xref	_UART2_ITConfig
+4767                     	xref	_UART2_Cmd
+4768                     	xref	_UART2_Init
+4769                     	xref	_UART2_DeInit
+4770                     	xref.b	c_lreg
+4771                     	xref.b	c_x
+4772                     	xref.b	c_y
+4792                     	xref	c_idiv
+4793                     	xref	c_lrzmp
+4794                     	xref	c_lgsbc
+4795                     	xref	c_ltor
+4796                     	end
