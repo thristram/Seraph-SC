@@ -35,7 +35,7 @@ uint8_t I2C_Config(void) {
 	//GPIO_Init(GPIOB,GPIO_PIN_5,GPIO_MODE_OUT_OD_HIZ_SLOW);
 	I2C_DeInit();
 	//CLK_PeripheralClockConfig(CLK_PERIPHERAL_I2C, ENABLE);
-	I2C_Init(20000,0x50,I2C_DUTYCYCLE_2,I2C_ACK_CURR,I2C_ADDMODE_7BIT,CLK_GetClockFreq()/1000000);
+	I2C_Init(100000,0x50,I2C_DUTYCYCLE_2,I2C_ACK_CURR,I2C_ADDMODE_7BIT,CLK_GetClockFreq()/1000000);
 	//I2C_ITConfig(I2C_IT_ERR,ENABLE);
 	I2C_Cmd(ENABLE);
   while((I2C->SR3 & I2C_SR3_BUSY))       									// Wait while the bus is busy

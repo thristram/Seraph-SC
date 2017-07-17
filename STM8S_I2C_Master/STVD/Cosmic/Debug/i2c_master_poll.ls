@@ -16,7 +16,7 @@
   67  0004 9a            rim
   69                     ; 36 	I2C_DeInit();
   72  0005 cd0000        	call	_I2C_DeInit
-  74                     ; 38 	I2C_Init(20000,0x50,I2C_DUTYCYCLE_2,I2C_ACK_CURR,I2C_ADDMODE_7BIT,CLK_GetClockFreq()/1000000);
+  74                     ; 38 	I2C_Init(100000,0x50,I2C_DUTYCYCLE_2,I2C_ACK_CURR,I2C_ADDMODE_7BIT,CLK_GetClockFreq()/1000000);
   76  0008 cd0000        	call	_CLK_GetClockFreq
   78  000b ae0000        	ldw	x,#L6
   79  000e cd0000        	call	c_ludv
@@ -27,9 +27,9 @@
   85  0018 4b00          	push	#0
   86  001a ae0050        	ldw	x,#80
   87  001d 89            	pushw	x
-  88  001e ae4e20        	ldw	x,#20000
+  88  001e ae86a0        	ldw	x,#34464
   89  0021 89            	pushw	x
-  90  0022 ae0000        	ldw	x,#0
+  90  0022 ae0001        	ldw	x,#1
   91  0025 89            	pushw	x
   92  0026 cd0000        	call	_I2C_Init
   94  0029 5b0a          	addw	sp,#10
