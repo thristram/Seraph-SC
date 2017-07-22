@@ -234,7 +234,7 @@ void clear_uart_buf(void)
 /*************SICP接收数据分析**********************/
 void rev_anaylze(void)
 {
-	u8 i,action_dimmer_num,ret;
+	u8 i,action_dimmer_num,action_plup_num,ret;
 	SICP_Message receipt;
 	if(rev_success){
 		rev_success = 0;
@@ -266,7 +266,8 @@ void rev_anaylze(void)
 					action_dimmer_ext = sicp_buf[9]+2;
 					//I2C发送调光指令并发送读取调光结果指令
 					ret = i2c_single_action_dimmer(sicp_buf[6],sicp_buf[7],sicp_buf[8],sicp_buf[9]);
-					if(ret == IIC_SUCCESS)	sicp_receipt_OK(0x02,rev_message_id,ns_own_meshid_H,ns_own_meshid_L);
+					delay(100);
+					if(ret == IIC_SUCCESS)	sicp_receipt_OK(0x02,rev_message_id,ns_host_meshid_H,ns_host_meshid_L);
 					//if(ret == IIC_SUCCESS)	sicp_receipt_Done(0x05,rev_message_id,ns_own_meshid_H,ns_own_meshid_L,0x01,rev_mdid);
 				break;
 				case 0x55://打开或关闭开关
@@ -274,13 +275,15 @@ void rev_anaylze(void)
 					rev_ad_channel = (sicp_buf[7]&0x0f);
 					//I2C发送调节开关指令并发送读取调节开关结果指令
 					ret = i2c_action_plug(sicp_buf[6],sicp_buf[7],sicp_buf[8],sicp_buf[9]);
+					delay(100);
 					if(ret == IIC_SUCCESS) sicp_receipt_Done(0x05,rev_message_id,ns_host_meshid_H,ns_host_meshid_L,0x02,rev_ad_mdid);
 				break;
 				case 0x57://一个SC下多个SLC多个通道调光
 					action_dimmer_num = sicp_buf[7];
-					sicp_receipt_OK(0x02,rev_message_id,ns_own_meshid_H,ns_own_meshid_L);
+					sicp_receipt_OK(0x02,rev_message_id,ns_host_meshid_H,ns_host_meshid_L);
 					//I2C发送多通道调光指令并发送读取调光结果指令
 					ret = i2c_multiple_action_dimmer(action_dimmer_num);
+					delay(100);
 					if(ret == IIC_SUCCESS){
 						receipt.frame_h1 = 0xEE;
 						receipt.frame_h2 = 0xAA;
@@ -289,17 +292,49 @@ void rev_anaylze(void)
 						receipt.mesh_id_L = ns_own_meshid_L;
 						receipt.payload[0] = 0xAA;
 						receipt.payload[1] = 0x05;
+						receipt.payload[2] = action_dimmer_num;
 						i = 0;
 						while(action_dimmer_num--){
-							rev_ad_mdid = (sicp_buf[8]&0xf0)>>4;
-							rev_ad_channel = (sicp_buf[8]&0x0f);
-							receipt.payload[2+i*5] = rev_ad_mdid;
-							receipt.payload[3+i*5] = sc.slc[rev_ad_mdid].ch1_status;
-							receipt.payload[4+i*5] = sc.slc[rev_ad_mdid].ch2_status;
-							receipt.payload[5+i*5] = sc.slc[rev_ad_mdid].ch3_status;
-							receipt.payload[6+i*5] = sc.slc[rev_ad_mdid].ch4_status;
+							rev_ad_mdid = (sicp_buf[8+i]&0xf0)>>4;
+							rev_ad_channel = (sicp_buf[8+i]&0x0f);
+							receipt.payload[3+i*5] = rev_ad_mdid;
+							receipt.payload[4+i*5] = sc.slc[rev_ad_mdid].ch1_status;
+							receipt.payload[5+i*5] = sc.slc[rev_ad_mdid].ch2_status;
+							receipt.payload[6+i*5] = sc.slc[rev_ad_mdid].ch3_status;
+							receipt.payload[7+i*5] = sc.slc[rev_ad_mdid].ch4_status;
+							
+							i++;
 						}
-						sicp_send_message(&receipt,7+i*5);
+						sicp_send_message(&receipt,8+i*5);
+					}
+					break;
+				case 0x58://一个SC下多个SPC多个通道调光
+					action_plup_num = sicp_buf[7];
+					sicp_receipt_OK(0x02,rev_message_id,ns_host_meshid_H,ns_host_meshid_L);
+					ret = i2c_multiple_action_plug(action_plup_num);
+					//I2C发送多通道调光指令并发送读取调光结果指令
+					delay(100);
+					if(ret == IIC_SUCCESS){
+						receipt.frame_h1 = 0xEE;
+						receipt.frame_h2 = 0xAA;
+						receipt.message_id = rev_message_id;
+						receipt.mesh_id_H = ns_own_meshid_H;
+						receipt.mesh_id_L = ns_own_meshid_L;
+						receipt.payload[0] = 0xAA;
+						receipt.payload[1] = 0x05;
+						receipt.payload[2] = action_plup_num;
+						i = 0;
+						while(action_plup_num--){
+							rev_ad_mdid = (sicp_buf[8+i]&0xf0)>>4;
+							rev_ad_channel = (sicp_buf[8+i]&0x0f);
+							receipt.payload[3+i*5] = rev_ad_mdid;
+							receipt.payload[4+i*5] = sc.spc[rev_ad_mdid].ch1_status;
+							receipt.payload[5+i*5] = sc.spc[rev_ad_mdid].ch2_status;
+							receipt.payload[6+i*5] = sc.spc[rev_ad_mdid].ch3_status;
+							receipt.payload[7+i*5] = sc.spc[rev_ad_mdid].ch4_status;
+							i++;
+						}
+						sicp_send_message(&receipt,8+i*5);
 					}
 					break;
 				case 0xAA:

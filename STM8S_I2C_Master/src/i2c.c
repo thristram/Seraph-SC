@@ -219,6 +219,7 @@ u8 i2c_single_action_dimmer_result(u8 mdid)
 			}
 		}
 	}
+	delay(10);
 	return ret;
 }
 
@@ -247,6 +248,7 @@ u8 i2c_action_plug(u8 action,u8 mdid_channel,u8 value,u8 ext)
 			}
 		}
 	}
+	delay(10);
 	return ret;
 }
 
@@ -262,6 +264,7 @@ u8 i2c_multiple_action_dimmer(u8 action_dimmer_num)
 		mad.payload[2+i] = sicp_buf[8+i];
 		ret = i2c_single_action_dimmer(0x51,sicp_buf[8+i],sicp_buf[8+temp],sicp_buf[9+temp]);
 		i++;
+		delay(100);
 	}
 	return ret;
 	/*
@@ -284,4 +287,21 @@ u8 i2c_multiple_action_dimmer(u8 action_dimmer_num)
 		}
 	}
 	*/
+}
+
+//SC收到SIDP的action plug后转发送多个SpC多通道action plug
+//注意该函数中要直接用到sicp_buf[*]数据
+u8 i2c_multiple_action_plug(u8 action_plug_num)
+{
+	u8 temp,i=0;
+	u8 ret;
+	I2C_Message map;
+	temp = action_plug_num;
+	while(temp--){
+		map.payload[2+i] = sicp_buf[8+i];
+		ret = i2c_action_plug(0x55,sicp_buf[8+i],sicp_buf[8+temp],sicp_buf[9+temp]);
+		i++;
+		delay(100);
+	}
+	return ret;
 }

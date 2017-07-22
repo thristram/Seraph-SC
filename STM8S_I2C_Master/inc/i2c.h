@@ -42,6 +42,7 @@ I2C_EXT void i2c_get_energy_consum(void);
 I2C_EXT u8 i2c_single_action_dimmer(u8 action,u8 mdid_channel,u8 value,u8 ext);
 I2C_EXT u8 i2c_action_plug(u8 action,u8 mdid_channel,u8 value,u8 ext);
 I2C_EXT u8 i2c_multiple_action_dimmer(u8 action_dimmer_num);
+I2C_EXT u8 i2c_multiple_action_plug(u8 action_plug_num);
 I2C_EXT u8 i2c_single_action_dimmer_result(u8 mdid);
 
 #endif

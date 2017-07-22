@@ -37,10 +37,6 @@ extern void delay(u16 Count);
 void sys_init(void)
 {
 	u8 i,j;
-	//ns_own_meshid_H = 0x80;
-	//ns_own_meshid_L = 0x04;
-	//ns_host_meshid_H = 0x80;
-	//ns_host_meshid_L = 0x05;
 	
 	sc.HWTtest = 0xC0;
 	sc.deviceid[0] = 0xAA;
