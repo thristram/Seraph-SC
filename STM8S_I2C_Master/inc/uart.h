@@ -146,8 +146,8 @@ UART_EXT u8   rev_mesh_id_L;
 UART_EXT u8   rev_ad_message_id;
 UART_EXT u8   rev_ad_mdid;
 UART_EXT u8   rev_ad_channel;
-
-
+UART_EXT u8   rev_ad_mesh_id_H;
+UART_EXT u8   rev_ad_mesh_id_L;
 
 UART_EXT u8 UART2_Send_Buf[Uart2_Send_Len];
 UART_EXT u8 Uart2_Send_Length;

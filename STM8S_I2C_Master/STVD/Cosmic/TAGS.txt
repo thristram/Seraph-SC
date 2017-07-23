@@ -4260,7 +4260,7 @@ ch3_status	..\..\inc\uart.h	62;"	member	struct:__anon254
 ch4_status	..\..\inc\uart.h	37;"	member	struct:__anon252
 ch4_status	..\..\inc\uart.h	63;"	member	struct:__anon254
 check_send_repeatedly	..\..\inc\uart.h	199;"	prototype	signature:(void)
-check_send_repeatedly	..\..\src\uart.c	705;"	function	signature:(void)
+check_send_repeatedly	..\..\src\uart.c	711;"	function	signature:(void)
 clear_uart_buf	..\..\src\uart.c	225;"	function	signature:(void)
 coord	..\..\inc\uart.h	32;"	member	struct:__anon252
 coord	..\..\inc\uart.h	58;"	member	struct:__anon254
@@ -4308,7 +4308,7 @@ halt	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2749;"	macro
 halt	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2759;"	macro
 hb_fail_mdid_cnt	..\..\inc\i2c.h	33;"	variable
 i2c_action_plug	..\..\inc\i2c.h	43;"	prototype	signature:(u8 action,u8 mdid_channel,u8 value,u8 ext)
-i2c_action_plug	..\..\src\i2c.c	227;"	function	signature:(u8 action,u8 mdid_channel,u8 value,u8 ext)
+i2c_action_plug	..\..\src\i2c.c	228;"	function	signature:(u8 action,u8 mdid_channel,u8 value,u8 ext)
 i2c_device_info	..\..\inc\i2c.h	39;"	prototype	signature:(void)
 i2c_device_info	..\..\src\i2c.c	37;"	function	signature:(void)
 i2c_get_energy_consum	..\..\inc\i2c.h	41;"	prototype	signature:(void)
@@ -4316,14 +4316,15 @@ i2c_get_energy_consum	..\..\src\i2c.c	144;"	function	signature:(void)
 i2c_heartbeat	..\..\inc\i2c.h	40;"	prototype	signature:(void)
 i2c_heartbeat	..\..\src\i2c.c	83;"	function	signature:(void)
 i2c_multiple_action_dimmer	..\..\inc\i2c.h	44;"	prototype	signature:(u8 action_dimmer_num)
-i2c_multiple_action_dimmer	..\..\src\i2c.c	255;"	function	signature:(u8 action_dimmer_num)
-i2c_multiple_action_plug	..\..\src\i2c.c	292;"	function	signature:(u8 action_plug_num)
+i2c_multiple_action_dimmer	..\..\src\i2c.c	257;"	function	signature:(u8 action_dimmer_num)
+i2c_multiple_action_plug	..\..\inc\i2c.h	45;"	prototype	signature:(u8 action_plug_num)
+i2c_multiple_action_plug	..\..\src\i2c.c	294;"	function	signature:(u8 action_plug_num)
 i2c_rx_buf	..\..\inc\i2c.h	28;"	variable
 i2c_rx_len	..\..\inc\i2c.h	29;"	variable
 i2c_send_message	..\..\src\i2c.c	8;"	function	signature:(u8 type,I2C_Message *tx,u8 payload_len,u8 mdid,u8 nreadbytes)
 i2c_single_action_dimmer	..\..\inc\i2c.h	42;"	prototype	signature:(u8 action,u8 mdid_channel,u8 value,u8 ext)
 i2c_single_action_dimmer	..\..\src\i2c.c	169;"	function	signature:(u8 action,u8 mdid_channel,u8 value,u8 ext)
-i2c_single_action_dimmer_result	..\..\inc\i2c.h	45;"	prototype	signature:(u8 mdid)
+i2c_single_action_dimmer_result	..\..\inc\i2c.h	46;"	prototype	signature:(u8 mdid)
 i2c_single_action_dimmer_result	..\..\src\i2c.c	202;"	function	signature:(u8 mdid)
 i2c_tx_buf	..\..\inc\i2c.h	26;"	variable
 i2c_tx_len	..\..\inc\i2c.h	27;"	variable
@@ -4383,15 +4384,17 @@ receipt_eg	..\..\inc\uart.h	104;"	macro
 rem	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	25;"	member	struct:__anon257
 rem	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdlib.h	30;"	member	struct:__anon258
 report_energy_consum	..\..\inc\uart.h	196;"	prototype	signature:(void)
-report_energy_consum	..\..\src\uart.c	519;"	function	signature:(void)
+report_energy_consum	..\..\src\uart.c	522;"	function	signature:(void)
 rev_ad_channel	..\..\inc\uart.h	148;"	variable
 rev_ad_mdid	..\..\inc\uart.h	147;"	variable
+rev_ad_mesh_id_H	..\..\inc\uart.h	149;"	variable
+rev_ad_mesh_id_L	..\..\inc\uart.h	150;"	variable
 rev_ad_message_id	..\..\inc\uart.h	146;"	variable
 rev_anaylze	..\..\inc\uart.h	184;"	prototype	signature:(void)
 rev_anaylze	..\..\src\uart.c	235;"	function	signature:(void)
 rev_bleheartbeat	..\..\inc\uart.h	105;"	macro
 rev_cmd_data	..\..\inc\uart.h	194;"	prototype	signature:(u8 moduleid)
-rev_cmd_data	..\..\src\uart.c	481;"	function	signature:(u8 moduleid)
+rev_cmd_data	..\..\src\uart.c	484;"	function	signature:(u8 moduleid)
 rev_deal	..\..\inc\uart.h	186;"	prototype	signature:(void)
 rev_deal	..\..\src\uart.c	150;"	function	signature:(void)
 rev_mesh_id_H	..\..\inc\uart.h	143;"	variable
@@ -4415,23 +4418,23 @@ scan_device	..\..\inc\i2c.h	38;"	prototype	signature:(void)
 scan_device	..\..\src\i2c.c	22;"	function	signature:(void)
 scanf	..\..\..\..\..\..\program files (x86)\cosmic\cxstm8\hstm8\stdio.h	20;"	prototype	signature:(char *format, ...)
 send_device_info	..\..\inc\uart.h	197;"	prototype	signature:(void)
-send_device_info	..\..\src\uart.c	631;"	function	signature:(void)
+send_device_info	..\..\src\uart.c	634;"	function	signature:(void)
 send_failed_count	..\..\inc\uart.h	160;"	variable
 send_fault_count	..\..\inc\uart.h	159;"	variable
 send_malfunction	..\..\inc\uart.h	198;"	prototype	signature:(void)
-send_malfunction	..\..\src\uart.c	655;"	function	signature:(void)
-send_sc_device_info	..\..\src\uart.c	570;"	function	signature:(void)
-send_slc_device_info	..\..\src\uart.c	591;"	function	signature:(u8 i)
-send_spc_device_info	..\..\src\uart.c	611;"	function	signature:(u8 i)
+send_malfunction	..\..\src\uart.c	658;"	function	signature:(void)
+send_sc_device_info	..\..\src\uart.c	573;"	function	signature:(void)
+send_slc_device_info	..\..\src\uart.c	594;"	function	signature:(u8 i)
+send_spc_device_info	..\..\src\uart.c	614;"	function	signature:(u8 i)
 sense	..\..\inc\uart.h	86;"	member	struct:__anon256
 set_tout_ms	..\..\inc\i2c_master_poll.h	65;"	macro
 sicp_buf	..\..\inc\uart.h	158;"	variable
 sicp_receipt_Done	..\..\inc\uart.h	193;"	prototype	signature:(u8 type,u8 send_message_id,u8 send_mesh_id_H,u8 send_mesh_id_L,u8 method,u8 mdid)
-sicp_receipt_Done	..\..\src\uart.c	437;"	function	signature:(u8 type,u8 send_message_id,u8 send_mesh_id_H,u8 send_mesh_id_L,u8 method,u8 mdid)
+sicp_receipt_Done	..\..\src\uart.c	440;"	function	signature:(u8 type,u8 send_message_id,u8 send_mesh_id_H,u8 send_mesh_id_L,u8 method,u8 mdid)
 sicp_receipt_OK	..\..\inc\uart.h	192;"	prototype	signature:(u8 type,u8 send_message_id,u8 send_mesh_id_H,u8 send_mesh_id_L)
-sicp_receipt_OK	..\..\src\uart.c	424;"	function	signature:(u8 type,u8 send_message_id,u8 send_mesh_id_H,u8 send_mesh_id_L)
+sicp_receipt_OK	..\..\src\uart.c	427;"	function	signature:(u8 type,u8 send_message_id,u8 send_mesh_id_H,u8 send_mesh_id_L)
 sicp_send_message	..\..\inc\uart.h	189;"	prototype	signature:(SICP_Message *tx,u8 payload_len)
-sicp_send_message	..\..\src\uart.c	404;"	function	signature:(SICP_Message *tx,u8 payload_len)
+sicp_send_message	..\..\src\uart.c	407;"	function	signature:(SICP_Message *tx,u8 payload_len)
 sim	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2736;"	macro
 sim	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2745;"	macro
 sim	..\..\..\libraries\stm8s_stdperiph_driver\inc\stm8s.h	2755;"	macro

@@ -261,13 +261,15 @@ void rev_anaylze(void)
 				case 0x53:
 				case 0x54:
 					rev_ad_message_id = sicp_buf[2];
+					rev_ad_mesh_id_H = sicp_buf[3];
+					rev_ad_mesh_id_L = sicp_buf[4];
 					rev_ad_mdid = (sicp_buf[7]&0xf0)>>4;
 					rev_ad_channel = (sicp_buf[7]&0x0f);
 					action_dimmer_ext = sicp_buf[9]+2;
 					//I2C发送调光指令并发送读取调光结果指令
 					ret = i2c_single_action_dimmer(sicp_buf[6],sicp_buf[7],sicp_buf[8],sicp_buf[9]);
 					delay(100);
-					if(ret == IIC_SUCCESS)	sicp_receipt_OK(0x02,rev_message_id,ns_host_meshid_H,ns_host_meshid_L);
+					if(ret == IIC_SUCCESS)	sicp_receipt_OK(0x02,rev_message_id,rev_mesh_id_H,rev_mesh_id_H);
 					//if(ret == IIC_SUCCESS)	sicp_receipt_Done(0x05,rev_message_id,ns_own_meshid_H,ns_own_meshid_L,0x01,rev_mdid);
 				break;
 				case 0x55://打开或关闭开关
@@ -288,8 +290,8 @@ void rev_anaylze(void)
 						receipt.frame_h1 = 0xEE;
 						receipt.frame_h2 = 0xAA;
 						receipt.message_id = rev_message_id;
-						receipt.mesh_id_H = ns_own_meshid_H;
-						receipt.mesh_id_L = ns_own_meshid_L;
+						receipt.mesh_id_H = ns_host_meshid_H;
+						receipt.mesh_id_L = ns_host_meshid_L;
 						receipt.payload[0] = 0xAA;
 						receipt.payload[1] = 0x05;
 						receipt.payload[2] = action_dimmer_num;
@@ -318,8 +320,8 @@ void rev_anaylze(void)
 						receipt.frame_h1 = 0xEE;
 						receipt.frame_h2 = 0xAA;
 						receipt.message_id = rev_message_id;
-						receipt.mesh_id_H = ns_own_meshid_H;
-						receipt.mesh_id_L = ns_own_meshid_L;
+						receipt.mesh_id_H = ns_host_meshid_H;
+						receipt.mesh_id_L = ns_host_meshid_L;
 						receipt.payload[0] = 0xAA;
 						receipt.payload[1] = 0x05;
 						receipt.payload[2] = action_plup_num;
@@ -634,19 +636,19 @@ void send_device_info(void)
 	u8 i;
 	//SC -- 0xB1
 	send_sc_device_info();
-	delay(100);
+	delay(200);
 	//SLC -- 0xB2
 	for(i = 0; i < 15;i++){
 		if(sc.slc[i].MDID){//MDID不为零说明I2C收到回复
 			send_slc_device_info(i);
-			delay(100);
+			delay(200);
 		}
 	}
 	//SPC -- 0xB3
 	for(i = 0; i < 15;i++){
 		if(sc.spc[i].MDID){//MDID不为零说明I2C收到回复
 			send_spc_device_info(i);
-			delay(100);
+			delay(200);
 		}
 	}
 	di_timeout = 5;
@@ -669,6 +671,7 @@ void send_malfunction(void)
 		mal.payload[2] =	0x00;
 		mal.payload[3] =	sc.HWTtest;
 		sicp_send_message(&mal,4);
+		delay(200);
 	}
 	//SLC type--0xB2
 	for(i = 0; i < 15;i++){
@@ -683,6 +686,7 @@ void send_malfunction(void)
 			mal.payload[2] =	sc.slc[i].MDID;
 			mal.payload[3] =	sc.slc[i].HWTtest;
 			sicp_send_message(&mal,4);
+			delay(200);
 		}
 	}
 	//SPC type--0xB3
@@ -698,6 +702,7 @@ void send_malfunction(void)
 			mal.payload[2] =	sc.spc[i].MDID;
 			mal.payload[3] =	sc.spc[i].HWTtest;
 			sicp_send_message(&mal,4);
+			delay(200);
 		}
 	}
 }

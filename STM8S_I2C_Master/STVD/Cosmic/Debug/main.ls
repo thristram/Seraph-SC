@@ -284,20 +284,20 @@
  491  0095 2621          	jrne	L111
  492                     ; 129 						action_dimmer_MDID = 0x00;
  494  0097 725f0000      	clr	_action_dimmer_MDID
- 495                     ; 130 						delay(10);
- 497  009b ae000a        	ldw	x,#10
- 498  009e cd0000        	call	_delay
- 500                     ; 131 						sicp_receipt_Done(0x05,rev_ad_message_id,ns_host_meshid_H,ns_host_meshid_L,0x01,rev_ad_mdid);
- 502  00a1 3b0000        	push	_rev_ad_mdid
- 503  00a4 4b01          	push	#1
- 504  00a6 3b0000        	push	_ns_host_meshid_L
- 505  00a9 3b0000        	push	_ns_host_meshid_H
- 506  00ac c60000        	ld	a,_rev_ad_message_id
- 507  00af 97            	ld	xl,a
- 508  00b0 a605          	ld	a,#5
- 509  00b2 95            	ld	xh,a
- 510  00b3 cd0000        	call	_sicp_receipt_Done
- 512  00b6 5b04          	addw	sp,#4
+ 495                     ; 130 						sicp_receipt_Done(0x05,rev_ad_message_id,ns_host_meshid_H,ns_host_meshid_L,0x01,rev_ad_mdid);
+ 497  009b 3b0000        	push	_rev_ad_mdid
+ 498  009e 4b01          	push	#1
+ 499  00a0 3b0000        	push	_ns_host_meshid_L
+ 500  00a3 3b0000        	push	_ns_host_meshid_H
+ 501  00a6 c60000        	ld	a,_rev_ad_message_id
+ 502  00a9 97            	ld	xl,a
+ 503  00aa a605          	ld	a,#5
+ 504  00ac 95            	ld	xh,a
+ 505  00ad cd0000        	call	_sicp_receipt_Done
+ 507  00b0 5b04          	addw	sp,#4
+ 508                     ; 131 						delay(100);
+ 510  00b2 ae0064        	ldw	x,#100
+ 511  00b5 cd0000        	call	_delay
  513  00b8               L111:
  514                     ; 135 			rev_anaylze();
  516  00b8 cd0000        	call	_rev_anaylze

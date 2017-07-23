@@ -262,7 +262,7 @@ u8 i2c_multiple_action_dimmer(u8 action_dimmer_num)
 	temp = action_dimmer_num;
 	while(temp--){
 		mad.payload[2+i] = sicp_buf[8+i];
-		ret = i2c_single_action_dimmer(0x51,sicp_buf[8+i],sicp_buf[8+temp],sicp_buf[9+temp]);
+		ret = i2c_single_action_dimmer(0x51,sicp_buf[8+i],sicp_buf[8+action_dimmer_num],sicp_buf[9+action_dimmer_num]);
 		i++;
 		delay(100);
 	}
@@ -299,7 +299,7 @@ u8 i2c_multiple_action_plug(u8 action_plug_num)
 	temp = action_plug_num;
 	while(temp--){
 		map.payload[2+i] = sicp_buf[8+i];
-		ret = i2c_action_plug(0x55,sicp_buf[8+i],sicp_buf[8+temp],sicp_buf[9+temp]);
+		ret = i2c_action_plug(0x55,sicp_buf[8+i],sicp_buf[8+action_plug_num],sicp_buf[9+action_plug_num]);
 		i++;
 		delay(100);
 	}

@@ -127,8 +127,8 @@ void main (void) {
 					ret = i2c_single_action_dimmer_result(action_dimmer_MDID);
 					if(ret == IIC_SUCCESS) {
 						action_dimmer_MDID = 0x00;
-						delay(10);
 						sicp_receipt_Done(0x05,rev_ad_message_id,ns_host_meshid_H,ns_host_meshid_L,0x01,rev_ad_mdid);
+						delay(100);
 					}
 				}
 			}
