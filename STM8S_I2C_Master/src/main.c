@@ -43,14 +43,14 @@ void sys_init(void)
 	sc.deviceid[1] = 0x55;
 	sc.deviceid[2] = 0xAB;
 	sc.deviceid[3] = 0x56;
-	sc.slc[0].deviceid[0] = 0xAA;
+	/*sc.slc[0].deviceid[0] = 0xAA;
 	sc.slc[0].deviceid[1] = 0x55;
 	sc.slc[0].deviceid[2] = 0xAB;
 	sc.slc[0].deviceid[3] = 0x57;
 	sc.spc[1].deviceid[0] = 0xAA;
 	sc.spc[1].deviceid[1] = 0x55;
 	sc.spc[1].deviceid[2] = 0xAB;
-	sc.spc[1].deviceid[3] = 0x58;
+	sc.spc[1].deviceid[3] = 0x58;*/
 	for(i = 0; i < 15; i++){
 		for(j = 0; j < 4;j++){
 			//sc.slc[i].deviceid[j] = 0x00;
@@ -110,8 +110,8 @@ void main (void) {
 	delay(2500);//等待SLC SPC上电完成初始化。10s
   while(1) {
 
-		if((!init_slc_spc_done)&&(rev_bleheartbeat)){
-			rev_bleheartbeat = 0;
+		if((!init_slc_spc_done)&&(rev_bleheartbeat)&&(rev_ssbroadcast)){
+			rev_bleheartbeat = 0;rev_ssbroadcast = 0;
 			scan_device();
 			i2c_device_info();
 			send_device_info();
@@ -128,7 +128,6 @@ void main (void) {
 					if(ret == IIC_SUCCESS) {
 						action_dimmer_MDID = 0x00;
 						sicp_receipt_Done(0x05,rev_ad_message_id,ns_host_meshid_H,ns_host_meshid_L,0x01,rev_ad_mdid);
-						delay(100);
 					}
 				}
 			}

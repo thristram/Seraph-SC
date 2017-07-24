@@ -267,9 +267,10 @@ void rev_anaylze(void)
 					rev_ad_channel = (sicp_buf[7]&0x0f);
 					action_dimmer_ext = sicp_buf[9]+2;
 					//I2C发送调光指令并发送读取调光结果指令
+					ret = 1;
 					ret = i2c_single_action_dimmer(sicp_buf[6],sicp_buf[7],sicp_buf[8],sicp_buf[9]);
-					delay(100);
-					if(ret == IIC_SUCCESS)	sicp_receipt_OK(0x02,rev_message_id,rev_mesh_id_H,rev_mesh_id_H);
+					if(ret == IIC_SUCCESS)	
+						sicp_receipt_OK(0x02,rev_message_id,rev_mesh_id_H,rev_mesh_id_H);
 					//if(ret == IIC_SUCCESS)	sicp_receipt_Done(0x05,rev_message_id,ns_own_meshid_H,ns_own_meshid_L,0x01,rev_mdid);
 				break;
 				case 0x55://打开或关闭开关
@@ -357,6 +358,7 @@ void rev_anaylze(void)
 				break;
 				case 0xB0://Gateway	Mesh	ID	Broadcasting
 					if(rev_message_id == 0x9E){
+						rev_ssbroadcast = 1;
 						ns_host_meshid_H = rev_mesh_id_H;
 						ns_host_meshid_L = rev_mesh_id_L;
 						sicp_receipt_OK(0x02,rev_message_id,ns_host_meshid_H,ns_host_meshid_L);
@@ -641,14 +643,14 @@ void send_device_info(void)
 	for(i = 0; i < 15;i++){
 		if(sc.slc[i].MDID){//MDID不为零说明I2C收到回复
 			send_slc_device_info(i);
-			delay(200);
+			delay(100);
 		}
 	}
 	//SPC -- 0xB3
 	for(i = 0; i < 15;i++){
 		if(sc.spc[i].MDID){//MDID不为零说明I2C收到回复
 			send_spc_device_info(i);
-			delay(200);
+			delay(100);
 		}
 	}
 	di_timeout = 5;

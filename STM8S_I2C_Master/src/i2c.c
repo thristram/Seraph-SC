@@ -4,7 +4,7 @@
 #include "uart.h"
 #include "i2c_master_poll.h"
 #include <stdio.h>
-u8 test;
+
 u8 i2c_send_message(u8 type,I2C_Message *tx,u8 payload_len,u8 mdid,u8 nreadbytes)
 {
 	i2c_tx_buf[0] = tx->frame_h1;
@@ -27,7 +27,6 @@ void scan_device(void)
 	for(i=1;i <= 0x0F;i++){
 		ret = I2C_WriteBytes(i,NULL,0,10);
 		if(ret == IIC_SUCCESS){
-			test = i;
 			device_flag |= (1<<(i-1));
 		}
 	}
@@ -191,11 +190,11 @@ u8 i2c_single_action_dimmer(u8 action,u8 mdid_channel,u8 value,u8 ext)
 	}*/
 	//读取slc是否发送来接收回执AA 02
 	ret = i2c_send_message(0x01,&sad,4,mdid,8);
-	if(Check_Sum(&i2c_rx_buf[2],i2c_rx_buf[3]) == i2c_rx_buf[7]){//校验正确
+	//if(Check_Sum(&i2c_rx_buf[2],i2c_rx_buf[3]) == i2c_rx_buf[7]){//校验正确
 		if((i2c_rx_buf[4] == 0xAA)&&(i2c_rx_buf[5]==0x02)){
 			action_dimmer_MDID = i2c_rx_buf[6];
 		}
-	}
+	//}
 	return ret;
 }
 //发送查询action dimmer执行结果
@@ -207,7 +206,7 @@ u8 i2c_single_action_dimmer_result(u8 mdid)
 	sad.frame_h2 = 0x7E;
 	sad.message_id = 66;
 	sad.payload[0] = 0x59;
-	sad.payload[1] = mdid;
+	sad.payload[1] = (mdid&0x0f);
 	ret = i2c_send_message(0x01,&sad,2,mdid,12);
 	if (ret == IIC_SUCCESS){
 		if(Check_Sum(&i2c_rx_buf[2],i2c_rx_buf[3]) == i2c_rx_buf[11]){//校验正确
@@ -264,7 +263,7 @@ u8 i2c_multiple_action_dimmer(u8 action_dimmer_num)
 		mad.payload[2+i] = sicp_buf[8+i];
 		ret = i2c_single_action_dimmer(0x51,sicp_buf[8+i],sicp_buf[8+action_dimmer_num],sicp_buf[9+action_dimmer_num]);
 		i++;
-		delay(100);
+		delay(30);
 	}
 	return ret;
 	/*
@@ -301,7 +300,7 @@ u8 i2c_multiple_action_plug(u8 action_plug_num)
 		map.payload[2+i] = sicp_buf[8+i];
 		ret = i2c_action_plug(0x55,sicp_buf[8+i],sicp_buf[8+action_plug_num],sicp_buf[9+action_plug_num]);
 		i++;
-		delay(100);
+		delay(30);
 	}
 	return ret;
 }

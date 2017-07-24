@@ -103,6 +103,7 @@ UART_EXT union  FLAG 				UART1Flag2_;
 #define UART1Flag2 					UART1Flag2_._flag_byte;
 #define receipt_eg					UART1Flag2_._flag_bit.bit0
 #define rev_bleheartbeat		UART1Flag2_._flag_bit.bit1
+#define rev_ssbroadcast			UART1Flag2_._flag_bit.bit2
 
 UART_EXT union  FLAG 			UART1Flag3_;
 #define UART1Flag3 				UART1Flag3_._flag_byte;
