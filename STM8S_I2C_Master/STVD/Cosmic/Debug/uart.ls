@@ -1,2567 +1,3686 @@
    1                     ; C Compiler for STM8 (COSMIC Software)
    2                     ; Generator V4.2.4 - 19 Dec 2007
- 814                     ; 24 void mymemcpy(void *des,void *src,u32 n)  
- 814                     ; 25 {  
- 816                     .text:	section	.text,new
- 817  0000               _mymemcpy:
- 819  0000 89            	pushw	x
- 820  0001 5204          	subw	sp,#4
- 821       00000004      OFST:	set	4
- 824                     ; 26   u8 *xdes=des;
- 826  0003 1f01          	ldw	(OFST-3,sp),x
- 827                     ; 27 	u8 *xsrc=src; 
- 829  0005 1e09          	ldw	x,(OFST+5,sp)
- 830  0007 1f03          	ldw	(OFST-1,sp),x
- 832  0009 2016          	jra	L754
- 833  000b               L354:
- 834                     ; 28   while(n--)*xdes++=*xsrc++;  
- 836  000b 1e03          	ldw	x,(OFST-1,sp)
- 837  000d 1c0001        	addw	x,#1
- 838  0010 1f03          	ldw	(OFST-1,sp),x
- 839  0012 1d0001        	subw	x,#1
- 840  0015 f6            	ld	a,(x)
- 841  0016 1e01          	ldw	x,(OFST-3,sp)
- 842  0018 1c0001        	addw	x,#1
- 843  001b 1f01          	ldw	(OFST-3,sp),x
- 844  001d 1d0001        	subw	x,#1
- 845  0020 f7            	ld	(x),a
- 846  0021               L754:
- 849  0021 96            	ldw	x,sp
- 850  0022 1c000b        	addw	x,#OFST+7
- 851  0025 cd0000        	call	c_ltor
- 853  0028 96            	ldw	x,sp
- 854  0029 1c000b        	addw	x,#OFST+7
- 855  002c a601          	ld	a,#1
- 856  002e cd0000        	call	c_lgsbc
- 858  0031 cd0000        	call	c_lrzmp
- 860  0034 26d5          	jrne	L354
- 861                     ; 29 }  
- 864  0036 5b06          	addw	sp,#6
- 865  0038 81            	ret
- 911                     ; 34 void delay(u16 Count)
- 911                     ; 35 {
- 912                     .text:	section	.text,new
- 913  0000               _delay:
- 915  0000 89            	pushw	x
- 916  0001 89            	pushw	x
- 917       00000002      OFST:	set	2
- 920  0002 2014          	jra	L505
- 921  0004               L305:
- 922                     ; 39     for(i=0;i<100;i++)
- 924  0004 0f01          	clr	(OFST-1,sp)
- 925  0006               L115:
- 926                     ; 40     for(j=0;j<50;j++);
- 928  0006 0f02          	clr	(OFST+0,sp)
- 929  0008               L715:
- 933  0008 0c02          	inc	(OFST+0,sp)
- 936  000a 7b02          	ld	a,(OFST+0,sp)
- 937  000c a132          	cp	a,#50
- 938  000e 25f8          	jrult	L715
- 939                     ; 39     for(i=0;i<100;i++)
- 941  0010 0c01          	inc	(OFST-1,sp)
- 944  0012 7b01          	ld	a,(OFST-1,sp)
- 945  0014 a164          	cp	a,#100
- 946  0016 25ee          	jrult	L115
- 947  0018               L505:
- 948                     ; 37   while (Count--)//Count形参控制延时次数
- 950  0018 1e03          	ldw	x,(OFST+1,sp)
- 951  001a 1d0001        	subw	x,#1
- 952  001d 1f03          	ldw	(OFST+1,sp),x
- 953  001f 1c0001        	addw	x,#1
- 954  0022 a30000        	cpw	x,#0
- 955  0025 26dd          	jrne	L305
- 956                     ; 42 }
- 959  0027 5b04          	addw	sp,#4
- 960  0029 81            	ret
-1007                     ; 50 u8 random(u8 xxx)  
-1007                     ; 51 {  
-1008                     .text:	section	.text,new
-1009  0000               _random:
-1011  0000 88            	push	a
-1012  0001 89            	pushw	x
-1013       00000002      OFST:	set	2
-1016                     ; 53   for(iii=0;iii<xxx;iii++)  
-1018  0002 0f02          	clr	(OFST+0,sp)
-1020  0004 2011          	jra	L155
-1021  0006               L545:
-1022                     ; 55     value = rand() % (MAX + 1- MIN) + MIN; //获取一个随机数1~255
-1024  0006 cd0000        	call	_rand
-1026  0009 90ae00ff      	ldw	y,#255
-1027  000d cd0000        	call	c_idiv
-1029  0010 51            	exgw	x,y
-1030  0011 9f            	ld	a,xl
-1031  0012 4c            	inc	a
-1032  0013 6b01          	ld	(OFST-1,sp),a
-1033                     ; 53   for(iii=0;iii<xxx;iii++)  
-1035  0015 0c02          	inc	(OFST+0,sp)
-1036  0017               L155:
-1039  0017 7b02          	ld	a,(OFST+0,sp)
-1040  0019 1103          	cp	a,(OFST+1,sp)
-1041  001b 25e9          	jrult	L545
-1042                     ; 57   return value;  
-1044  001d 7b01          	ld	a,(OFST-1,sp)
-1047  001f 5b03          	addw	sp,#3
-1048  0021 81            	ret
-1075                     ; 66 void Init_uart2(void)
-1075                     ; 67 {
-1076                     .text:	section	.text,new
-1077  0000               _Init_uart2:
-1081                     ; 68 	UART2_DeInit();
-1083  0000 cd0000        	call	_UART2_DeInit
-1085                     ; 70 	UART2_Init((u32)57600,UART2_WORDLENGTH_8D,UART2_STOPBITS_1,UART2_PARITY_NO,UART2_SYNCMODE_CLOCK_DISABLE,	UART2_MODE_TXRX_ENABLE);
-1087  0003 4b0c          	push	#12
-1088  0005 4b80          	push	#128
-1089  0007 4b00          	push	#0
-1090  0009 4b00          	push	#0
-1091  000b 4b00          	push	#0
-1092  000d aee100        	ldw	x,#57600
-1093  0010 89            	pushw	x
-1094  0011 ae0000        	ldw	x,#0
-1095  0014 89            	pushw	x
-1096  0015 cd0000        	call	_UART2_Init
-1098  0018 5b09          	addw	sp,#9
-1099                     ; 71 	UART2_ITConfig(UART2_IT_TC,ENABLE);//发送完成中断
-1101  001a 4b01          	push	#1
-1102  001c ae0266        	ldw	x,#614
-1103  001f cd0000        	call	_UART2_ITConfig
-1105  0022 84            	pop	a
-1106                     ; 72 	UART2_ITConfig(UART2_IT_RXNE_OR,ENABLE);//接收非空中断
-1108  0023 4b01          	push	#1
-1109  0025 ae0205        	ldw	x,#517
-1110  0028 cd0000        	call	_UART2_ITConfig
-1112  002b 84            	pop	a
-1113                     ; 73 	UART2_Cmd(ENABLE);//启用uart1接口
-1115  002c a601          	ld	a,#1
-1116  002e cd0000        	call	_UART2_Cmd
-1118                     ; 74 }
-1121  0031 81            	ret
-1166                     ; 83 void Uart2_Send(u8 *buf,u16 len)
-1166                     ; 84 {
-1167                     .text:	section	.text,new
-1168  0000               _Uart2_Send:
-1170  0000 89            	pushw	x
-1171       00000000      OFST:	set	0
-1174                     ; 85 	if(len >= Uart2_Send_Len)	len = Uart2_Send_Len;
-1176  0001 1e05          	ldw	x,(OFST+5,sp)
-1177  0003 a30028        	cpw	x,#40
-1178  0006 2505          	jrult	L506
-1181  0008 ae0028        	ldw	x,#40
-1182  000b 1f05          	ldw	(OFST+5,sp),x
-1183  000d               L506:
-1184                     ; 87 	Uart2_Send_Length = len;
-1186  000d 7b06          	ld	a,(OFST+6,sp)
-1187  000f c70059        	ld	_Uart2_Send_Length,a
-1188                     ; 88 	Uart2_Send_Cnt = 1;
-1190  0012 35010058      	mov	_Uart2_Send_Cnt,#1
-1191                     ; 89 	UART2->DR = UART2_Send_Buf[0];
-1193  0016 55005a5241    	mov	21057,_UART2_Send_Buf
-1194                     ; 91 }
-1197  001b 85            	popw	x
-1198  001c 81            	ret
-1225                     ; 98 @interrupt void UART2_TX_ISR(void)
-1225                     ; 99 {
-1226                     .text:	section	.text,new
-1227  0000               _UART2_TX_ISR:
-1232                     ; 103 	UART2->SR &= ~0x40;//清除发送完成标志位
-1234  0000 721d5240      	bres	21056,#6
-1235                     ; 105 	if (Uart2_Send_Cnt < Uart2_Send_Length)
-1237  0004 c60058        	ld	a,_Uart2_Send_Cnt
-1238  0007 c10059        	cp	a,_Uart2_Send_Length
-1239  000a 2411          	jruge	L716
-1240                     ; 107 		UART2->DR = UART2_Send_Buf[Uart2_Send_Cnt];
-1242  000c c60058        	ld	a,_Uart2_Send_Cnt
-1243  000f 5f            	clrw	x
-1244  0010 97            	ld	xl,a
-1245  0011 d6005a        	ld	a,(_UART2_Send_Buf,x)
-1246  0014 c75241        	ld	21057,a
-1247                     ; 108 		Uart2_Send_Cnt++;
-1249  0017 725c0058      	inc	_Uart2_Send_Cnt
-1251  001b 2008          	jra	L126
-1252  001d               L716:
-1253                     ; 112 		Uart2_Send_Done = 1;
-1255  001d 35010057      	mov	_Uart2_Send_Done,#1
-1256                     ; 113 		Uart2_Send_Cnt = 0;
-1258  0021 725f0058      	clr	_Uart2_Send_Cnt
-1259  0025               L126:
-1260                     ; 115 }
-1263  0025 80            	iret
-1287                     ; 123 @interrupt void UART2_RX_ISR(void)
-1287                     ; 124 {
-1288                     .text:	section	.text,new
-1289  0000               _UART2_RX_ISR:
-1292  0000 3b0002        	push	c_x+2
-1293  0003 be00          	ldw	x,c_x
-1294  0005 89            	pushw	x
-1295  0006 3b0002        	push	c_y+2
-1296  0009 be00          	ldw	x,c_y
-1297  000b 89            	pushw	x
-1300                     ; 125 	rev_deal();
-1302  000c cd0000        	call	_rev_deal
-1304                     ; 126 }
-1307  000f 85            	popw	x
-1308  0010 bf00          	ldw	c_y,x
-1309  0012 320002        	pop	c_y+2
-1310  0015 85            	popw	x
-1311  0016 bf00          	ldw	c_x,x
-1312  0018 320002        	pop	c_x+2
-1313  001b 80            	iret
-1369                     ; 134 u8 Check_Sum(u8 *buf,u8 length)
-1369                     ; 135 {
-1370                     .text:	section	.text,new
-1371  0000               _Check_Sum:
-1373  0000 89            	pushw	x
-1374  0001 89            	pushw	x
-1375       00000002      OFST:	set	2
-1378                     ; 137 	u8 result = *buf++;
-1380  0002 1e03          	ldw	x,(OFST+1,sp)
-1381  0004 1c0001        	addw	x,#1
-1382  0007 1f03          	ldw	(OFST+1,sp),x
-1383  0009 1d0001        	subw	x,#1
-1384  000c f6            	ld	a,(x)
-1385  000d 6b01          	ld	(OFST-1,sp),a
-1386                     ; 138 	for(i = 1;i < length;i++)
-1388  000f a601          	ld	a,#1
-1389  0011 6b02          	ld	(OFST+0,sp),a
-1391  0013 2011          	jra	L366
-1392  0015               L756:
-1393                     ; 140 		result ^= *buf++;
-1395  0015 1e03          	ldw	x,(OFST+1,sp)
-1396  0017 1c0001        	addw	x,#1
-1397  001a 1f03          	ldw	(OFST+1,sp),x
-1398  001c 1d0001        	subw	x,#1
-1399  001f 7b01          	ld	a,(OFST-1,sp)
-1400  0021 f8            	xor	a,	(x)
-1401  0022 6b01          	ld	(OFST-1,sp),a
-1402                     ; 138 	for(i = 1;i < length;i++)
-1404  0024 0c02          	inc	(OFST+0,sp)
-1405  0026               L366:
-1408  0026 7b02          	ld	a,(OFST+0,sp)
-1409  0028 1107          	cp	a,(OFST+5,sp)
-1410  002a 25e9          	jrult	L756
-1411                     ; 142 	return result;
-1413  002c 7b01          	ld	a,(OFST-1,sp)
-1416  002e 5b04          	addw	sp,#4
-1417  0030 81            	ret
-1475                     ; 150 void rev_deal(void)
-1475                     ; 151 {
-1476                     .text:	section	.text,new
-1477  0000               _rev_deal:
-1479  0000 89            	pushw	x
-1480       00000002      OFST:	set	2
-1483                     ; 154 	temp = (u8)UART2->DR;
-1485  0001 c65241        	ld	a,21057
-1486  0004 6b02          	ld	(OFST+0,sp),a
-1487                     ; 155 	Uart2_Rece_Buf[Uart2_Rec_Cnt] = temp;
-1489  0006 c6002e        	ld	a,_Uart2_Rec_Cnt
-1490  0009 5f            	clrw	x
-1491  000a 97            	ld	xl,a
-1492  000b 7b02          	ld	a,(OFST+0,sp)
-1493  000d d7002f        	ld	(_Uart2_Rece_Buf,x),a
-1494                     ; 156 	Uart2_Rec_Cnt++;
-1496  0010 725c002e      	inc	_Uart2_Rec_Cnt
-1497                     ; 157 	switch(Uart2_Rec_Cnt)
-1499  0014 c6002e        	ld	a,_Uart2_Rec_Cnt
-1501                     ; 216 			break;
-1502  0017 4a            	dec	a
-1503  0018 2722          	jreq	L766
-1504  001a 4a            	dec	a
-1505  001b 2739          	jreq	L176
-1506  001d 4a            	dec	a
-1507  001e 2603          	jrne	L62
-1508  0020 cc012b        	jp	L727
-1509  0023               L62:
-1510  0023 4a            	dec	a
-1511  0024 2603          	jrne	L03
-1512  0026 cc012b        	jp	L727
-1513  0029               L03:
-1514  0029 4a            	dec	a
-1515  002a 2603          	jrne	L23
-1516  002c cc012b        	jp	L727
-1517  002f               L23:
-1518  002f               L107:
-1519                     ; 174 		default:
-1519                     ; 175 			if (Uart2_Rec_Cnt > Uart2_Rec_Len)//防止接收错误后溢出
-1521  002f c6002e        	ld	a,_Uart2_Rec_Cnt
-1522  0032 a129          	cp	a,#41
-1523  0034 2543          	jrult	L537
-1524                     ; 177 				Uart2_Rec_Cnt = 0;
-1526  0036 725f002e      	clr	_Uart2_Rec_Cnt
-1527  003a 203d          	jra	L537
-1528  003c               L766:
-1529                     ; 159 		case 1:
-1529                     ; 160 			if ((temp != 0xEE) && (temp != 0xDD))	Uart2_Rec_Cnt = 0;
-1531  003c 7b02          	ld	a,(OFST+0,sp)
-1532  003e a1ee          	cp	a,#238
-1533  0040 2603          	jrne	L43
-1534  0042 cc012b        	jp	L727
-1535  0045               L43:
-1537  0045 7b02          	ld	a,(OFST+0,sp)
-1538  0047 a1dd          	cp	a,#221
-1539  0049 2603          	jrne	L63
-1540  004b cc012b        	jp	L727
-1541  004e               L63:
-1544  004e 725f002e      	clr	_Uart2_Rec_Cnt
-1545  0052 ac2b012b      	jpf	L727
-1546  0056               L176:
-1547                     ; 162 		case 2:
-1547                     ; 163 			if ((temp != 0xEE) && (temp != 0xAA) && (temp != 0xDD)) Uart2_Rec_Cnt = 0;
-1549  0056 7b02          	ld	a,(OFST+0,sp)
-1550  0058 a1ee          	cp	a,#238
-1551  005a 2603          	jrne	L04
-1552  005c cc012b        	jp	L727
-1553  005f               L04:
-1555  005f 7b02          	ld	a,(OFST+0,sp)
-1556  0061 a1aa          	cp	a,#170
-1557  0063 2603          	jrne	L24
-1558  0065 cc012b        	jp	L727
-1559  0068               L24:
-1561  0068 7b02          	ld	a,(OFST+0,sp)
-1562  006a a1dd          	cp	a,#221
-1563  006c 2603          	jrne	L44
-1564  006e cc012b        	jp	L727
-1565  0071               L44:
-1568  0071 725f002e      	clr	_Uart2_Rec_Cnt
-1569  0075 ac2b012b      	jpf	L727
-1570  0079               L537:
-1571                     ; 179 			if ((Uart2_Rece_Buf[0] == 0xEE)&&((Uart2_Rece_Buf[1] == 0xEE) || (Uart2_Rece_Buf[1] == 0xAA)))
-1573  0079 c6002f        	ld	a,_Uart2_Rece_Buf
-1574  007c a1ee          	cp	a,#238
-1575  007e 2663          	jrne	L737
-1577  0080 c60030        	ld	a,_Uart2_Rece_Buf+1
-1578  0083 a1ee          	cp	a,#238
-1579  0085 2707          	jreq	L147
-1581  0087 c60030        	ld	a,_Uart2_Rece_Buf+1
-1582  008a a1aa          	cp	a,#170
-1583  008c 2655          	jrne	L737
-1584  008e               L147:
-1585                     ; 181 				if (Uart2_Rec_Cnt > Uart2_Rece_Buf[5] + 2)//接收数据完成
-1587  008e 9c            	rvf
-1588  008f c6002e        	ld	a,_Uart2_Rec_Cnt
-1589  0092 5f            	clrw	x
-1590  0093 97            	ld	xl,a
-1591  0094 c60034        	ld	a,_Uart2_Rece_Buf+5
-1592  0097 905f          	clrw	y
-1593  0099 9097          	ld	yl,a
-1594  009b 905c          	incw	y
-1595  009d 905c          	incw	y
-1596  009f bf01          	ldw	c_x+1,x
-1597  00a1 90b301        	cpw	y,c_x+1
-1598  00a4 2ec8          	jrsge	L727
-1599                     ; 183 					Uart2_Rec_Cnt = 0;
-1601  00a6 725f002e      	clr	_Uart2_Rec_Cnt
-1602                     ; 184 					check_sum = Check_Sum(Uart2_Rece_Buf+2,Uart2_Rece_Buf[5]);
-1604  00aa 3b0034        	push	_Uart2_Rece_Buf+5
-1605  00ad ae0031        	ldw	x,#_Uart2_Rece_Buf+2
-1606  00b0 cd0000        	call	_Check_Sum
-1608  00b3 5b01          	addw	sp,#1
-1609  00b5 6b02          	ld	(OFST+0,sp),a
-1610                     ; 186 					if (check_sum == Uart2_Rece_Buf[Uart2_Rece_Buf[5] + 2])//校验正确	
-1612  00b7 c60034        	ld	a,_Uart2_Rece_Buf+5
-1613  00ba 5f            	clrw	x
-1614  00bb 97            	ld	xl,a
-1615  00bc d60031        	ld	a,(_Uart2_Rece_Buf+2,x)
-1616  00bf 1102          	cp	a,(OFST+0,sp)
-1617  00c1 261a          	jrne	L547
-1618                     ; 188 						rev_success = 1;
-1620  00c3 721003da      	bset	_UART1Flag1_,#0
-1621                     ; 189 						for (i = 0;i < Uart2_Rec_Len;i++)
-1623  00c7 0f02          	clr	(OFST+0,sp)
-1624  00c9               L747:
-1625                     ; 191 							sicp_buf[i] = Uart2_Rece_Buf[i];
-1627  00c9 7b02          	ld	a,(OFST+0,sp)
-1628  00cb 5f            	clrw	x
-1629  00cc 97            	ld	xl,a
-1630  00cd d6002f        	ld	a,(_Uart2_Rece_Buf,x)
-1631  00d0 d70006        	ld	(_sicp_buf,x),a
-1632                     ; 189 						for (i = 0;i < Uart2_Rec_Len;i++)
-1634  00d3 0c02          	inc	(OFST+0,sp)
-1637  00d5 7b02          	ld	a,(OFST+0,sp)
-1638  00d7 a128          	cp	a,#40
-1639  00d9 25ee          	jrult	L747
-1641  00db 204e          	jra	L727
-1642  00dd               L547:
-1643                     ; 196 						Uart2_Rec_Cnt = 0;
-1645  00dd 725f002e      	clr	_Uart2_Rec_Cnt
-1646  00e1 2048          	jra	L727
-1647  00e3               L737:
-1648                     ; 200 			else if((Uart2_Rece_Buf[0] == 0xDD)&&(Uart2_Rece_Buf[1] == 0xDD))
-1650  00e3 c6002f        	ld	a,_Uart2_Rece_Buf
-1651  00e6 a1dd          	cp	a,#221
-1652  00e8 263d          	jrne	L167
-1654  00ea c60030        	ld	a,_Uart2_Rece_Buf+1
-1655  00ed a1dd          	cp	a,#221
-1656  00ef 2636          	jrne	L167
-1657                     ; 202 				if (Uart2_Rec_Cnt > Uart2_Rece_Buf[3] + 2)//接收数据完成
-1659  00f1 9c            	rvf
-1660  00f2 c6002e        	ld	a,_Uart2_Rec_Cnt
-1661  00f5 5f            	clrw	x
-1662  00f6 97            	ld	xl,a
-1663  00f7 c60032        	ld	a,_Uart2_Rece_Buf+3
-1664  00fa 905f          	clrw	y
-1665  00fc 9097          	ld	yl,a
-1666  00fe 905c          	incw	y
-1667  0100 905c          	incw	y
-1668  0102 bf01          	ldw	c_x+1,x
-1669  0104 90b301        	cpw	y,c_x+1
-1670  0107 2e22          	jrsge	L727
-1671                     ; 204 					Uart2_Rec_Cnt = 0;
-1673  0109 725f002e      	clr	_Uart2_Rec_Cnt
-1674                     ; 205 					rev_success = 1;
-1676  010d 721003da      	bset	_UART1Flag1_,#0
-1677                     ; 206 					for (i = 0;i < Uart2_Rec_Len;i++)
-1679  0111 0f02          	clr	(OFST+0,sp)
-1680  0113               L567:
-1681                     ; 208 						sicp_buf[i] = Uart2_Rece_Buf[i];
-1683  0113 7b02          	ld	a,(OFST+0,sp)
-1684  0115 5f            	clrw	x
-1685  0116 97            	ld	xl,a
-1686  0117 d6002f        	ld	a,(_Uart2_Rece_Buf,x)
-1687  011a d70006        	ld	(_sicp_buf,x),a
-1688                     ; 206 					for (i = 0;i < Uart2_Rec_Len;i++)
-1690  011d 0c02          	inc	(OFST+0,sp)
-1693  011f 7b02          	ld	a,(OFST+0,sp)
-1694  0121 a128          	cp	a,#40
-1695  0123 25ee          	jrult	L567
-1696  0125 2004          	jra	L727
-1697  0127               L167:
-1698                     ; 214 				Uart2_Rec_Cnt = 0;
-1700  0127 725f002e      	clr	_Uart2_Rec_Cnt
-1701  012b               L727:
-1702                     ; 218 	if (UART2->SR & 0x20) //|| (UART2->SR & UART2_SR_OR))
-1704  012b c65240        	ld	a,21056
-1705  012e a520          	bcp	a,#32
-1706  0130 2707          	jreq	L577
-1707                     ; 220 		temp2 = UART2->DR;
-1709  0132 7b01          	ld	a,(OFST-1,sp)
-1710  0134 97            	ld	xl,a
-1711  0135 c65241        	ld	a,21057
-1712  0138 97            	ld	xl,a
-1713  0139               L577:
-1714                     ; 223 }
-1717  0139 85            	popw	x
-1718  013a 81            	ret
-1752                     ; 225 void clear_uart_buf(void)
-1752                     ; 226 {
-1753                     .text:	section	.text,new
-1754  0000               _clear_uart_buf:
-1756  0000 88            	push	a
-1757       00000001      OFST:	set	1
-1760                     ; 228 	for (i = 0;i < Uart2_Rec_Len;i++)
-1762  0001 0f01          	clr	(OFST+0,sp)
-1763  0003               L3101:
-1764                     ; 230 		sicp_buf[i] = Uart2_Rece_Buf[i] = 0;
-1766  0003 7b01          	ld	a,(OFST+0,sp)
-1767  0005 5f            	clrw	x
-1768  0006 97            	ld	xl,a
-1769  0007 724f002f      	clr	(_Uart2_Rece_Buf,x)
-1770  000b 7b01          	ld	a,(OFST+0,sp)
-1771  000d 5f            	clrw	x
-1772  000e 97            	ld	xl,a
-1773  000f 724f0006      	clr	(_sicp_buf,x)
-1774                     ; 228 	for (i = 0;i < Uart2_Rec_Len;i++)
-1776  0013 0c01          	inc	(OFST+0,sp)
-1779  0015 7b01          	ld	a,(OFST+0,sp)
-1780  0017 a128          	cp	a,#40
-1781  0019 25e8          	jrult	L3101
-1782                     ; 232 }
-1785  001b 84            	pop	a
-1786  001c 81            	ret
-1933                     ; 235 void rev_anaylze(void)
-1933                     ; 236 {
-1934                     .text:	section	.text,new
-1935  0000               _rev_anaylze:
-1937  0000 523b          	subw	sp,#59
-1938       0000003b      OFST:	set	59
-1941                     ; 239 	if(rev_success){
-1943  0002 c603da        	ld	a,_UART1Flag1_
-1944  0005 a501          	bcp	a,#1
-1945  0007 2603          	jrne	L25
-1946  0009 cc04f5        	jp	L7111
-1947  000c               L25:
-1948                     ; 240 		rev_success = 0;
-1950  000c 721103da      	bres	_UART1Flag1_,#0
-1951                     ; 241 		if ((sicp_buf[0] == 0xEE) && ((sicp_buf[1]== 0xEE) || (sicp_buf[1]== 0xAA))){
-1953  0010 c60006        	ld	a,_sicp_buf
-1954  0013 a1ee          	cp	a,#238
-1955  0015 2614          	jrne	L1211
-1957  0017 c60007        	ld	a,_sicp_buf+1
-1958  001a a1ee          	cp	a,#238
-1959  001c 2707          	jreq	L3211
-1961  001e c60007        	ld	a,_sicp_buf+1
-1962  0021 a1aa          	cp	a,#170
-1963  0023 2606          	jrne	L1211
-1964  0025               L3211:
-1965                     ; 242 			ble_data_frame = 1;
-1967  0025 721203da      	bset	_UART1Flag1_,#1
-1969  0029 2012          	jra	L5211
-1970  002b               L1211:
-1971                     ; 244 		else if ((sicp_buf[0] == 0xDD) && (sicp_buf[1]== 0xDD)){//Network	Status	Reporting	{
-1973  002b c60006        	ld	a,_sicp_buf
-1974  002e a1dd          	cp	a,#221
-1975  0030 260b          	jrne	L5211
-1977  0032 c60007        	ld	a,_sicp_buf+1
-1978  0035 a1dd          	cp	a,#221
-1979  0037 2604          	jrne	L5211
-1980                     ; 245 			ble_ctrl_frame = 1;
-1982  0039 721403da      	bset	_UART1Flag1_,#2
-1983  003d               L5211:
-1984                     ; 248 		if (ble_data_frame){
-1986  003d c603da        	ld	a,_UART1Flag1_
-1987  0040 a502          	bcp	a,#2
-1988  0042 2603          	jrne	L45
-1989  0044 cc048b        	jp	L1311
-1990  0047               L45:
-1991                     ; 249 			ble_data_frame = 0;
-1993  0047 721303da      	bres	_UART1Flag1_,#1
-1994                     ; 250 			rev_message_id = sicp_buf[2];
-1996  004b 5500080089    	mov	_rev_message_id,_sicp_buf+2
-1997                     ; 251 			rev_mesh_id_H	= sicp_buf[3];
-1999  0050 5500090088    	mov	_rev_mesh_id_H,_sicp_buf+3
-2000                     ; 252 			rev_mesh_id_L = sicp_buf[4];
-2002  0055 55000a0087    	mov	_rev_mesh_id_L,_sicp_buf+4
-2003                     ; 253 			switch(sicp_buf[6]){
-2005  005a c6000c        	ld	a,_sicp_buf+6
-2007                     ; 366 				break;
-2008  005d a003          	sub	a,#3
-2009  005f 2732          	jreq	L1201
-2010  0061 a04e          	sub	a,#78
-2011  0063 2742          	jreq	L3201
-2012  0065 4a            	dec	a
-2013  0066 273f          	jreq	L3201
-2014  0068 4a            	dec	a
-2015  0069 273c          	jreq	L3201
-2016  006b 4a            	dec	a
-2017  006c 2739          	jreq	L3201
-2018  006e 4a            	dec	a
-2019  006f 2603          	jrne	L65
-2020  0071 cc0104        	jp	L5201
-2021  0074               L65:
-2022  0074 a002          	sub	a,#2
-2023  0076 2603          	jrne	L06
-2024  0078 cc0153        	jp	L7201
-2025  007b               L06:
-2026  007b 4a            	dec	a
-2027  007c 2603          	jrne	L26
-2028  007e cc0266        	jp	L1301
-2029  0081               L26:
-2030  0081 a052          	sub	a,#82
-2031  0083 2603          	jrne	L46
-2032  0085 cc0379        	jp	L3301
-2033  0088               L46:
-2034  0088 a006          	sub	a,#6
-2035  008a 2603          	jrne	L66
-2036  008c cc045e        	jp	L7301
-2037  008f               L66:
-2038  008f acf504f5      	jpf	L7111
-2039  0093               L1201:
-2040                     ; 254 				case 0x03://heartbeat获取当前设备状态信息(灯亮度，开关等)
-2040                     ; 255 					if(sicp_buf[7] == 0x03){
-2042  0093 c6000d        	ld	a,_sicp_buf+7
-2043  0096 a103          	cp	a,#3
-2044  0098 2703          	jreq	L07
-2045  009a cc04f5        	jp	L7111
-2046  009d               L07:
-2047                     ; 256 						rev_cmd_data(sicp_buf[8]);
-2049  009d c6000e        	ld	a,_sicp_buf+8
-2050  00a0 cd0000        	call	_rev_cmd_data
-2052  00a3 acf504f5      	jpf	L7111
-2053  00a7               L3201:
-2054                     ; 259 				case 0x51://一个SC下单个SLC多个通道调光
-2054                     ; 260 				case 0x52:
-2054                     ; 261 				case 0x53:
-2054                     ; 262 				case 0x54:
-2054                     ; 263 					rev_ad_message_id = sicp_buf[2];
-2056  00a7 5500080086    	mov	_rev_ad_message_id,_sicp_buf+2
-2057                     ; 264 					rev_ad_mesh_id_H = sicp_buf[3];
-2059  00ac 5500090083    	mov	_rev_ad_mesh_id_H,_sicp_buf+3
-2060                     ; 265 					rev_ad_mesh_id_L = sicp_buf[4];
-2062  00b1 55000a0082    	mov	_rev_ad_mesh_id_L,_sicp_buf+4
-2063                     ; 266 					rev_ad_mdid = (sicp_buf[7]&0xf0)>>4;
-2065  00b6 c6000d        	ld	a,_sicp_buf+7
-2066  00b9 a4f0          	and	a,#240
-2067  00bb 4e            	swap	a
-2068  00bc a40f          	and	a,#15
-2069  00be c70085        	ld	_rev_ad_mdid,a
-2070                     ; 267 					rev_ad_channel = (sicp_buf[7]&0x0f);
-2072  00c1 c6000d        	ld	a,_sicp_buf+7
-2073  00c4 a40f          	and	a,#15
-2074  00c6 c70084        	ld	_rev_ad_channel,a
-2075                     ; 268 					action_dimmer_ext = sicp_buf[9]+2;
-2077  00c9 c6000f        	ld	a,_sicp_buf+9
-2078  00cc ab02          	add	a,#2
-2079  00ce c70000        	ld	_action_dimmer_ext,a
-2080                     ; 270 					ret = 1;
-2082  00d1 7b3b          	ld	a,(OFST+0,sp)
-2083  00d3 97            	ld	xl,a
-2084                     ; 271 					ret = i2c_single_action_dimmer(sicp_buf[6],sicp_buf[7],sicp_buf[8],sicp_buf[9]);
-2086  00d4 3b000f        	push	_sicp_buf+9
-2087  00d7 3b000e        	push	_sicp_buf+8
-2088  00da c6000d        	ld	a,_sicp_buf+7
-2089  00dd 97            	ld	xl,a
-2090  00de c6000c        	ld	a,_sicp_buf+6
-2091  00e1 95            	ld	xh,a
-2092  00e2 cd0000        	call	_i2c_single_action_dimmer
-2094  00e5 85            	popw	x
-2095  00e6 6b3b          	ld	(OFST+0,sp),a
-2096                     ; 272 					if(ret == IIC_SUCCESS)	
-2098  00e8 0d3b          	tnz	(OFST+0,sp)
-2099  00ea 2703          	jreq	L27
-2100  00ec cc04f5        	jp	L7111
-2101  00ef               L27:
-2102                     ; 273 						sicp_receipt_OK(0x02,rev_message_id,rev_mesh_id_H,rev_mesh_id_H);
-2104  00ef 3b0088        	push	_rev_mesh_id_H
-2105  00f2 3b0088        	push	_rev_mesh_id_H
-2106  00f5 c60089        	ld	a,_rev_message_id
-2107  00f8 97            	ld	xl,a
-2108  00f9 a602          	ld	a,#2
-2109  00fb 95            	ld	xh,a
-2110  00fc cd0000        	call	_sicp_receipt_OK
-2112  00ff 85            	popw	x
-2113  0100 acf504f5      	jpf	L7111
-2114  0104               L5201:
-2115                     ; 276 				case 0x55://打开或关闭开关
-2115                     ; 277 					rev_ad_mdid = (sicp_buf[7]&0xf0)>>4;
-2117  0104 c6000d        	ld	a,_sicp_buf+7
-2118  0107 a4f0          	and	a,#240
-2119  0109 4e            	swap	a
-2120  010a a40f          	and	a,#15
-2121  010c c70085        	ld	_rev_ad_mdid,a
-2122                     ; 278 					rev_ad_channel = (sicp_buf[7]&0x0f);
-2124  010f c6000d        	ld	a,_sicp_buf+7
-2125  0112 a40f          	and	a,#15
-2126  0114 c70084        	ld	_rev_ad_channel,a
-2127                     ; 280 					ret = i2c_action_plug(sicp_buf[6],sicp_buf[7],sicp_buf[8],sicp_buf[9]);
-2129  0117 3b000f        	push	_sicp_buf+9
-2130  011a 3b000e        	push	_sicp_buf+8
-2131  011d c6000d        	ld	a,_sicp_buf+7
-2132  0120 97            	ld	xl,a
-2133  0121 c6000c        	ld	a,_sicp_buf+6
-2134  0124 95            	ld	xh,a
-2135  0125 cd0000        	call	_i2c_action_plug
-2137  0128 85            	popw	x
-2138  0129 6b3b          	ld	(OFST+0,sp),a
-2139                     ; 281 					delay(100);
-2141  012b ae0064        	ldw	x,#100
-2142  012e cd0000        	call	_delay
-2144                     ; 282 					if(ret == IIC_SUCCESS) sicp_receipt_Done(0x05,rev_message_id,ns_host_meshid_H,ns_host_meshid_L,0x02,rev_ad_mdid);
-2146  0131 0d3b          	tnz	(OFST+0,sp)
-2147  0133 2703          	jreq	L47
-2148  0135 cc04f5        	jp	L7111
-2149  0138               L47:
-2152  0138 3b0085        	push	_rev_ad_mdid
-2153  013b 4b02          	push	#2
-2154  013d 3b008a        	push	_ns_host_meshid_L
-2155  0140 3b008b        	push	_ns_host_meshid_H
-2156  0143 c60089        	ld	a,_rev_message_id
-2157  0146 97            	ld	xl,a
-2158  0147 a605          	ld	a,#5
-2159  0149 95            	ld	xh,a
-2160  014a cd0000        	call	_sicp_receipt_Done
-2162  014d 5b04          	addw	sp,#4
-2163  014f acf504f5      	jpf	L7111
-2164  0153               L7201:
-2165                     ; 284 				case 0x57://一个SC下多个SLC多个通道调光
-2165                     ; 285 					action_dimmer_num = sicp_buf[7];
-2167  0153 c6000d        	ld	a,_sicp_buf+7
-2168  0156 6b03          	ld	(OFST-56,sp),a
-2169                     ; 286 					sicp_receipt_OK(0x02,rev_message_id,ns_host_meshid_H,ns_host_meshid_L);
-2171  0158 3b008a        	push	_ns_host_meshid_L
-2172  015b 3b008b        	push	_ns_host_meshid_H
-2173  015e c60089        	ld	a,_rev_message_id
-2174  0161 97            	ld	xl,a
-2175  0162 a602          	ld	a,#2
-2176  0164 95            	ld	xh,a
-2177  0165 cd0000        	call	_sicp_receipt_OK
-2179  0168 85            	popw	x
-2180                     ; 288 					ret = i2c_multiple_action_dimmer(action_dimmer_num);
-2182  0169 7b03          	ld	a,(OFST-56,sp)
-2183  016b cd0000        	call	_i2c_multiple_action_dimmer
-2185  016e 6b3b          	ld	(OFST+0,sp),a
-2186                     ; 289 					delay(100);
-2188  0170 ae0064        	ldw	x,#100
-2189  0173 cd0000        	call	_delay
-2191                     ; 290 					if(ret == IIC_SUCCESS){
-2193  0176 0d3b          	tnz	(OFST+0,sp)
-2194  0178 2703          	jreq	L67
-2195  017a cc04f5        	jp	L7111
-2196  017d               L67:
-2197                     ; 291 						receipt.frame_h1 = 0xEE;
-2199  017d a6ee          	ld	a,#238
-2200  017f 6b04          	ld	(OFST-55,sp),a
-2201                     ; 292 						receipt.frame_h2 = 0xAA;
-2203  0181 a6aa          	ld	a,#170
-2204  0183 6b05          	ld	(OFST-54,sp),a
-2205                     ; 293 						receipt.message_id = rev_message_id;
-2207  0185 c60089        	ld	a,_rev_message_id
-2208  0188 6b06          	ld	(OFST-53,sp),a
-2209                     ; 294 						receipt.mesh_id_H = ns_host_meshid_H;
-2211  018a c6008b        	ld	a,_ns_host_meshid_H
-2212  018d 6b07          	ld	(OFST-52,sp),a
-2213                     ; 295 						receipt.mesh_id_L = ns_host_meshid_L;
-2215  018f c6008a        	ld	a,_ns_host_meshid_L
-2216  0192 6b08          	ld	(OFST-51,sp),a
-2217                     ; 296 						receipt.payload[0] = 0xAA;
-2219  0194 a6aa          	ld	a,#170
-2220  0196 6b09          	ld	(OFST-50,sp),a
-2221                     ; 297 						receipt.payload[1] = 0x05;
-2223  0198 a605          	ld	a,#5
-2224  019a 6b0a          	ld	(OFST-49,sp),a
-2225                     ; 298 						receipt.payload[2] = action_dimmer_num;
-2227  019c 7b03          	ld	a,(OFST-56,sp)
-2228  019e 6b0b          	ld	(OFST-48,sp),a
-2229                     ; 299 						i = 0;
-2231  01a0 0f3b          	clr	(OFST+0,sp)
-2233  01a2 ac460246      	jpf	L3511
-2234  01a6               L7411:
-2235                     ; 301 							rev_ad_mdid = (sicp_buf[8+i]&0xf0)>>4;
-2237  01a6 7b3b          	ld	a,(OFST+0,sp)
-2238  01a8 5f            	clrw	x
-2239  01a9 97            	ld	xl,a
-2240  01aa d6000e        	ld	a,(_sicp_buf+8,x)
-2241  01ad a4f0          	and	a,#240
-2242  01af 4e            	swap	a
-2243  01b0 a40f          	and	a,#15
-2244  01b2 c70085        	ld	_rev_ad_mdid,a
-2245                     ; 302 							rev_ad_channel = (sicp_buf[8+i]&0x0f);
-2247  01b5 7b3b          	ld	a,(OFST+0,sp)
-2248  01b7 5f            	clrw	x
-2249  01b8 97            	ld	xl,a
-2250  01b9 d6000e        	ld	a,(_sicp_buf+8,x)
-2251  01bc a40f          	and	a,#15
-2252  01be c70084        	ld	_rev_ad_channel,a
-2253                     ; 303 							receipt.payload[3+i*5] = rev_ad_mdid;
-2255  01c1 96            	ldw	x,sp
-2256  01c2 1c000c        	addw	x,#OFST-47
-2257  01c5 1f01          	ldw	(OFST-58,sp),x
-2258  01c7 7b3b          	ld	a,(OFST+0,sp)
-2259  01c9 97            	ld	xl,a
-2260  01ca a605          	ld	a,#5
-2261  01cc 42            	mul	x,a
-2262  01cd 72fb01        	addw	x,(OFST-58,sp)
-2263  01d0 c60085        	ld	a,_rev_ad_mdid
-2264  01d3 f7            	ld	(x),a
-2265                     ; 304 							receipt.payload[4+i*5] = sc.slc[rev_ad_mdid].ch1_status;
-2267  01d4 96            	ldw	x,sp
-2268  01d5 1c000d        	addw	x,#OFST-46
-2269  01d8 1f01          	ldw	(OFST-58,sp),x
-2270  01da 7b3b          	ld	a,(OFST+0,sp)
-2271  01dc 97            	ld	xl,a
-2272  01dd a605          	ld	a,#5
-2273  01df 42            	mul	x,a
-2274  01e0 72fb01        	addw	x,(OFST-58,sp)
-2275  01e3 89            	pushw	x
-2276  01e4 c60085        	ld	a,_rev_ad_mdid
-2277  01e7 97            	ld	xl,a
-2278  01e8 a61a          	ld	a,#26
-2279  01ea 42            	mul	x,a
-2280  01eb d60263        	ld	a,(_sc+466,x)
-2281  01ee 85            	popw	x
-2282  01ef f7            	ld	(x),a
-2283                     ; 305 							receipt.payload[5+i*5] = sc.slc[rev_ad_mdid].ch2_status;
-2285  01f0 96            	ldw	x,sp
-2286  01f1 1c000e        	addw	x,#OFST-45
-2287  01f4 1f01          	ldw	(OFST-58,sp),x
-2288  01f6 7b3b          	ld	a,(OFST+0,sp)
-2289  01f8 97            	ld	xl,a
-2290  01f9 a605          	ld	a,#5
-2291  01fb 42            	mul	x,a
-2292  01fc 72fb01        	addw	x,(OFST-58,sp)
-2293  01ff 89            	pushw	x
-2294  0200 c60085        	ld	a,_rev_ad_mdid
-2295  0203 97            	ld	xl,a
-2296  0204 a61a          	ld	a,#26
-2297  0206 42            	mul	x,a
-2298  0207 d60264        	ld	a,(_sc+467,x)
-2299  020a 85            	popw	x
-2300  020b f7            	ld	(x),a
-2301                     ; 306 							receipt.payload[6+i*5] = sc.slc[rev_ad_mdid].ch3_status;
-2303  020c 96            	ldw	x,sp
-2304  020d 1c000f        	addw	x,#OFST-44
-2305  0210 1f01          	ldw	(OFST-58,sp),x
-2306  0212 7b3b          	ld	a,(OFST+0,sp)
-2307  0214 97            	ld	xl,a
-2308  0215 a605          	ld	a,#5
-2309  0217 42            	mul	x,a
-2310  0218 72fb01        	addw	x,(OFST-58,sp)
-2311  021b 89            	pushw	x
-2312  021c c60085        	ld	a,_rev_ad_mdid
-2313  021f 97            	ld	xl,a
-2314  0220 a61a          	ld	a,#26
-2315  0222 42            	mul	x,a
-2316  0223 d60265        	ld	a,(_sc+468,x)
-2317  0226 85            	popw	x
-2318  0227 f7            	ld	(x),a
-2319                     ; 307 							receipt.payload[7+i*5] = sc.slc[rev_ad_mdid].ch4_status;
-2321  0228 96            	ldw	x,sp
-2322  0229 1c0010        	addw	x,#OFST-43
-2323  022c 1f01          	ldw	(OFST-58,sp),x
-2324  022e 7b3b          	ld	a,(OFST+0,sp)
-2325  0230 97            	ld	xl,a
-2326  0231 a605          	ld	a,#5
-2327  0233 42            	mul	x,a
-2328  0234 72fb01        	addw	x,(OFST-58,sp)
-2329  0237 89            	pushw	x
-2330  0238 c60085        	ld	a,_rev_ad_mdid
-2331  023b 97            	ld	xl,a
-2332  023c a61a          	ld	a,#26
-2333  023e 42            	mul	x,a
-2334  023f d60266        	ld	a,(_sc+469,x)
-2335  0242 85            	popw	x
-2336  0243 f7            	ld	(x),a
-2337                     ; 309 							i++;
-2339  0244 0c3b          	inc	(OFST+0,sp)
-2340  0246               L3511:
-2341                     ; 300 						while(action_dimmer_num--){
-2343  0246 7b03          	ld	a,(OFST-56,sp)
-2344  0248 0a03          	dec	(OFST-56,sp)
-2345  024a 4d            	tnz	a
-2346  024b 2703          	jreq	L001
-2347  024d cc01a6        	jp	L7411
-2348  0250               L001:
-2349                     ; 311 						sicp_send_message(&receipt,8+i*5);
-2351  0250 7b3b          	ld	a,(OFST+0,sp)
-2352  0252 97            	ld	xl,a
-2353  0253 a605          	ld	a,#5
-2354  0255 42            	mul	x,a
-2355  0256 9f            	ld	a,xl
-2356  0257 ab08          	add	a,#8
-2357  0259 88            	push	a
-2358  025a 96            	ldw	x,sp
-2359  025b 1c0005        	addw	x,#OFST-54
-2360  025e cd0000        	call	_sicp_send_message
-2362  0261 84            	pop	a
-2363  0262 acf504f5      	jpf	L7111
-2364  0266               L1301:
-2365                     ; 314 				case 0x58://一个SC下多个SPC多个通道调光
-2365                     ; 315 					action_plup_num = sicp_buf[7];
-2367  0266 c6000d        	ld	a,_sicp_buf+7
-2368  0269 6b03          	ld	(OFST-56,sp),a
-2369                     ; 316 					sicp_receipt_OK(0x02,rev_message_id,ns_host_meshid_H,ns_host_meshid_L);
-2371  026b 3b008a        	push	_ns_host_meshid_L
-2372  026e 3b008b        	push	_ns_host_meshid_H
-2373  0271 c60089        	ld	a,_rev_message_id
-2374  0274 97            	ld	xl,a
-2375  0275 a602          	ld	a,#2
-2376  0277 95            	ld	xh,a
-2377  0278 cd0000        	call	_sicp_receipt_OK
-2379  027b 85            	popw	x
-2380                     ; 317 					ret = i2c_multiple_action_plug(action_plup_num);
-2382  027c 7b03          	ld	a,(OFST-56,sp)
-2383  027e cd0000        	call	_i2c_multiple_action_plug
-2385  0281 6b3b          	ld	(OFST+0,sp),a
-2386                     ; 319 					delay(100);
-2388  0283 ae0064        	ldw	x,#100
-2389  0286 cd0000        	call	_delay
-2391                     ; 320 					if(ret == IIC_SUCCESS){
-2393  0289 0d3b          	tnz	(OFST+0,sp)
-2394  028b 2703          	jreq	L201
-2395  028d cc04f5        	jp	L7111
-2396  0290               L201:
-2397                     ; 321 						receipt.frame_h1 = 0xEE;
-2399  0290 a6ee          	ld	a,#238
-2400  0292 6b04          	ld	(OFST-55,sp),a
-2401                     ; 322 						receipt.frame_h2 = 0xAA;
-2403  0294 a6aa          	ld	a,#170
-2404  0296 6b05          	ld	(OFST-54,sp),a
-2405                     ; 323 						receipt.message_id = rev_message_id;
-2407  0298 c60089        	ld	a,_rev_message_id
-2408  029b 6b06          	ld	(OFST-53,sp),a
-2409                     ; 324 						receipt.mesh_id_H = ns_host_meshid_H;
-2411  029d c6008b        	ld	a,_ns_host_meshid_H
-2412  02a0 6b07          	ld	(OFST-52,sp),a
-2413                     ; 325 						receipt.mesh_id_L = ns_host_meshid_L;
-2415  02a2 c6008a        	ld	a,_ns_host_meshid_L
-2416  02a5 6b08          	ld	(OFST-51,sp),a
-2417                     ; 326 						receipt.payload[0] = 0xAA;
-2419  02a7 a6aa          	ld	a,#170
-2420  02a9 6b09          	ld	(OFST-50,sp),a
-2421                     ; 327 						receipt.payload[1] = 0x05;
-2423  02ab a605          	ld	a,#5
-2424  02ad 6b0a          	ld	(OFST-49,sp),a
-2425                     ; 328 						receipt.payload[2] = action_plup_num;
-2427  02af 7b03          	ld	a,(OFST-56,sp)
-2428  02b1 6b0b          	ld	(OFST-48,sp),a
-2429                     ; 329 						i = 0;
-2431  02b3 0f3b          	clr	(OFST+0,sp)
-2433  02b5 ac590359      	jpf	L5611
-2434  02b9               L1611:
-2435                     ; 331 							rev_ad_mdid = (sicp_buf[8+i]&0xf0)>>4;
-2437  02b9 7b3b          	ld	a,(OFST+0,sp)
-2438  02bb 5f            	clrw	x
-2439  02bc 97            	ld	xl,a
-2440  02bd d6000e        	ld	a,(_sicp_buf+8,x)
-2441  02c0 a4f0          	and	a,#240
-2442  02c2 4e            	swap	a
-2443  02c3 a40f          	and	a,#15
-2444  02c5 c70085        	ld	_rev_ad_mdid,a
-2445                     ; 332 							rev_ad_channel = (sicp_buf[8+i]&0x0f);
-2447  02c8 7b3b          	ld	a,(OFST+0,sp)
-2448  02ca 5f            	clrw	x
-2449  02cb 97            	ld	xl,a
-2450  02cc d6000e        	ld	a,(_sicp_buf+8,x)
-2451  02cf a40f          	and	a,#15
-2452  02d1 c70084        	ld	_rev_ad_channel,a
-2453                     ; 333 							receipt.payload[3+i*5] = rev_ad_mdid;
-2455  02d4 96            	ldw	x,sp
-2456  02d5 1c000c        	addw	x,#OFST-47
-2457  02d8 1f01          	ldw	(OFST-58,sp),x
-2458  02da 7b3b          	ld	a,(OFST+0,sp)
-2459  02dc 97            	ld	xl,a
-2460  02dd a605          	ld	a,#5
-2461  02df 42            	mul	x,a
-2462  02e0 72fb01        	addw	x,(OFST-58,sp)
-2463  02e3 c60085        	ld	a,_rev_ad_mdid
-2464  02e6 f7            	ld	(x),a
-2465                     ; 334 							receipt.payload[4+i*5] = sc.spc[rev_ad_mdid].ch1_status;
-2467  02e7 96            	ldw	x,sp
-2468  02e8 1c000d        	addw	x,#OFST-46
-2469  02eb 1f01          	ldw	(OFST-58,sp),x
-2470  02ed 7b3b          	ld	a,(OFST+0,sp)
-2471  02ef 97            	ld	xl,a
-2472  02f0 a605          	ld	a,#5
-2473  02f2 42            	mul	x,a
-2474  02f3 72fb01        	addw	x,(OFST-58,sp)
-2475  02f6 89            	pushw	x
-2476  02f7 c60085        	ld	a,_rev_ad_mdid
-2477  02fa 97            	ld	xl,a
-2478  02fb a61c          	ld	a,#28
-2479  02fd 42            	mul	x,a
-2480  02fe d600bf        	ld	a,(_sc+46,x)
-2481  0301 85            	popw	x
-2482  0302 f7            	ld	(x),a
-2483                     ; 335 							receipt.payload[5+i*5] = sc.spc[rev_ad_mdid].ch2_status;
-2485  0303 96            	ldw	x,sp
-2486  0304 1c000e        	addw	x,#OFST-45
-2487  0307 1f01          	ldw	(OFST-58,sp),x
-2488  0309 7b3b          	ld	a,(OFST+0,sp)
-2489  030b 97            	ld	xl,a
-2490  030c a605          	ld	a,#5
-2491  030e 42            	mul	x,a
-2492  030f 72fb01        	addw	x,(OFST-58,sp)
-2493  0312 89            	pushw	x
-2494  0313 c60085        	ld	a,_rev_ad_mdid
-2495  0316 97            	ld	xl,a
-2496  0317 a61c          	ld	a,#28
-2497  0319 42            	mul	x,a
-2498  031a d600c0        	ld	a,(_sc+47,x)
-2499  031d 85            	popw	x
-2500  031e f7            	ld	(x),a
-2501                     ; 336 							receipt.payload[6+i*5] = sc.spc[rev_ad_mdid].ch3_status;
-2503  031f 96            	ldw	x,sp
-2504  0320 1c000f        	addw	x,#OFST-44
-2505  0323 1f01          	ldw	(OFST-58,sp),x
-2506  0325 7b3b          	ld	a,(OFST+0,sp)
-2507  0327 97            	ld	xl,a
-2508  0328 a605          	ld	a,#5
-2509  032a 42            	mul	x,a
-2510  032b 72fb01        	addw	x,(OFST-58,sp)
-2511  032e 89            	pushw	x
-2512  032f c60085        	ld	a,_rev_ad_mdid
-2513  0332 97            	ld	xl,a
-2514  0333 a61c          	ld	a,#28
-2515  0335 42            	mul	x,a
-2516  0336 d600c1        	ld	a,(_sc+48,x)
-2517  0339 85            	popw	x
-2518  033a f7            	ld	(x),a
-2519                     ; 337 							receipt.payload[7+i*5] = sc.spc[rev_ad_mdid].ch4_status;
-2521  033b 96            	ldw	x,sp
-2522  033c 1c0010        	addw	x,#OFST-43
-2523  033f 1f01          	ldw	(OFST-58,sp),x
-2524  0341 7b3b          	ld	a,(OFST+0,sp)
-2525  0343 97            	ld	xl,a
-2526  0344 a605          	ld	a,#5
-2527  0346 42            	mul	x,a
-2528  0347 72fb01        	addw	x,(OFST-58,sp)
-2529  034a 89            	pushw	x
-2530  034b c60085        	ld	a,_rev_ad_mdid
-2531  034e 97            	ld	xl,a
-2532  034f a61c          	ld	a,#28
-2533  0351 42            	mul	x,a
-2534  0352 d600c2        	ld	a,(_sc+49,x)
-2535  0355 85            	popw	x
-2536  0356 f7            	ld	(x),a
-2537                     ; 338 							i++;
-2539  0357 0c3b          	inc	(OFST+0,sp)
-2540  0359               L5611:
-2541                     ; 330 						while(action_plup_num--){
-2543  0359 7b03          	ld	a,(OFST-56,sp)
-2544  035b 0a03          	dec	(OFST-56,sp)
-2545  035d 4d            	tnz	a
-2546  035e 2703          	jreq	L401
-2547  0360 cc02b9        	jp	L1611
-2548  0363               L401:
-2549                     ; 340 						sicp_send_message(&receipt,8+i*5);
-2551  0363 7b3b          	ld	a,(OFST+0,sp)
-2552  0365 97            	ld	xl,a
-2553  0366 a605          	ld	a,#5
-2554  0368 42            	mul	x,a
-2555  0369 9f            	ld	a,xl
-2556  036a ab08          	add	a,#8
-2557  036c 88            	push	a
-2558  036d 96            	ldw	x,sp
-2559  036e 1c0005        	addw	x,#OFST-54
-2560  0371 cd0000        	call	_sicp_send_message
-2562  0374 84            	pop	a
-2563  0375 acf504f5      	jpf	L7111
-2564  0379               L3301:
-2565                     ; 343 				case 0xAA:
-2565                     ; 344 					if(sicp_buf[7] == 0x02)	{
-2567  0379 c6000d        	ld	a,_sicp_buf+7
-2568  037c a102          	cp	a,#2
-2569  037e 2703          	jreq	L601
-2570  0380 cc04f5        	jp	L7111
-2571  0383               L601:
-2572                     ; 346 						if((rev_message_id >= 1)&&(rev_message_id <= 15))	sc.spc[rev_message_id-1].flag._flag_bit.bit0 = 1;
-2574  0383 725d0089      	tnz	_rev_message_id
-2575  0387 271d          	jreq	L3711
-2577  0389 c60089        	ld	a,_rev_message_id
-2578  038c a110          	cp	a,#16
-2579  038e 2416          	jruge	L3711
-2582  0390 c60089        	ld	a,_rev_message_id
-2583  0393 97            	ld	xl,a
-2584  0394 a61c          	ld	a,#28
-2585  0396 42            	mul	x,a
-2586  0397 1d001c        	subw	x,#28
-2587  039a d600c5        	ld	a,(_sc+52,x)
-2588  039d aa01          	or	a,#1
-2589  039f d700c5        	ld	(_sc+52,x),a
-2591  03a2 acf504f5      	jpf	L7111
-2592  03a6               L3711:
-2593                     ; 348 						else if(rev_message_id == 16)														sc.flag._flag_bit.bit1 = 1;
-2595  03a6 c60089        	ld	a,_rev_message_id
-2596  03a9 a110          	cp	a,#16
-2597  03ab 2608          	jrne	L7711
-2600  03ad 721203d4      	bset	_sc+835,#1
-2602  03b1 acf504f5      	jpf	L7111
-2603  03b5               L7711:
-2604                     ; 349 						else if((rev_message_id >= 21)&&(rev_message_id <= 35))	sc.slc[rev_message_id-21].flag._flag_bit.bit1 = 1;
-2606  03b5 c60089        	ld	a,_rev_message_id
-2607  03b8 a115          	cp	a,#21
-2608  03ba 251d          	jrult	L3021
-2610  03bc c60089        	ld	a,_rev_message_id
-2611  03bf a124          	cp	a,#36
-2612  03c1 2416          	jruge	L3021
-2615  03c3 c60089        	ld	a,_rev_message_id
-2616  03c6 97            	ld	xl,a
-2617  03c7 a61a          	ld	a,#26
-2618  03c9 42            	mul	x,a
-2619  03ca 1d0222        	subw	x,#546
-2620  03cd d60267        	ld	a,(_sc+470,x)
-2621  03d0 aa02          	or	a,#2
-2622  03d2 d70267        	ld	(_sc+470,x),a
-2624  03d5 acf504f5      	jpf	L7111
-2625  03d9               L3021:
-2626                     ; 350 						else if((rev_message_id >= 36)&&(rev_message_id <= 50))	sc.spc[rev_message_id-36].flag._flag_bit.bit1 = 1;
-2628  03d9 c60089        	ld	a,_rev_message_id
-2629  03dc a124          	cp	a,#36
-2630  03de 251d          	jrult	L7021
-2632  03e0 c60089        	ld	a,_rev_message_id
-2633  03e3 a133          	cp	a,#51
-2634  03e5 2416          	jruge	L7021
-2637  03e7 c60089        	ld	a,_rev_message_id
-2638  03ea 97            	ld	xl,a
-2639  03eb a61c          	ld	a,#28
-2640  03ed 42            	mul	x,a
-2641  03ee 1d03f0        	subw	x,#1008
-2642  03f1 d600c5        	ld	a,(_sc+52,x)
-2643  03f4 aa02          	or	a,#2
-2644  03f6 d700c5        	ld	(_sc+52,x),a
-2646  03f9 acf504f5      	jpf	L7111
-2647  03fd               L7021:
-2648                     ; 352 						else if(rev_message_id == 17)														sc.flag._flag_bit.bit2 = 1;
-2650  03fd c60089        	ld	a,_rev_message_id
-2651  0400 a111          	cp	a,#17
-2652  0402 2608          	jrne	L3121
-2655  0404 721403d4      	bset	_sc+835,#2
-2657  0408 acf504f5      	jpf	L7111
-2658  040c               L3121:
-2659                     ; 353 						else if((rev_message_id >= 51)&&(rev_message_id <= 65))	sc.slc[rev_message_id-51].flag._flag_bit.bit2 = 1;
-2661  040c c60089        	ld	a,_rev_message_id
-2662  040f a133          	cp	a,#51
-2663  0411 251d          	jrult	L7121
-2665  0413 c60089        	ld	a,_rev_message_id
-2666  0416 a142          	cp	a,#66
-2667  0418 2416          	jruge	L7121
-2670  041a c60089        	ld	a,_rev_message_id
-2671  041d 97            	ld	xl,a
-2672  041e a61a          	ld	a,#26
-2673  0420 42            	mul	x,a
-2674  0421 1d052e        	subw	x,#1326
-2675  0424 d60267        	ld	a,(_sc+470,x)
-2676  0427 aa04          	or	a,#4
-2677  0429 d70267        	ld	(_sc+470,x),a
-2679  042c acf504f5      	jpf	L7111
-2680  0430               L7121:
-2681                     ; 354 						else if((rev_message_id >= 66)&&(rev_message_id <= 80))	sc.spc[rev_message_id-66].flag._flag_bit.bit2 = 1;
-2683  0430 c60089        	ld	a,_rev_message_id
-2684  0433 a142          	cp	a,#66
-2685  0435 2403          	jruge	L011
-2686  0437 cc04f5        	jp	L7111
-2687  043a               L011:
-2689  043a c60089        	ld	a,_rev_message_id
-2690  043d a151          	cp	a,#81
-2691  043f 2503          	jrult	L211
-2692  0441 cc04f5        	jp	L7111
-2693  0444               L211:
-2696  0444 c60089        	ld	a,_rev_message_id
-2697  0447 97            	ld	xl,a
-2698  0448 a61c          	ld	a,#28
-2699  044a 42            	mul	x,a
-2700  044b 1d0738        	subw	x,#1848
-2701  044e d600c5        	ld	a,(_sc+52,x)
-2702  0451 aa04          	or	a,#4
-2703  0453 d700c5        	ld	(_sc+52,x),a
-2704  0456 acf504f5      	jpf	L7111
-2705  045a               L5301:
-2706                     ; 357 				case 0x05://Alert Command,SC接收到该条指令不用做任何处理
-2706                     ; 358 				break;
-2708  045a acf504f5      	jpf	L7111
-2709  045e               L7301:
-2710                     ; 359 				case 0xB0://Gateway	Mesh	ID	Broadcasting
-2710                     ; 360 					if(rev_message_id == 0x9E){
-2712  045e c60089        	ld	a,_rev_message_id
-2713  0461 a19e          	cp	a,#158
-2714  0463 2703          	jreq	L411
-2715  0465 cc04f5        	jp	L7111
-2716  0468               L411:
-2717                     ; 361 						rev_ssbroadcast = 1;
-2719  0468 721403d9      	bset	_UART1Flag2_,#2
-2720                     ; 362 						ns_host_meshid_H = rev_mesh_id_H;
-2722  046c 550088008b    	mov	_ns_host_meshid_H,_rev_mesh_id_H
-2723                     ; 363 						ns_host_meshid_L = rev_mesh_id_L;
-2725  0471 550087008a    	mov	_ns_host_meshid_L,_rev_mesh_id_L
-2726                     ; 364 						sicp_receipt_OK(0x02,rev_message_id,ns_host_meshid_H,ns_host_meshid_L);
-2728  0476 3b008a        	push	_ns_host_meshid_L
-2729  0479 3b008b        	push	_ns_host_meshid_H
-2730  047c c60089        	ld	a,_rev_message_id
-2731  047f 97            	ld	xl,a
-2732  0480 a602          	ld	a,#2
-2733  0482 95            	ld	xh,a
-2734  0483 cd0000        	call	_sicp_receipt_OK
-2736  0486 85            	popw	x
-2737  0487 206c          	jra	L7111
-2738  0489               L5311:
-2739                     ; 366 				break;
-2740  0489 206a          	jra	L7111
-2741  048b               L1311:
-2742                     ; 369 		else if (ble_ctrl_frame){
-2744  048b c603da        	ld	a,_UART1Flag1_
-2745  048e a504          	bcp	a,#4
-2746  0490 2763          	jreq	L7111
-2747                     ; 370 			ble_ctrl_frame = 0;
-2749  0492 721503da      	bres	_UART1Flag1_,#2
-2750                     ; 371 			switch(sicp_buf[4]){
-2752  0496 c6000a        	ld	a,_sicp_buf+4
-2754                     ; 402 				break;
-2755  0499 4a            	dec	a
-2756  049a 2708          	jreq	L1401
-2757  049c 4a            	dec	a
-2758  049d 2724          	jreq	L3401
-2759  049f 4a            	dec	a
-2760  04a0 272d          	jreq	L5401
-2761  04a2 2051          	jra	L7111
-2762  04a4               L1401:
-2763                     ; 372 				case 0x01://网络状态帧
-2763                     ; 373 				rev_bleheartbeat = 1;
-2765  04a4 721203d9      	bset	_UART1Flag2_,#1
-2766                     ; 374 				ns_signal = sicp_buf[5];
-2768  04a8 55000b0090    	mov	_ns_signal,_sicp_buf+5
-2769                     ; 375 				ns_status = sicp_buf[6];
-2771  04ad 55000c008f    	mov	_ns_status,_sicp_buf+6
-2772                     ; 376 				ns_phonenum = sicp_buf[7];
-2774  04b2 55000d008e    	mov	_ns_phonenum,_sicp_buf+7
-2775                     ; 377 				ns_own_meshid_H = sicp_buf[8];
-2777  04b7 55000e008d    	mov	_ns_own_meshid_H,_sicp_buf+8
-2778                     ; 378 				ns_own_meshid_L = sicp_buf[9];
-2780  04bc 55000f008c    	mov	_ns_own_meshid_L,_sicp_buf+9
-2781                     ; 385 				break;
-2783  04c1 2032          	jra	L7111
-2784  04c3               L3401:
-2785                     ; 386 			case 0x02://重置芯片，清空串口缓存，保留mesh连接
-2785                     ; 387 				sys_init();
-2787  04c3 cd0000        	call	_sys_init
-2789                     ; 388 				clear_uart_buf();
-2791  04c6 cd0000        	call	_clear_uart_buf
-2793                     ; 389 				init_slc_spc_done = 0;//重新获取slc和spc的数据
-2795  04c9 725f0000      	clr	_init_slc_spc_done
-2796                     ; 390 				break;
-2798  04cd 2026          	jra	L7111
-2799  04cf               L5401:
-2800                     ; 391 			case 0x03://重置芯片和网络，退出mesh连接
-2800                     ; 392 				sys_init();
-2802  04cf cd0000        	call	_sys_init
-2804                     ; 393 				clear_uart_buf();
-2806  04d2 cd0000        	call	_clear_uart_buf
-2808                     ; 394 				init_slc_spc_done = 0;//重新获取slc和spc的数据
-2810  04d5 725f0000      	clr	_init_slc_spc_done
-2811                     ; 395 				ns_signal = 0x00;
-2813  04d9 725f0090      	clr	_ns_signal
-2814                     ; 396 				ns_status = 0x00;
-2816  04dd 725f008f      	clr	_ns_status
-2817                     ; 397 				ns_phonenum = 0x00;
-2819  04e1 725f008e      	clr	_ns_phonenum
-2820                     ; 398 				ns_own_meshid_H = 0x00;
-2822  04e5 725f008d      	clr	_ns_own_meshid_H
-2823                     ; 399 				ns_own_meshid_L = 0x00;
-2825  04e9 725f008c      	clr	_ns_own_meshid_L
-2826                     ; 400 				ns_host_meshid_H = 0x80;
-2828  04ed 3580008b      	mov	_ns_host_meshid_H,#128
-2829                     ; 401 				ns_host_meshid_L = 0xFF;
-2831  04f1 35ff008a      	mov	_ns_host_meshid_L,#255
-2832                     ; 402 				break;
-2834  04f5               L5321:
-2835  04f5               L7111:
-2836                     ; 406 }
-2839  04f5 5b3b          	addw	sp,#59
-2840  04f7 81            	ret
-2889                     ; 409 void sicp_send_message(SICP_Message *tx,u8 payload_len)
-2889                     ; 410 {
-2890                     .text:	section	.text,new
-2891  0000               _sicp_send_message:
-2893  0000 89            	pushw	x
-2894       00000000      OFST:	set	0
-2897                     ; 413 	UART2_Send_Buf[0] = tx->frame_h1;
-2899  0001 f6            	ld	a,(x)
-2900  0002 c7005a        	ld	_UART2_Send_Buf,a
-2901                     ; 414 	UART2_Send_Buf[1] = tx->frame_h2;
-2903  0005 e601          	ld	a,(1,x)
-2904  0007 c7005b        	ld	_UART2_Send_Buf+1,a
-2905                     ; 415 	UART2_Send_Buf[2] = tx->message_id;
-2907  000a e602          	ld	a,(2,x)
-2908  000c c7005c        	ld	_UART2_Send_Buf+2,a
-2909                     ; 416 	UART2_Send_Buf[3] = tx->mesh_id_H;
-2911  000f e603          	ld	a,(3,x)
-2912  0011 c7005d        	ld	_UART2_Send_Buf+3,a
-2913                     ; 417 	UART2_Send_Buf[4] = tx->mesh_id_L;
-2915  0014 e604          	ld	a,(4,x)
-2916  0016 c7005e        	ld	_UART2_Send_Buf+4,a
-2917                     ; 418 	UART2_Send_Buf[5] = 4+payload_len;
-2919  0019 7b05          	ld	a,(OFST+5,sp)
-2920  001b ab04          	add	a,#4
-2921  001d c7005f        	ld	_UART2_Send_Buf+5,a
-2922                     ; 419 	mymemcpy(&UART2_Send_Buf[6],tx->payload,payload_len);
-2924  0020 7b05          	ld	a,(OFST+5,sp)
-2925  0022 b703          	ld	c_lreg+3,a
-2926  0024 3f02          	clr	c_lreg+2
-2927  0026 3f01          	clr	c_lreg+1
-2928  0028 3f00          	clr	c_lreg
-2929  002a be02          	ldw	x,c_lreg+2
-2930  002c 89            	pushw	x
-2931  002d be00          	ldw	x,c_lreg
-2932  002f 89            	pushw	x
-2933  0030 1e05          	ldw	x,(OFST+5,sp)
-2934  0032 1c0005        	addw	x,#5
-2935  0035 89            	pushw	x
-2936  0036 ae0060        	ldw	x,#_UART2_Send_Buf+6
-2937  0039 cd0000        	call	_mymemcpy
-2939  003c 5b06          	addw	sp,#6
-2940                     ; 420 	UART2_Send_Buf[6+payload_len] = Check_Sum(&UART2_Send_Buf[2],UART2_Send_Buf[5]);
-2942  003e 7b05          	ld	a,(OFST+5,sp)
-2943  0040 5f            	clrw	x
-2944  0041 97            	ld	xl,a
-2945  0042 89            	pushw	x
-2946  0043 3b005f        	push	_UART2_Send_Buf+5
-2947  0046 ae005c        	ldw	x,#_UART2_Send_Buf+2
-2948  0049 cd0000        	call	_Check_Sum
-2950  004c 5b01          	addw	sp,#1
-2951  004e 85            	popw	x
-2952  004f d70060        	ld	(_UART2_Send_Buf+6,x),a
-2953                     ; 421 	Uart2_Send(UART2_Send_Buf,7+payload_len);
-2955  0052 7b05          	ld	a,(OFST+5,sp)
-2956  0054 5f            	clrw	x
-2957  0055 97            	ld	xl,a
-2958  0056 1c0007        	addw	x,#7
-2959  0059 89            	pushw	x
-2960  005a ae005a        	ldw	x,#_UART2_Send_Buf
-2961  005d cd0000        	call	_Uart2_Send
-2963  0060 85            	popw	x
-2965  0061               L3621:
-2966                     ; 422 	while(!Uart2_Send_Done);	Uart2_Send_Done = 0;//等待这包数据发送完成
-2968  0061 725d0057      	tnz	_Uart2_Send_Done
-2969  0065 27fa          	jreq	L3621
-2972  0067 725f0057      	clr	_Uart2_Send_Done
-2973                     ; 423 }
-2976  006b 85            	popw	x
-2977  006c 81            	ret
-3029                     ; 429 void sicp_receipt_OK(u8 type,u8 send_message_id,u8 send_mesh_id_H,u8 send_mesh_id_L)
-3029                     ; 430 {
-3030                     .text:	section	.text,new
-3031  0000               _sicp_receipt_OK:
-3033  0000 5237          	subw	sp,#55
-3034       00000037      OFST:	set	55
-3037                     ; 432 	receipt.frame_h1 = 0xEE;
-3039  0002 a6ee          	ld	a,#238
-3040  0004 6b01          	ld	(OFST-54,sp),a
-3041                     ; 433 	receipt.frame_h2 = 0xAA;
-3043  0006 a6aa          	ld	a,#170
-3044  0008 6b02          	ld	(OFST-53,sp),a
-3045                     ; 434 	receipt.message_id = send_message_id;
-3047  000a 9f            	ld	a,xl
-3048  000b 6b03          	ld	(OFST-52,sp),a
-3049                     ; 435 	receipt.mesh_id_H = ns_host_meshid_H;
-3051  000d c6008b        	ld	a,_ns_host_meshid_H
-3052  0010 6b04          	ld	(OFST-51,sp),a
-3053                     ; 436 	receipt.mesh_id_L = ns_host_meshid_L;
-3055  0012 c6008a        	ld	a,_ns_host_meshid_L
-3056  0015 6b05          	ld	(OFST-50,sp),a
-3057                     ; 437 	receipt.payload[0] = 0xAA;
-3059  0017 a6aa          	ld	a,#170
-3060  0019 6b06          	ld	(OFST-49,sp),a
-3061                     ; 438 	receipt.payload[1] = type;
-3063  001b 9e            	ld	a,xh
-3064  001c 6b07          	ld	(OFST-48,sp),a
-3065                     ; 439 	sicp_send_message(&receipt,2);
-3067  001e 4b02          	push	#2
-3068  0020 96            	ldw	x,sp
-3069  0021 1c0002        	addw	x,#OFST-53
-3070  0024 cd0000        	call	_sicp_send_message
-3072  0027 84            	pop	a
-3073                     ; 440 }
-3076  0028 5b37          	addw	sp,#55
-3077  002a 81            	ret
-3151                     ; 442 void sicp_receipt_Done(u8 type,u8 send_message_id,u8 send_mesh_id_H,u8 send_mesh_id_L,u8 method,u8 mdid)
-3151                     ; 443 {
-3152                     .text:	section	.text,new
-3153  0000               _sicp_receipt_Done:
-3155  0000 89            	pushw	x
-3156  0001 5238          	subw	sp,#56
-3157       00000038      OFST:	set	56
-3160                     ; 444 	u8 i = 0;
-3162  0003 0f38          	clr	(OFST+0,sp)
-3163                     ; 446 	receipt.frame_h1 = 0xEE;
-3165  0005 a6ee          	ld	a,#238
-3166  0007 6b01          	ld	(OFST-55,sp),a
-3167                     ; 447 	receipt.frame_h2 = 0xAA;
-3169  0009 a6aa          	ld	a,#170
-3170  000b 6b02          	ld	(OFST-54,sp),a
-3171                     ; 448 	receipt.message_id = send_message_id;
-3173  000d 9f            	ld	a,xl
-3174  000e 6b03          	ld	(OFST-53,sp),a
-3175                     ; 449 	receipt.mesh_id_H = ns_host_meshid_H;
-3177  0010 c6008b        	ld	a,_ns_host_meshid_H
-3178  0013 6b04          	ld	(OFST-52,sp),a
-3179                     ; 450 	receipt.mesh_id_L = ns_host_meshid_L;
-3181  0015 c6008a        	ld	a,_ns_host_meshid_L
-3182  0018 6b05          	ld	(OFST-51,sp),a
-3183                     ; 451 	receipt.payload[0] = 0xAA;
-3185  001a a6aa          	ld	a,#170
-3186  001c 6b06          	ld	(OFST-50,sp),a
-3187                     ; 452 	receipt.payload[1] = type;
-3189  001e 9e            	ld	a,xh
-3190  001f 6b07          	ld	(OFST-49,sp),a
-3191                     ; 453 	switch(method){
-3193  0021 7b3f          	ld	a,(OFST+7,sp)
-3195                     ; 480 		default:
-3195                     ; 481 		break;
-3196  0023 4a            	dec	a
-3197  0024 2707          	jreq	L1131
-3198  0026 4a            	dec	a
-3199  0027 2766          	jreq	L3131
-3200  0029 acef00ef      	jpf	L1531
-3201  002d               L1131:
-3202                     ; 454 		case 0x01://action Dimmer调光的执行回执
-3202                     ; 455 		receipt.payload[2] = mdid;
-3204  002d 7b40          	ld	a,(OFST+8,sp)
-3205  002f 6b08          	ld	(OFST-48,sp),a
-3206                     ; 456 		for(i = 0;i < 15;i++){
-3208  0031 0f38          	clr	(OFST+0,sp)
-3209  0033               L3531:
-3210                     ; 457 			if(sc.slc[i].MDID == mdid){
-3212  0033 7b38          	ld	a,(OFST+0,sp)
-3213  0035 97            	ld	xl,a
-3214  0036 a61a          	ld	a,#26
-3215  0038 42            	mul	x,a
-3216  0039 7b40          	ld	a,(OFST+8,sp)
-3217  003b 905f          	clrw	y
-3218  003d 9097          	ld	yl,a
-3219  003f 90bf00        	ldw	c_y,y
-3220  0042 9093          	ldw	y,x
-3221  0044 90de0261      	ldw	y,(_sc+464,y)
-3222  0048 90b300        	cpw	y,c_y
-3223  004b 2638          	jrne	L1631
-3224                     ; 458 				receipt.payload[3] = sc.slc[i].ch1_status;
-3226  004d 7b38          	ld	a,(OFST+0,sp)
-3227  004f 97            	ld	xl,a
-3228  0050 a61a          	ld	a,#26
-3229  0052 42            	mul	x,a
-3230  0053 d60263        	ld	a,(_sc+466,x)
-3231  0056 6b09          	ld	(OFST-47,sp),a
-3232                     ; 459 				receipt.payload[4] = sc.slc[i].ch2_status;
-3234  0058 7b38          	ld	a,(OFST+0,sp)
-3235  005a 97            	ld	xl,a
-3236  005b a61a          	ld	a,#26
-3237  005d 42            	mul	x,a
-3238  005e d60264        	ld	a,(_sc+467,x)
-3239  0061 6b0a          	ld	(OFST-46,sp),a
-3240                     ; 460 				receipt.payload[5] = sc.slc[i].ch3_status;
-3242  0063 7b38          	ld	a,(OFST+0,sp)
-3243  0065 97            	ld	xl,a
-3244  0066 a61a          	ld	a,#26
-3245  0068 42            	mul	x,a
-3246  0069 d60265        	ld	a,(_sc+468,x)
-3247  006c 6b0b          	ld	(OFST-45,sp),a
-3248                     ; 461 				receipt.payload[6] = sc.slc[i].ch4_status;
-3250  006e 7b38          	ld	a,(OFST+0,sp)
-3251  0070 97            	ld	xl,a
-3252  0071 a61a          	ld	a,#26
-3253  0073 42            	mul	x,a
-3254  0074 d60266        	ld	a,(_sc+469,x)
-3255  0077 6b0c          	ld	(OFST-44,sp),a
-3256                     ; 462 				sicp_send_message(&receipt,7);
-3258  0079 4b07          	push	#7
-3259  007b 96            	ldw	x,sp
-3260  007c 1c0002        	addw	x,#OFST-54
-3261  007f cd0000        	call	_sicp_send_message
-3263  0082 84            	pop	a
-3264                     ; 463 				break;
-3266  0083 206a          	jra	L1531
-3267  0085               L1631:
-3268                     ; 456 		for(i = 0;i < 15;i++){
-3270  0085 0c38          	inc	(OFST+0,sp)
-3273  0087 7b38          	ld	a,(OFST+0,sp)
-3274  0089 a10f          	cp	a,#15
-3275  008b 25a6          	jrult	L3531
-3276  008d 2060          	jra	L1531
-3277  008f               L3131:
-3278                     ; 467 		case 0x02://action plug switch打开或关闭开关的执行回执
-3278                     ; 468 		receipt.payload[2] = mdid;
-3280  008f 7b40          	ld	a,(OFST+8,sp)
-3281  0091 6b08          	ld	(OFST-48,sp),a
-3282                     ; 469 		for(i = 0;i < 15;i++){
-3284  0093 0f38          	clr	(OFST+0,sp)
-3285  0095               L3631:
-3286                     ; 470 			if(sc.spc[i].MDID == mdid){
-3288  0095 7b38          	ld	a,(OFST+0,sp)
-3289  0097 97            	ld	xl,a
-3290  0098 a61c          	ld	a,#28
-3291  009a 42            	mul	x,a
-3292  009b 7b40          	ld	a,(OFST+8,sp)
-3293  009d 905f          	clrw	y
-3294  009f 9097          	ld	yl,a
-3295  00a1 90bf00        	ldw	c_y,y
-3296  00a4 9093          	ldw	y,x
-3297  00a6 90de00bd      	ldw	y,(_sc+44,y)
-3298  00aa 90b300        	cpw	y,c_y
-3299  00ad 2638          	jrne	L1731
-3300                     ; 471 				receipt.payload[3] = sc.spc[i].ch1_status;
-3302  00af 7b38          	ld	a,(OFST+0,sp)
-3303  00b1 97            	ld	xl,a
-3304  00b2 a61c          	ld	a,#28
-3305  00b4 42            	mul	x,a
-3306  00b5 d600bf        	ld	a,(_sc+46,x)
-3307  00b8 6b09          	ld	(OFST-47,sp),a
-3308                     ; 472 				receipt.payload[4] = sc.spc[i].ch2_status;
-3310  00ba 7b38          	ld	a,(OFST+0,sp)
-3311  00bc 97            	ld	xl,a
-3312  00bd a61c          	ld	a,#28
-3313  00bf 42            	mul	x,a
-3314  00c0 d600c0        	ld	a,(_sc+47,x)
-3315  00c3 6b0a          	ld	(OFST-46,sp),a
-3316                     ; 473 				receipt.payload[5] = sc.spc[i].ch3_status;
-3318  00c5 7b38          	ld	a,(OFST+0,sp)
-3319  00c7 97            	ld	xl,a
-3320  00c8 a61c          	ld	a,#28
-3321  00ca 42            	mul	x,a
-3322  00cb d600c1        	ld	a,(_sc+48,x)
-3323  00ce 6b0b          	ld	(OFST-45,sp),a
-3324                     ; 474 				receipt.payload[6] = sc.spc[i].ch4_status;
-3326  00d0 7b38          	ld	a,(OFST+0,sp)
-3327  00d2 97            	ld	xl,a
-3328  00d3 a61c          	ld	a,#28
-3329  00d5 42            	mul	x,a
-3330  00d6 d600c2        	ld	a,(_sc+49,x)
-3331  00d9 6b0c          	ld	(OFST-44,sp),a
-3332                     ; 475 				sicp_send_message(&receipt,7);
-3334  00db 4b07          	push	#7
-3335  00dd 96            	ldw	x,sp
-3336  00de 1c0002        	addw	x,#OFST-54
-3337  00e1 cd0000        	call	_sicp_send_message
-3339  00e4 84            	pop	a
-3340                     ; 476 				break;
-3342  00e5 2008          	jra	L1531
-3343  00e7               L1731:
-3344                     ; 469 		for(i = 0;i < 15;i++){
-3346  00e7 0c38          	inc	(OFST+0,sp)
-3349  00e9 7b38          	ld	a,(OFST+0,sp)
-3350  00eb a10f          	cp	a,#15
-3351  00ed 25a6          	jrult	L3631
-3352  00ef               L5131:
-3353                     ; 480 		default:
-3353                     ; 481 		break;
-3355  00ef               L1531:
-3356                     ; 483 }
-3359  00ef 5b3a          	addw	sp,#58
-3360  00f1 81            	ret
-3414                     ; 486 void rev_cmd_data(u8 moduleid){
-3415                     .text:	section	.text,new
-3416  0000               _rev_cmd_data:
-3418  0000 88            	push	a
-3419  0001 5238          	subw	sp,#56
-3420       00000038      OFST:	set	56
-3423                     ; 489 	for(i = 0;i < 15;i++){
-3425  0003 0f01          	clr	(OFST-55,sp)
-3426  0005               L5141:
-3427                     ; 490 		if(sc.slc[i].MDID == moduleid){
-3429  0005 7b01          	ld	a,(OFST-55,sp)
-3430  0007 97            	ld	xl,a
-3431  0008 a61a          	ld	a,#26
-3432  000a 42            	mul	x,a
-3433  000b 7b39          	ld	a,(OFST+1,sp)
-3434  000d 905f          	clrw	y
-3435  000f 9097          	ld	yl,a
-3436  0011 90bf00        	ldw	c_y,y
-3437  0014 9093          	ldw	y,x
-3438  0016 90de0261      	ldw	y,(_sc+464,y)
-3439  001a 90b300        	cpw	y,c_y
-3440  001d 2657          	jrne	L3241
-3441                     ; 491 			cmd_data.frame_h1 = 0xEE;
-3443  001f a6ee          	ld	a,#238
-3444  0021 6b02          	ld	(OFST-54,sp),a
-3445                     ; 492 			cmd_data.frame_h2 = 0xAA;
-3447  0023 a6aa          	ld	a,#170
-3448  0025 6b03          	ld	(OFST-53,sp),a
-3449                     ; 493 			cmd_data.message_id = rev_message_id;
-3451  0027 c60089        	ld	a,_rev_message_id
-3452  002a 6b04          	ld	(OFST-52,sp),a
-3453                     ; 494 			cmd_data.mesh_id_H = ns_host_meshid_H;
-3455  002c c6008b        	ld	a,_ns_host_meshid_H
-3456  002f 6b05          	ld	(OFST-51,sp),a
-3457                     ; 495 			cmd_data.mesh_id_L = ns_host_meshid_L;
-3459  0031 c6008a        	ld	a,_ns_host_meshid_L
-3460  0034 6b06          	ld	(OFST-50,sp),a
-3461                     ; 496 			cmd_data.payload[0] = 0x06;
-3463  0036 a606          	ld	a,#6
-3464  0038 6b07          	ld	(OFST-49,sp),a
-3465                     ; 497 			cmd_data.payload[1] = moduleid;
-3467  003a 7b39          	ld	a,(OFST+1,sp)
-3468  003c 6b08          	ld	(OFST-48,sp),a
-3469                     ; 498 			cmd_data.payload[2] = sc.slc[i].ch1_status;
-3471  003e 7b01          	ld	a,(OFST-55,sp)
-3472  0040 97            	ld	xl,a
-3473  0041 a61a          	ld	a,#26
-3474  0043 42            	mul	x,a
-3475  0044 d60263        	ld	a,(_sc+466,x)
-3476  0047 6b09          	ld	(OFST-47,sp),a
-3477                     ; 499 			cmd_data.payload[3] = sc.slc[i].ch2_status;
-3479  0049 7b01          	ld	a,(OFST-55,sp)
-3480  004b 97            	ld	xl,a
-3481  004c a61a          	ld	a,#26
-3482  004e 42            	mul	x,a
-3483  004f d60264        	ld	a,(_sc+467,x)
-3484  0052 6b0a          	ld	(OFST-46,sp),a
-3485                     ; 500 			cmd_data.payload[4] = sc.slc[i].ch3_status;
-3487  0054 7b01          	ld	a,(OFST-55,sp)
-3488  0056 97            	ld	xl,a
-3489  0057 a61a          	ld	a,#26
-3490  0059 42            	mul	x,a
-3491  005a d60265        	ld	a,(_sc+468,x)
-3492  005d 6b0b          	ld	(OFST-45,sp),a
-3493                     ; 501 			cmd_data.payload[5] = sc.slc[i].ch4_status;
-3495  005f 7b01          	ld	a,(OFST-55,sp)
-3496  0061 97            	ld	xl,a
-3497  0062 a61a          	ld	a,#26
-3498  0064 42            	mul	x,a
-3499  0065 d60266        	ld	a,(_sc+469,x)
-3500  0068 6b0c          	ld	(OFST-44,sp),a
-3501                     ; 502 			sicp_send_message(&cmd_data,6);
-3503  006a 4b06          	push	#6
-3504  006c 96            	ldw	x,sp
-3505  006d 1c0003        	addw	x,#OFST-53
-3506  0070 cd0000        	call	_sicp_send_message
-3508  0073 84            	pop	a
-3509                     ; 503 			break;
-3511  0074 207c          	jra	L1241
-3512  0076               L3241:
-3513                     ; 505 		if(sc.spc[i].MDID == moduleid){
-3515  0076 7b01          	ld	a,(OFST-55,sp)
-3516  0078 97            	ld	xl,a
-3517  0079 a61c          	ld	a,#28
-3518  007b 42            	mul	x,a
-3519  007c 7b39          	ld	a,(OFST+1,sp)
-3520  007e 905f          	clrw	y
-3521  0080 9097          	ld	yl,a
-3522  0082 90bf00        	ldw	c_y,y
-3523  0085 9093          	ldw	y,x
-3524  0087 90de00bd      	ldw	y,(_sc+44,y)
-3525  008b 90b300        	cpw	y,c_y
-3526  008e 2657          	jrne	L5241
-3527                     ; 506 			cmd_data.frame_h1 = 0xEE;
-3529  0090 a6ee          	ld	a,#238
-3530  0092 6b02          	ld	(OFST-54,sp),a
-3531                     ; 507 			cmd_data.frame_h2 = 0xAA;
-3533  0094 a6aa          	ld	a,#170
-3534  0096 6b03          	ld	(OFST-53,sp),a
-3535                     ; 508 			cmd_data.message_id = rev_message_id;
-3537  0098 c60089        	ld	a,_rev_message_id
-3538  009b 6b04          	ld	(OFST-52,sp),a
-3539                     ; 509 			cmd_data.mesh_id_H = ns_host_meshid_H;
-3541  009d c6008b        	ld	a,_ns_host_meshid_H
-3542  00a0 6b05          	ld	(OFST-51,sp),a
-3543                     ; 510 			cmd_data.mesh_id_L = ns_host_meshid_L;
-3545  00a2 c6008a        	ld	a,_ns_host_meshid_L
-3546  00a5 6b06          	ld	(OFST-50,sp),a
-3547                     ; 511 			cmd_data.payload[0] = 0x06;
-3549  00a7 a606          	ld	a,#6
-3550  00a9 6b07          	ld	(OFST-49,sp),a
-3551                     ; 512 			cmd_data.payload[1] = moduleid;
-3553  00ab 7b39          	ld	a,(OFST+1,sp)
-3554  00ad 6b08          	ld	(OFST-48,sp),a
-3555                     ; 513 			cmd_data.payload[2] = sc.spc[i].ch1_status;
-3557  00af 7b01          	ld	a,(OFST-55,sp)
-3558  00b1 97            	ld	xl,a
-3559  00b2 a61c          	ld	a,#28
-3560  00b4 42            	mul	x,a
-3561  00b5 d600bf        	ld	a,(_sc+46,x)
-3562  00b8 6b09          	ld	(OFST-47,sp),a
-3563                     ; 514 			cmd_data.payload[3] = sc.spc[i].ch2_status;
-3565  00ba 7b01          	ld	a,(OFST-55,sp)
-3566  00bc 97            	ld	xl,a
-3567  00bd a61c          	ld	a,#28
-3568  00bf 42            	mul	x,a
-3569  00c0 d600c0        	ld	a,(_sc+47,x)
-3570  00c3 6b0a          	ld	(OFST-46,sp),a
-3571                     ; 515 			cmd_data.payload[4] = sc.spc[i].ch3_status;
-3573  00c5 7b01          	ld	a,(OFST-55,sp)
-3574  00c7 97            	ld	xl,a
-3575  00c8 a61c          	ld	a,#28
-3576  00ca 42            	mul	x,a
-3577  00cb d600c1        	ld	a,(_sc+48,x)
-3578  00ce 6b0b          	ld	(OFST-45,sp),a
-3579                     ; 516 			cmd_data.payload[5] = sc.spc[i].ch4_status;
-3581  00d0 7b01          	ld	a,(OFST-55,sp)
-3582  00d2 97            	ld	xl,a
-3583  00d3 a61c          	ld	a,#28
-3584  00d5 42            	mul	x,a
-3585  00d6 d600c2        	ld	a,(_sc+49,x)
-3586  00d9 6b0c          	ld	(OFST-44,sp),a
-3587                     ; 517 			sicp_send_message(&cmd_data,6);
-3589  00db 4b06          	push	#6
-3590  00dd 96            	ldw	x,sp
-3591  00de 1c0003        	addw	x,#OFST-53
-3592  00e1 cd0000        	call	_sicp_send_message
-3594  00e4 84            	pop	a
-3595                     ; 518 			break;
-3597  00e5 200b          	jra	L1241
-3598  00e7               L5241:
-3599                     ; 489 	for(i = 0;i < 15;i++){
-3601  00e7 0c01          	inc	(OFST-55,sp)
-3604  00e9 7b01          	ld	a,(OFST-55,sp)
-3605  00eb a10f          	cp	a,#15
-3606  00ed 2403          	jruge	L621
-3607  00ef cc0005        	jp	L5141
-3608  00f2               L621:
-3609  00f2               L1241:
-3610                     ; 521 }
-3613  00f2 5b39          	addw	sp,#57
-3614  00f4 81            	ret
-3617                     	switch	.data
-3618  0000               L7241_eg_timeout:
-3619  0000 0000          	dc.w	0
-3673                     ; 524 void report_energy_consum(void){
-3674                     .text:	section	.text,new
-3675  0000               _report_energy_consum:
-3677  0000 5238          	subw	sp,#56
-3678       00000038      OFST:	set	56
-3681                     ; 528 	systime_count[3]++;
-3683  0002 ce0006        	ldw	x,_systime_count+6
-3684  0005 1c0001        	addw	x,#1
-3685  0008 cf0006        	ldw	_systime_count+6,x
-3686                     ; 529 	if(systime_count[3] >= 60){
-3688  000b ce0006        	ldw	x,_systime_count+6
-3689  000e a3003c        	cpw	x,#60
-3690  0011 2403          	jruge	L231
-3691  0013 cc00a2        	jp	L3541
-3692  0016               L231:
-3693                     ; 530 		systime_count[3] = 0;
-3695  0016 5f            	clrw	x
-3696  0017 cf0006        	ldw	_systime_count+6,x
-3697                     ; 531 		systime_count[4]++;
-3699  001a ce0008        	ldw	x,_systime_count+8
-3700  001d 1c0001        	addw	x,#1
-3701  0020 cf0008        	ldw	_systime_count+8,x
-3702                     ; 532 		if(systime_count[4] >= 30){
-3704  0023 ce0008        	ldw	x,_systime_count+8
-3705  0026 a3001e        	cpw	x,#30
-3706  0029 2577          	jrult	L3541
-3707                     ; 533 			systime_count[4] = 0;
-3709  002b 5f            	clrw	x
-3710  002c cf0008        	ldw	_systime_count+8,x
-3711                     ; 534 			i2c_get_energy_consum();
-3713  002f cd0000        	call	_i2c_get_energy_consum
-3715                     ; 535 			for(i = 0; i < 15; i++){
-3717  0032 0f01          	clr	(OFST-55,sp)
-3718  0034               L7541:
-3719                     ; 536 				if(sc.spc[i].MDID){//有ID说明SPC存在
-3721  0034 7b01          	ld	a,(OFST-55,sp)
-3722  0036 97            	ld	xl,a
-3723  0037 a61c          	ld	a,#28
-3724  0039 42            	mul	x,a
-3725  003a d600be        	ld	a,(_sc+45,x)
-3726  003d da00bd        	or	a,(_sc+44,x)
-3727  0040 2758          	jreq	L5641
-3728                     ; 537 				ec.frame_h1 = 0xEE;
-3730  0042 a6ee          	ld	a,#238
-3731  0044 6b02          	ld	(OFST-54,sp),a
-3732                     ; 538 				ec.frame_h2 = 0xEE;
-3734  0046 a6ee          	ld	a,#238
-3735  0048 6b03          	ld	(OFST-53,sp),a
-3736                     ; 539 				ec.message_id = i+1;
-3738  004a 7b01          	ld	a,(OFST-55,sp)
-3739  004c 4c            	inc	a
-3740  004d 6b04          	ld	(OFST-52,sp),a
-3741                     ; 540 				ec.mesh_id_H = ns_host_meshid_H;
-3743  004f c6008b        	ld	a,_ns_host_meshid_H
-3744  0052 6b05          	ld	(OFST-51,sp),a
-3745                     ; 541 				ec.mesh_id_L = ns_host_meshid_L;
-3747  0054 c6008a        	ld	a,_ns_host_meshid_L
-3748  0057 6b06          	ld	(OFST-50,sp),a
-3749                     ; 542 				ec.payload[0] = 0x2A;
-3751  0059 a62a          	ld	a,#42
-3752  005b 6b07          	ld	(OFST-49,sp),a
-3753                     ; 543 				ec.payload[1] =	(u8)((sc.spc[i].energy_consum&0xff00)>>8);
-3755  005d 7b01          	ld	a,(OFST-55,sp)
-3756  005f 97            	ld	xl,a
-3757  0060 a61c          	ld	a,#28
-3758  0062 42            	mul	x,a
-3759  0063 de00c3        	ldw	x,(_sc+50,x)
-3760  0066 01            	rrwa	x,a
-3761  0067 9f            	ld	a,xl
-3762  0068 a4ff          	and	a,#255
-3763  006a 97            	ld	xl,a
-3764  006b 4f            	clr	a
-3765  006c 02            	rlwa	x,a
-3766  006d 4f            	clr	a
-3767  006e 01            	rrwa	x,a
-3768  006f 9f            	ld	a,xl
-3769  0070 6b08          	ld	(OFST-48,sp),a
-3770                     ; 544 				ec.payload[2] =	(u8)(sc.spc[i].energy_consum&0x00ff);
-3772  0072 7b01          	ld	a,(OFST-55,sp)
-3773  0074 97            	ld	xl,a
-3774  0075 a61c          	ld	a,#28
-3775  0077 42            	mul	x,a
-3776  0078 d600c4        	ld	a,(_sc+51,x)
-3777  007b a4ff          	and	a,#255
-3778  007d 6b09          	ld	(OFST-47,sp),a
-3779                     ; 545 				ec.payload[3] =	sc.spc[i].MDID;
-3781  007f 7b01          	ld	a,(OFST-55,sp)
-3782  0081 97            	ld	xl,a
-3783  0082 a61c          	ld	a,#28
-3784  0084 42            	mul	x,a
-3785  0085 d600be        	ld	a,(_sc+45,x)
-3786  0088 6b0a          	ld	(OFST-46,sp),a
-3787                     ; 546 				sicp_send_message(&ec,4);
-3789  008a 4b04          	push	#4
-3790  008c 96            	ldw	x,sp
-3791  008d 1c0003        	addw	x,#OFST-53
-3792  0090 cd0000        	call	_sicp_send_message
-3794  0093 84            	pop	a
-3795                     ; 547 				eg_timeout = 5;
-3797  0094 ae0005        	ldw	x,#5
-3798  0097 cf0000        	ldw	L7241_eg_timeout,x
-3799  009a               L5641:
-3800                     ; 535 			for(i = 0; i < 15; i++){
-3802  009a 0c01          	inc	(OFST-55,sp)
-3805  009c 7b01          	ld	a,(OFST-55,sp)
-3806  009e a10f          	cp	a,#15
-3807  00a0 2592          	jrult	L7541
-3808  00a2               L3541:
-3809                     ; 553 	if(eg_timeout){
-3811  00a2 ce0000        	ldw	x,L7241_eg_timeout
-3812  00a5 2603          	jrne	L431
-3813  00a7 cc0132        	jp	L7641
-3814  00aa               L431:
-3815                     ; 554 		if(--eg_timeout == 0){
-3817  00aa ce0000        	ldw	x,L7241_eg_timeout
-3818  00ad 1d0001        	subw	x,#1
-3819  00b0 cf0000        	ldw	L7241_eg_timeout,x
-3820  00b3 267d          	jrne	L7641
-3821                     ; 555 			for(i = 0;i < 15;i++){
-3823  00b5 0f01          	clr	(OFST-55,sp)
-3824  00b7               L3741:
-3825                     ; 556 				if((sc.spc[i].MDID!=0) && (!sc.spc[i].flag._flag_bit.bit0)){//5s后判断sc.spc[i].flag._flag_bit.bit0还是为0，则重发1次
-3827  00b7 7b01          	ld	a,(OFST-55,sp)
-3828  00b9 97            	ld	xl,a
-3829  00ba a61c          	ld	a,#28
-3830  00bc 42            	mul	x,a
-3831  00bd d600be        	ld	a,(_sc+45,x)
-3832  00c0 da00bd        	or	a,(_sc+44,x)
-3833  00c3 2765          	jreq	L1051
-3835  00c5 7b01          	ld	a,(OFST-55,sp)
-3836  00c7 97            	ld	xl,a
-3837  00c8 a61c          	ld	a,#28
-3838  00ca 42            	mul	x,a
-3839  00cb d600c5        	ld	a,(_sc+52,x)
-3840  00ce a501          	bcp	a,#1
-3841  00d0 2658          	jrne	L1051
-3842                     ; 557 					ec.frame_h1 = 0xEE;
-3844  00d2 a6ee          	ld	a,#238
-3845  00d4 6b02          	ld	(OFST-54,sp),a
-3846                     ; 558 					ec.frame_h2 = 0xEE;
-3848  00d6 a6ee          	ld	a,#238
-3849  00d8 6b03          	ld	(OFST-53,sp),a
-3850                     ; 559 					ec.message_id = i+1;
-3852  00da 7b01          	ld	a,(OFST-55,sp)
-3853  00dc 4c            	inc	a
-3854  00dd 6b04          	ld	(OFST-52,sp),a
-3855                     ; 560 					ec.mesh_id_H = ns_host_meshid_H;
-3857  00df c6008b        	ld	a,_ns_host_meshid_H
-3858  00e2 6b05          	ld	(OFST-51,sp),a
-3859                     ; 561 					ec.mesh_id_L = ns_host_meshid_L;
-3861  00e4 c6008a        	ld	a,_ns_host_meshid_L
-3862  00e7 6b06          	ld	(OFST-50,sp),a
-3863                     ; 562 					ec.payload[0] = 0x2A;
-3865  00e9 a62a          	ld	a,#42
-3866  00eb 6b07          	ld	(OFST-49,sp),a
-3867                     ; 563 					ec.payload[1] =	(u8)((sc.spc[i].energy_consum&0xff00)>>8);
-3869  00ed 7b01          	ld	a,(OFST-55,sp)
-3870  00ef 97            	ld	xl,a
-3871  00f0 a61c          	ld	a,#28
-3872  00f2 42            	mul	x,a
-3873  00f3 de00c3        	ldw	x,(_sc+50,x)
-3874  00f6 01            	rrwa	x,a
-3875  00f7 9f            	ld	a,xl
-3876  00f8 a4ff          	and	a,#255
-3877  00fa 97            	ld	xl,a
-3878  00fb 4f            	clr	a
-3879  00fc 02            	rlwa	x,a
-3880  00fd 4f            	clr	a
-3881  00fe 01            	rrwa	x,a
-3882  00ff 9f            	ld	a,xl
-3883  0100 6b08          	ld	(OFST-48,sp),a
-3884                     ; 564 					ec.payload[2] =	(u8)(sc.spc[i].energy_consum&0x00ff);
-3886  0102 7b01          	ld	a,(OFST-55,sp)
-3887  0104 97            	ld	xl,a
-3888  0105 a61c          	ld	a,#28
-3889  0107 42            	mul	x,a
-3890  0108 d600c4        	ld	a,(_sc+51,x)
-3891  010b a4ff          	and	a,#255
-3892  010d 6b09          	ld	(OFST-47,sp),a
-3893                     ; 565 					ec.payload[3] =	sc.spc[i].MDID;
-3895  010f 7b01          	ld	a,(OFST-55,sp)
-3896  0111 97            	ld	xl,a
-3897  0112 a61c          	ld	a,#28
-3898  0114 42            	mul	x,a
-3899  0115 d600be        	ld	a,(_sc+45,x)
-3900  0118 6b0a          	ld	(OFST-46,sp),a
-3901                     ; 566 					sicp_send_message(&ec,4);
-3903  011a 4b04          	push	#4
-3904  011c 96            	ldw	x,sp
-3905  011d 1c0003        	addw	x,#OFST-53
-3906  0120 cd0000        	call	_sicp_send_message
-3908  0123 84            	pop	a
-3909                     ; 567 					eg_timeout = 5;//每5s重发1次直到接收到回执为止
-3911  0124 ae0005        	ldw	x,#5
-3912  0127 cf0000        	ldw	L7241_eg_timeout,x
-3913  012a               L1051:
-3914                     ; 555 			for(i = 0;i < 15;i++){
-3916  012a 0c01          	inc	(OFST-55,sp)
-3919  012c 7b01          	ld	a,(OFST-55,sp)
-3920  012e a10f          	cp	a,#15
-3921  0130 2585          	jrult	L3741
-3922  0132               L7641:
-3923                     ; 572 }
-3926  0132 5b38          	addw	sp,#56
-3927  0134 81            	ret
-3967                     ; 575 void send_sc_device_info(void)
-3967                     ; 576 {
-3968                     .text:	section	.text,new
-3969  0000               _send_sc_device_info:
-3971  0000 5237          	subw	sp,#55
-3972       00000037      OFST:	set	55
-3975                     ; 579 	di.frame_h1 = 0xEE;
-3977  0002 a6ee          	ld	a,#238
-3978  0004 6b01          	ld	(OFST-54,sp),a
-3979                     ; 580 	di.frame_h2 = 0xEE;
-3981  0006 a6ee          	ld	a,#238
-3982  0008 6b02          	ld	(OFST-53,sp),a
-3983                     ; 581 	di.message_id = 16;
-3985  000a a610          	ld	a,#16
-3986  000c 6b03          	ld	(OFST-52,sp),a
-3987                     ; 582 	di.mesh_id_H = ns_host_meshid_H;
-3989  000e c6008b        	ld	a,_ns_host_meshid_H
-3990  0011 6b04          	ld	(OFST-51,sp),a
-3991                     ; 583 	di.mesh_id_L = ns_host_meshid_L;
-3993  0013 c6008a        	ld	a,_ns_host_meshid_L
-3994  0016 6b05          	ld	(OFST-50,sp),a
-3995                     ; 584 	di.payload[0] = 0xB1;
-3997  0018 a6b1          	ld	a,#177
-3998  001a 6b06          	ld	(OFST-49,sp),a
-3999                     ; 585 	di.payload[1] =	sc.deviceid[0];
-4001  001c c60093        	ld	a,_sc+2
-4002  001f 6b07          	ld	(OFST-48,sp),a
-4003                     ; 586 	di.payload[2] =	sc.deviceid[1];
-4005  0021 c60094        	ld	a,_sc+3
-4006  0024 6b08          	ld	(OFST-47,sp),a
-4007                     ; 587 	di.payload[3] =	sc.deviceid[2];
-4009  0026 c60095        	ld	a,_sc+4
-4010  0029 6b09          	ld	(OFST-46,sp),a
-4011                     ; 588 	di.payload[4] =	sc.deviceid[3];
-4013  002b c60096        	ld	a,_sc+5
-4014  002e 6b0a          	ld	(OFST-45,sp),a
-4015                     ; 589 	di.payload[5] =	sc.model;
-4017  0030 c60099        	ld	a,_sc+8
-4018  0033 6b0b          	ld	(OFST-44,sp),a
-4019                     ; 590 	di.payload[6] = sc.firmware;
-4021  0035 c60097        	ld	a,_sc+6
-4022  0038 6b0c          	ld	(OFST-43,sp),a
-4023                     ; 591 	di.payload[7] = sc.HWTtest;
-4025  003a c60098        	ld	a,_sc+7
-4026  003d 6b0d          	ld	(OFST-42,sp),a
-4027                     ; 592 	di.payload[8] = sc.Ndevice;
-4029  003f c600a4        	ld	a,_sc+19
-4030  0042 6b0e          	ld	(OFST-41,sp),a
-4031                     ; 593 	sicp_send_message(&di,9);
-4033  0044 4b09          	push	#9
-4034  0046 96            	ldw	x,sp
-4035  0047 1c0002        	addw	x,#OFST-53
-4036  004a cd0000        	call	_sicp_send_message
-4038  004d 84            	pop	a
-4039                     ; 594 }
-4042  004e 5b37          	addw	sp,#55
-4043  0050 81            	ret
-4090                     ; 596 void send_slc_device_info(u8 i)
-4090                     ; 597 {
-4091                     .text:	section	.text,new
-4092  0000               _send_slc_device_info:
-4094  0000 88            	push	a
-4095  0001 5237          	subw	sp,#55
-4096       00000037      OFST:	set	55
-4099                     ; 599 	di.frame_h1 = 0xEE;
-4101  0003 a6ee          	ld	a,#238
-4102  0005 6b01          	ld	(OFST-54,sp),a
-4103                     ; 600 	di.frame_h2 = 0xEE;
-4105  0007 a6ee          	ld	a,#238
-4106  0009 6b02          	ld	(OFST-53,sp),a
-4107                     ; 601 	di.message_id = 21+i;
-4109  000b 7b38          	ld	a,(OFST+1,sp)
-4110  000d ab15          	add	a,#21
-4111  000f 6b03          	ld	(OFST-52,sp),a
-4112                     ; 602 	di.mesh_id_H = ns_host_meshid_H;
-4114  0011 c6008b        	ld	a,_ns_host_meshid_H
-4115  0014 6b04          	ld	(OFST-51,sp),a
-4116                     ; 603 	di.mesh_id_L = ns_host_meshid_L;
-4118  0016 c6008a        	ld	a,_ns_host_meshid_L
-4119  0019 6b05          	ld	(OFST-50,sp),a
-4120                     ; 604 	di.payload[0] = 0xB2;
-4122  001b a6b2          	ld	a,#178
-4123  001d 6b06          	ld	(OFST-49,sp),a
-4124                     ; 605 	di.payload[1] =	sc.slc[i].deviceid[0];
-4126  001f 7b38          	ld	a,(OFST+1,sp)
-4127  0021 97            	ld	xl,a
-4128  0022 a61a          	ld	a,#26
-4129  0024 42            	mul	x,a
-4130  0025 d60250        	ld	a,(_sc+447,x)
-4131  0028 6b07          	ld	(OFST-48,sp),a
-4132                     ; 606 	di.payload[2] =	sc.slc[i].deviceid[1];
-4134  002a 7b38          	ld	a,(OFST+1,sp)
-4135  002c 97            	ld	xl,a
-4136  002d a61a          	ld	a,#26
-4137  002f 42            	mul	x,a
-4138  0030 d60251        	ld	a,(_sc+448,x)
-4139  0033 6b08          	ld	(OFST-47,sp),a
-4140                     ; 607 	di.payload[3] =	sc.slc[i].deviceid[2];
-4142  0035 7b38          	ld	a,(OFST+1,sp)
-4143  0037 97            	ld	xl,a
-4144  0038 a61a          	ld	a,#26
-4145  003a 42            	mul	x,a
-4146  003b d60252        	ld	a,(_sc+449,x)
-4147  003e 6b09          	ld	(OFST-46,sp),a
-4148                     ; 608 	di.payload[4] =	sc.slc[i].deviceid[3];
-4150  0040 7b38          	ld	a,(OFST+1,sp)
-4151  0042 97            	ld	xl,a
-4152  0043 a61a          	ld	a,#26
-4153  0045 42            	mul	x,a
-4154  0046 d60253        	ld	a,(_sc+450,x)
-4155  0049 6b0a          	ld	(OFST-45,sp),a
-4156                     ; 609 	di.payload[5] =	sc.slc[i].model;
-4158  004b 7b38          	ld	a,(OFST+1,sp)
-4159  004d 97            	ld	xl,a
-4160  004e a61a          	ld	a,#26
-4161  0050 42            	mul	x,a
-4162  0051 d60256        	ld	a,(_sc+453,x)
-4163  0054 6b0b          	ld	(OFST-44,sp),a
-4164                     ; 610 	di.payload[6] = sc.slc[i].firmware;
-4166  0056 7b38          	ld	a,(OFST+1,sp)
-4167  0058 97            	ld	xl,a
-4168  0059 a61a          	ld	a,#26
-4169  005b 42            	mul	x,a
-4170  005c d60254        	ld	a,(_sc+451,x)
-4171  005f 6b0c          	ld	(OFST-43,sp),a
-4172                     ; 611 	di.payload[7] = sc.slc[i].HWTtest;
-4174  0061 7b38          	ld	a,(OFST+1,sp)
-4175  0063 97            	ld	xl,a
-4176  0064 a61a          	ld	a,#26
-4177  0066 42            	mul	x,a
-4178  0067 d60255        	ld	a,(_sc+452,x)
-4179  006a 6b0d          	ld	(OFST-42,sp),a
-4180                     ; 612 	di.payload[8] = sc.slc[i].MDID;
-4182  006c 7b38          	ld	a,(OFST+1,sp)
-4183  006e 97            	ld	xl,a
-4184  006f a61a          	ld	a,#26
-4185  0071 42            	mul	x,a
-4186  0072 d60262        	ld	a,(_sc+465,x)
-4187  0075 6b0e          	ld	(OFST-41,sp),a
-4188                     ; 613 	sicp_send_message(&di,9);
-4190  0077 4b09          	push	#9
-4191  0079 96            	ldw	x,sp
-4192  007a 1c0002        	addw	x,#OFST-53
-4193  007d cd0000        	call	_sicp_send_message
-4195  0080 84            	pop	a
-4196                     ; 614 }
-4199  0081 5b38          	addw	sp,#56
-4200  0083 81            	ret
-4247                     ; 616 void send_spc_device_info(u8 i)
-4247                     ; 617 {
-4248                     .text:	section	.text,new
-4249  0000               _send_spc_device_info:
-4251  0000 88            	push	a
-4252  0001 5237          	subw	sp,#55
-4253       00000037      OFST:	set	55
-4256                     ; 619 	di.frame_h1 = 0xEE;
-4258  0003 a6ee          	ld	a,#238
-4259  0005 6b01          	ld	(OFST-54,sp),a
-4260                     ; 620 	di.frame_h2 = 0xEE;
-4262  0007 a6ee          	ld	a,#238
-4263  0009 6b02          	ld	(OFST-53,sp),a
-4264                     ; 621 	di.message_id = 36+i;
-4266  000b 7b38          	ld	a,(OFST+1,sp)
-4267  000d ab24          	add	a,#36
-4268  000f 6b03          	ld	(OFST-52,sp),a
-4269                     ; 622 	di.mesh_id_H = ns_host_meshid_H;
-4271  0011 c6008b        	ld	a,_ns_host_meshid_H
-4272  0014 6b04          	ld	(OFST-51,sp),a
-4273                     ; 623 	di.mesh_id_L = ns_host_meshid_L;
-4275  0016 c6008a        	ld	a,_ns_host_meshid_L
-4276  0019 6b05          	ld	(OFST-50,sp),a
-4277                     ; 624 	di.payload[0] = 0xB3;
-4279  001b a6b3          	ld	a,#179
-4280  001d 6b06          	ld	(OFST-49,sp),a
-4281                     ; 625 	di.payload[1] =	sc.spc[i].deviceid[0];
-4283  001f 7b38          	ld	a,(OFST+1,sp)
-4284  0021 97            	ld	xl,a
-4285  0022 a61c          	ld	a,#28
-4286  0024 42            	mul	x,a
-4287  0025 d600ac        	ld	a,(_sc+27,x)
-4288  0028 6b07          	ld	(OFST-48,sp),a
-4289                     ; 626 	di.payload[2] =	sc.spc[i].deviceid[1];
-4291  002a 7b38          	ld	a,(OFST+1,sp)
-4292  002c 97            	ld	xl,a
-4293  002d a61c          	ld	a,#28
-4294  002f 42            	mul	x,a
-4295  0030 d600ad        	ld	a,(_sc+28,x)
-4296  0033 6b08          	ld	(OFST-47,sp),a
-4297                     ; 627 	di.payload[3] =	sc.spc[i].deviceid[2];
-4299  0035 7b38          	ld	a,(OFST+1,sp)
-4300  0037 97            	ld	xl,a
-4301  0038 a61c          	ld	a,#28
-4302  003a 42            	mul	x,a
-4303  003b d600ae        	ld	a,(_sc+29,x)
-4304  003e 6b09          	ld	(OFST-46,sp),a
-4305                     ; 628 	di.payload[4] =	sc.spc[i].deviceid[3];
-4307  0040 7b38          	ld	a,(OFST+1,sp)
-4308  0042 97            	ld	xl,a
-4309  0043 a61c          	ld	a,#28
-4310  0045 42            	mul	x,a
-4311  0046 d600af        	ld	a,(_sc+30,x)
-4312  0049 6b0a          	ld	(OFST-45,sp),a
-4313                     ; 629 	di.payload[5] =	sc.spc[i].model;
-4315  004b 7b38          	ld	a,(OFST+1,sp)
-4316  004d 97            	ld	xl,a
-4317  004e a61c          	ld	a,#28
-4318  0050 42            	mul	x,a
-4319  0051 d600b2        	ld	a,(_sc+33,x)
-4320  0054 6b0b          	ld	(OFST-44,sp),a
-4321                     ; 630 	di.payload[6] = sc.spc[i].firmware;
-4323  0056 7b38          	ld	a,(OFST+1,sp)
-4324  0058 97            	ld	xl,a
-4325  0059 a61c          	ld	a,#28
-4326  005b 42            	mul	x,a
-4327  005c d600b0        	ld	a,(_sc+31,x)
-4328  005f 6b0c          	ld	(OFST-43,sp),a
-4329                     ; 631 	di.payload[7] = sc.spc[i].HWTtest;
-4331  0061 7b38          	ld	a,(OFST+1,sp)
-4332  0063 97            	ld	xl,a
-4333  0064 a61c          	ld	a,#28
-4334  0066 42            	mul	x,a
-4335  0067 d600b1        	ld	a,(_sc+32,x)
-4336  006a 6b0d          	ld	(OFST-42,sp),a
-4337                     ; 632 	di.payload[8] = sc.spc[i].MDID;
-4339  006c 7b38          	ld	a,(OFST+1,sp)
-4340  006e 97            	ld	xl,a
-4341  006f a61c          	ld	a,#28
-4342  0071 42            	mul	x,a
-4343  0072 d600be        	ld	a,(_sc+45,x)
-4344  0075 6b0e          	ld	(OFST-41,sp),a
-4345                     ; 633 	sicp_send_message(&di,9);
-4347  0077 4b09          	push	#9
-4348  0079 96            	ldw	x,sp
-4349  007a 1c0002        	addw	x,#OFST-53
-4350  007d cd0000        	call	_sicp_send_message
-4352  0080 84            	pop	a
-4353                     ; 634 }
-4356  0081 5b38          	addw	sp,#56
-4357  0083 81            	ret
-4395                     ; 636 void send_device_info(void)
-4395                     ; 637 {
-4396                     .text:	section	.text,new
-4397  0000               _send_device_info:
-4399  0000 88            	push	a
-4400       00000001      OFST:	set	1
-4403                     ; 640 	send_sc_device_info();
-4405  0001 cd0000        	call	_send_sc_device_info
-4407                     ; 641 	delay(200);
-4409  0004 ae00c8        	ldw	x,#200
-4410  0007 cd0000        	call	_delay
-4412                     ; 643 	for(i = 0; i < 15;i++){
-4414  000a 0f01          	clr	(OFST+0,sp)
-4415  000c               L5751:
-4416                     ; 644 		if(sc.slc[i].MDID){//MDID不为零说明I2C收到回复
-4418  000c 7b01          	ld	a,(OFST+0,sp)
-4419  000e 97            	ld	xl,a
-4420  000f a61a          	ld	a,#26
-4421  0011 42            	mul	x,a
-4422  0012 d60262        	ld	a,(_sc+465,x)
-4423  0015 da0261        	or	a,(_sc+464,x)
-4424  0018 270b          	jreq	L3061
-4425                     ; 645 			send_slc_device_info(i);
-4427  001a 7b01          	ld	a,(OFST+0,sp)
-4428  001c cd0000        	call	_send_slc_device_info
-4430                     ; 646 			delay(100);
-4432  001f ae0064        	ldw	x,#100
-4433  0022 cd0000        	call	_delay
-4435  0025               L3061:
-4436                     ; 643 	for(i = 0; i < 15;i++){
-4438  0025 0c01          	inc	(OFST+0,sp)
-4441  0027 7b01          	ld	a,(OFST+0,sp)
-4442  0029 a10f          	cp	a,#15
-4443  002b 25df          	jrult	L5751
-4444                     ; 650 	for(i = 0; i < 15;i++){
-4446  002d 0f01          	clr	(OFST+0,sp)
-4447  002f               L5061:
-4448                     ; 651 		if(sc.spc[i].MDID){//MDID不为零说明I2C收到回复
-4450  002f 7b01          	ld	a,(OFST+0,sp)
-4451  0031 97            	ld	xl,a
-4452  0032 a61c          	ld	a,#28
-4453  0034 42            	mul	x,a
-4454  0035 d600be        	ld	a,(_sc+45,x)
-4455  0038 da00bd        	or	a,(_sc+44,x)
-4456  003b 270b          	jreq	L3161
-4457                     ; 652 			send_spc_device_info(i);
-4459  003d 7b01          	ld	a,(OFST+0,sp)
-4460  003f cd0000        	call	_send_spc_device_info
-4462                     ; 653 			delay(100);
-4464  0042 ae0064        	ldw	x,#100
-4465  0045 cd0000        	call	_delay
-4467  0048               L3161:
-4468                     ; 650 	for(i = 0; i < 15;i++){
-4470  0048 0c01          	inc	(OFST+0,sp)
-4473  004a 7b01          	ld	a,(OFST+0,sp)
-4474  004c a10f          	cp	a,#15
-4475  004e 25df          	jrult	L5061
-4476                     ; 656 	di_timeout = 5;
-4478  0050 35050001      	mov	_di_timeout,#5
-4479                     ; 657 }
-4482  0054 84            	pop	a
-4483  0055 81            	ret
-4530                     ; 660 void send_malfunction(void)
-4530                     ; 661 {
-4531                     .text:	section	.text,new
-4532  0000               _send_malfunction:
-4534  0000 5238          	subw	sp,#56
-4535       00000038      OFST:	set	56
-4538                     ; 665 	if((sc.HWTtest & 0xC0)!=0xC0){
-4540  0002 c60098        	ld	a,_sc+7
-4541  0005 a4c0          	and	a,#192
-4542  0007 a1c0          	cp	a,#192
-4543  0009 2735          	jreq	L5361
-4544                     ; 666 		mal.frame_h1 = 0xEE;
-4546  000b a6ee          	ld	a,#238
-4547  000d 6b02          	ld	(OFST-54,sp),a
-4548                     ; 667 		mal.frame_h2 = 0xEE;
-4550  000f a6ee          	ld	a,#238
-4551  0011 6b03          	ld	(OFST-53,sp),a
-4552                     ; 668 		mal.message_id = 17;
-4554  0013 a611          	ld	a,#17
-4555  0015 6b04          	ld	(OFST-52,sp),a
-4556                     ; 669 		mal.mesh_id_H = ns_host_meshid_H;
-4558  0017 c6008b        	ld	a,_ns_host_meshid_H
-4559  001a 6b05          	ld	(OFST-51,sp),a
-4560                     ; 670 		mal.mesh_id_L = ns_host_meshid_L;
-4562  001c c6008a        	ld	a,_ns_host_meshid_L
-4563  001f 6b06          	ld	(OFST-50,sp),a
-4564                     ; 671 		mal.payload[0] = 0x0A;
-4566  0021 a60a          	ld	a,#10
-4567  0023 6b07          	ld	(OFST-49,sp),a
-4568                     ; 672 		mal.payload[1] = 0xB1;
-4570  0025 a6b1          	ld	a,#177
-4571  0027 6b08          	ld	(OFST-48,sp),a
-4572                     ; 673 		mal.payload[2] =	0x00;
-4574  0029 0f09          	clr	(OFST-47,sp)
-4575                     ; 674 		mal.payload[3] =	sc.HWTtest;
-4577  002b c60098        	ld	a,_sc+7
-4578  002e 6b0a          	ld	(OFST-46,sp),a
-4579                     ; 675 		sicp_send_message(&mal,4);
-4581  0030 4b04          	push	#4
-4582  0032 96            	ldw	x,sp
-4583  0033 1c0003        	addw	x,#OFST-53
-4584  0036 cd0000        	call	_sicp_send_message
-4586  0039 84            	pop	a
-4587                     ; 676 		delay(200);
-4589  003a ae00c8        	ldw	x,#200
-4590  003d cd0000        	call	_delay
-4592  0040               L5361:
-4593                     ; 679 	for(i = 0; i < 15;i++){
-4595  0040 0f01          	clr	(OFST-55,sp)
-4596  0042               L7361:
-4597                     ; 680 		if((sc.slc[i].MDID)&&((sc.slc[i].HWTtest& 0xC0)!=0xC0)){	//send_slc_malfunction(i);
-4599  0042 7b01          	ld	a,(OFST-55,sp)
-4600  0044 97            	ld	xl,a
-4601  0045 a61a          	ld	a,#26
-4602  0047 42            	mul	x,a
-4603  0048 d60262        	ld	a,(_sc+465,x)
-4604  004b da0261        	or	a,(_sc+464,x)
-4605  004e 2755          	jreq	L5461
-4607  0050 7b01          	ld	a,(OFST-55,sp)
-4608  0052 97            	ld	xl,a
-4609  0053 a61a          	ld	a,#26
-4610  0055 42            	mul	x,a
-4611  0056 d60255        	ld	a,(_sc+452,x)
-4612  0059 a4c0          	and	a,#192
-4613  005b a1c0          	cp	a,#192
-4614  005d 2746          	jreq	L5461
-4615                     ; 681 			mal.frame_h1 = 0xEE;
-4617  005f a6ee          	ld	a,#238
-4618  0061 6b02          	ld	(OFST-54,sp),a
-4619                     ; 682 			mal.frame_h2 = 0xEE;
-4621  0063 a6ee          	ld	a,#238
-4622  0065 6b03          	ld	(OFST-53,sp),a
-4623                     ; 683 			mal.message_id = 51+i;
-4625  0067 7b01          	ld	a,(OFST-55,sp)
-4626  0069 ab33          	add	a,#51
-4627  006b 6b04          	ld	(OFST-52,sp),a
-4628                     ; 684 			mal.mesh_id_H = ns_host_meshid_H;
-4630  006d c6008b        	ld	a,_ns_host_meshid_H
-4631  0070 6b05          	ld	(OFST-51,sp),a
-4632                     ; 685 			mal.mesh_id_L = ns_host_meshid_L;
-4634  0072 c6008a        	ld	a,_ns_host_meshid_L
-4635  0075 6b06          	ld	(OFST-50,sp),a
-4636                     ; 686 			mal.payload[0] = 0x0A;
-4638  0077 a60a          	ld	a,#10
-4639  0079 6b07          	ld	(OFST-49,sp),a
-4640                     ; 687 			mal.payload[1] = 0xB2;
-4642  007b a6b2          	ld	a,#178
-4643  007d 6b08          	ld	(OFST-48,sp),a
-4644                     ; 688 			mal.payload[2] =	sc.slc[i].MDID;
-4646  007f 7b01          	ld	a,(OFST-55,sp)
-4647  0081 97            	ld	xl,a
-4648  0082 a61a          	ld	a,#26
-4649  0084 42            	mul	x,a
-4650  0085 d60262        	ld	a,(_sc+465,x)
-4651  0088 6b09          	ld	(OFST-47,sp),a
-4652                     ; 689 			mal.payload[3] =	sc.slc[i].HWTtest;
-4654  008a 7b01          	ld	a,(OFST-55,sp)
-4655  008c 97            	ld	xl,a
-4656  008d a61a          	ld	a,#26
-4657  008f 42            	mul	x,a
-4658  0090 d60255        	ld	a,(_sc+452,x)
-4659  0093 6b0a          	ld	(OFST-46,sp),a
-4660                     ; 690 			sicp_send_message(&mal,4);
-4662  0095 4b04          	push	#4
-4663  0097 96            	ldw	x,sp
-4664  0098 1c0003        	addw	x,#OFST-53
-4665  009b cd0000        	call	_sicp_send_message
-4667  009e 84            	pop	a
-4668                     ; 691 			delay(200);
-4670  009f ae00c8        	ldw	x,#200
-4671  00a2 cd0000        	call	_delay
-4673  00a5               L5461:
-4674                     ; 679 	for(i = 0; i < 15;i++){
-4676  00a5 0c01          	inc	(OFST-55,sp)
-4679  00a7 7b01          	ld	a,(OFST-55,sp)
-4680  00a9 a10f          	cp	a,#15
-4681  00ab 2595          	jrult	L7361
-4682                     ; 695 	for(i = 0; i < 15;i++){
-4684  00ad 0f01          	clr	(OFST-55,sp)
-4685  00af               L7461:
-4686                     ; 696 		if((sc.spc[i].MDID)&&((sc.spc[i].HWTtest& 0xC0)!=0xC0)){	//send_spc_malfunction(i);
-4688  00af 7b01          	ld	a,(OFST-55,sp)
-4689  00b1 97            	ld	xl,a
-4690  00b2 a61c          	ld	a,#28
-4691  00b4 42            	mul	x,a
-4692  00b5 d600be        	ld	a,(_sc+45,x)
-4693  00b8 da00bd        	or	a,(_sc+44,x)
-4694  00bb 2755          	jreq	L5561
-4696  00bd 7b01          	ld	a,(OFST-55,sp)
-4697  00bf 97            	ld	xl,a
-4698  00c0 a61c          	ld	a,#28
-4699  00c2 42            	mul	x,a
-4700  00c3 d600b1        	ld	a,(_sc+32,x)
-4701  00c6 a4c0          	and	a,#192
-4702  00c8 a1c0          	cp	a,#192
-4703  00ca 2746          	jreq	L5561
-4704                     ; 697 			mal.frame_h1 = 0xEE;
-4706  00cc a6ee          	ld	a,#238
-4707  00ce 6b02          	ld	(OFST-54,sp),a
-4708                     ; 698 			mal.frame_h2 = 0xEE;
-4710  00d0 a6ee          	ld	a,#238
-4711  00d2 6b03          	ld	(OFST-53,sp),a
-4712                     ; 699 			mal.message_id = 66+i;
-4714  00d4 7b01          	ld	a,(OFST-55,sp)
-4715  00d6 ab42          	add	a,#66
-4716  00d8 6b04          	ld	(OFST-52,sp),a
-4717                     ; 700 			mal.mesh_id_H = ns_host_meshid_H;
-4719  00da c6008b        	ld	a,_ns_host_meshid_H
-4720  00dd 6b05          	ld	(OFST-51,sp),a
-4721                     ; 701 			mal.mesh_id_L = ns_host_meshid_L;
-4723  00df c6008a        	ld	a,_ns_host_meshid_L
-4724  00e2 6b06          	ld	(OFST-50,sp),a
-4725                     ; 702 			mal.payload[0] = 0x0A;
-4727  00e4 a60a          	ld	a,#10
-4728  00e6 6b07          	ld	(OFST-49,sp),a
-4729                     ; 703 			mal.payload[1] = 0xB2;
-4731  00e8 a6b2          	ld	a,#178
-4732  00ea 6b08          	ld	(OFST-48,sp),a
-4733                     ; 704 			mal.payload[2] =	sc.spc[i].MDID;
-4735  00ec 7b01          	ld	a,(OFST-55,sp)
-4736  00ee 97            	ld	xl,a
-4737  00ef a61c          	ld	a,#28
-4738  00f1 42            	mul	x,a
-4739  00f2 d600be        	ld	a,(_sc+45,x)
-4740  00f5 6b09          	ld	(OFST-47,sp),a
-4741                     ; 705 			mal.payload[3] =	sc.spc[i].HWTtest;
-4743  00f7 7b01          	ld	a,(OFST-55,sp)
-4744  00f9 97            	ld	xl,a
-4745  00fa a61c          	ld	a,#28
-4746  00fc 42            	mul	x,a
-4747  00fd d600b1        	ld	a,(_sc+32,x)
-4748  0100 6b0a          	ld	(OFST-46,sp),a
-4749                     ; 706 			sicp_send_message(&mal,4);
-4751  0102 4b04          	push	#4
-4752  0104 96            	ldw	x,sp
-4753  0105 1c0003        	addw	x,#OFST-53
-4754  0108 cd0000        	call	_sicp_send_message
-4756  010b 84            	pop	a
-4757                     ; 707 			delay(200);
-4759  010c ae00c8        	ldw	x,#200
-4760  010f cd0000        	call	_delay
-4762  0112               L5561:
-4763                     ; 695 	for(i = 0; i < 15;i++){
-4765  0112 0c01          	inc	(OFST-55,sp)
-4768  0114 7b01          	ld	a,(OFST-55,sp)
-4769  0116 a10f          	cp	a,#15
-4770  0118 2595          	jrult	L7461
-4771                     ; 710 }
-4774  011a 5b38          	addw	sp,#56
-4775  011c 81            	ret
-4813                     ; 713 void check_send_repeatedly(void){
-4814                     .text:	section	.text,new
-4815  0000               _check_send_repeatedly:
-4817  0000 88            	push	a
-4818       00000001      OFST:	set	1
-4821                     ; 716 	if(di_timeout){
-4823  0001 725d0001      	tnz	_di_timeout
-4824  0005 2766          	jreq	L3761
-4825                     ; 717 		if(--di_timeout == 0){
-4827  0007 725a0001      	dec	_di_timeout
-4828  000b 2660          	jrne	L3761
-4829                     ; 718 			if(!sc.flag._flag_bit.bit1)	{send_sc_device_info();di_timeout = 5;}
-4831  000d c603d4        	ld	a,_sc+835
-4832  0010 a502          	bcp	a,#2
-4833  0012 2607          	jrne	L7761
-4836  0014 cd0000        	call	_send_sc_device_info
-4840  0017 35050001      	mov	_di_timeout,#5
-4841  001b               L7761:
-4842                     ; 719 			for(i = 0; i < 15; i++){
-4844  001b 0f01          	clr	(OFST+0,sp)
-4845  001d               L1071:
-4846                     ; 720 				if((sc.slc[i].MDID) && !sc.slc[i].flag._flag_bit.bit1){send_slc_device_info(i);di_timeout = 5;}
-4848  001d 7b01          	ld	a,(OFST+0,sp)
-4849  001f 97            	ld	xl,a
-4850  0020 a61a          	ld	a,#26
-4851  0022 42            	mul	x,a
-4852  0023 d60262        	ld	a,(_sc+465,x)
-4853  0026 da0261        	or	a,(_sc+464,x)
-4854  0029 2716          	jreq	L7071
-4856  002b 7b01          	ld	a,(OFST+0,sp)
-4857  002d 97            	ld	xl,a
-4858  002e a61a          	ld	a,#26
-4859  0030 42            	mul	x,a
-4860  0031 d60267        	ld	a,(_sc+470,x)
-4861  0034 a502          	bcp	a,#2
-4862  0036 2609          	jrne	L7071
-4865  0038 7b01          	ld	a,(OFST+0,sp)
-4866  003a cd0000        	call	_send_slc_device_info
-4870  003d 35050001      	mov	_di_timeout,#5
-4871  0041               L7071:
-4872                     ; 721 				if((sc.spc[i].MDID) && !sc.spc[i].flag._flag_bit.bit1){send_spc_device_info(i);di_timeout = 5;}
-4874  0041 7b01          	ld	a,(OFST+0,sp)
-4875  0043 97            	ld	xl,a
-4876  0044 a61c          	ld	a,#28
-4877  0046 42            	mul	x,a
-4878  0047 d600be        	ld	a,(_sc+45,x)
-4879  004a da00bd        	or	a,(_sc+44,x)
-4880  004d 2716          	jreq	L1171
-4882  004f 7b01          	ld	a,(OFST+0,sp)
-4883  0051 97            	ld	xl,a
-4884  0052 a61c          	ld	a,#28
-4885  0054 42            	mul	x,a
-4886  0055 d600c5        	ld	a,(_sc+52,x)
-4887  0058 a502          	bcp	a,#2
-4888  005a 2609          	jrne	L1171
-4891  005c 7b01          	ld	a,(OFST+0,sp)
-4892  005e cd0000        	call	_send_spc_device_info
-4896  0061 35050001      	mov	_di_timeout,#5
-4897  0065               L1171:
-4898                     ; 719 			for(i = 0; i < 15; i++){
-4900  0065 0c01          	inc	(OFST+0,sp)
-4903  0067 7b01          	ld	a,(OFST+0,sp)
-4904  0069 a10f          	cp	a,#15
-4905  006b 25b0          	jrult	L1071
-4906  006d               L3761:
-4907                     ; 725 }
-4910  006d 84            	pop	a
-4911  006e 81            	ret
-4924                     	xdef	_send_spc_device_info
-4925                     	xdef	_send_slc_device_info
-4926                     	xdef	_send_sc_device_info
-4927                     	xdef	_clear_uart_buf
-4928                     	xdef	_Uart2_Send
-4929                     	xref	_rand
-4930                     	xref	_i2c_multiple_action_plug
-4931                     	xref	_i2c_multiple_action_dimmer
-4932                     	xref	_i2c_action_plug
-4933                     	xref	_i2c_single_action_dimmer
-4934                     	xref	_i2c_get_energy_consum
-4935                     	xref	_action_dimmer_ext
-4936                     	xdef	_delay
-4937                     	xref	_systime_count
-4938                     	xref	_init_slc_spc_done
-4939                     	xref	_sys_init
-4940                     	xdef	_check_send_repeatedly
-4941                     	xdef	_send_malfunction
-4942                     	xdef	_send_device_info
-4943                     	xdef	_report_energy_consum
-4944                     	xdef	_rev_cmd_data
-4945                     	xdef	_sicp_receipt_Done
-4946                     	xdef	_sicp_receipt_OK
-4947                     	xdef	_sicp_send_message
-4948                     	xdef	_random
-4949                     	xdef	_rev_deal
-4950                     	xdef	_Check_Sum
-4951                     	xdef	_rev_anaylze
-4952                     	xdef	_UART2_RX_ISR
-4953                     	xdef	_UART2_TX_ISR
-4954                     	xdef	_Init_uart2
-4955                     	xdef	_mymemcpy
-4956                     	switch	.bss
-4957  0000               _mal_timeout:
-4958  0000 00            	ds.b	1
-4959                     	xdef	_mal_timeout
-4960  0001               _di_timeout:
-4961  0001 00            	ds.b	1
-4962                     	xdef	_di_timeout
-4963  0002               _send_failed_count:
-4964  0002 0000          	ds.b	2
-4965                     	xdef	_send_failed_count
-4966  0004               _send_fault_count:
-4967  0004 0000          	ds.b	2
-4968                     	xdef	_send_fault_count
-4969  0006               _sicp_buf:
-4970  0006 000000000000  	ds.b	40
-4971                     	xdef	_sicp_buf
-4972  002e               _Uart2_Rec_Cnt:
-4973  002e 00            	ds.b	1
-4974                     	xdef	_Uart2_Rec_Cnt
-4975  002f               _Uart2_Rece_Buf:
-4976  002f 000000000000  	ds.b	40
-4977                     	xdef	_Uart2_Rece_Buf
-4978  0057               _Uart2_Send_Done:
-4979  0057 00            	ds.b	1
-4980                     	xdef	_Uart2_Send_Done
-4981  0058               _Uart2_Send_Cnt:
-4982  0058 00            	ds.b	1
-4983                     	xdef	_Uart2_Send_Cnt
-4984  0059               _Uart2_Send_Length:
-4985  0059 00            	ds.b	1
-4986                     	xdef	_Uart2_Send_Length
-4987  005a               _UART2_Send_Buf:
-4988  005a 000000000000  	ds.b	40
-4989                     	xdef	_UART2_Send_Buf
-4990  0082               _rev_ad_mesh_id_L:
-4991  0082 00            	ds.b	1
-4992                     	xdef	_rev_ad_mesh_id_L
-4993  0083               _rev_ad_mesh_id_H:
-4994  0083 00            	ds.b	1
-4995                     	xdef	_rev_ad_mesh_id_H
-4996  0084               _rev_ad_channel:
-4997  0084 00            	ds.b	1
-4998                     	xdef	_rev_ad_channel
-4999  0085               _rev_ad_mdid:
-5000  0085 00            	ds.b	1
-5001                     	xdef	_rev_ad_mdid
-5002  0086               _rev_ad_message_id:
-5003  0086 00            	ds.b	1
-5004                     	xdef	_rev_ad_message_id
-5005  0087               _rev_mesh_id_L:
-5006  0087 00            	ds.b	1
-5007                     	xdef	_rev_mesh_id_L
-5008  0088               _rev_mesh_id_H:
-5009  0088 00            	ds.b	1
-5010                     	xdef	_rev_mesh_id_H
-5011  0089               _rev_message_id:
-5012  0089 00            	ds.b	1
-5013                     	xdef	_rev_message_id
-5014  008a               _ns_host_meshid_L:
-5015  008a 00            	ds.b	1
-5016                     	xdef	_ns_host_meshid_L
-5017  008b               _ns_host_meshid_H:
-5018  008b 00            	ds.b	1
-5019                     	xdef	_ns_host_meshid_H
-5020  008c               _ns_own_meshid_L:
-5021  008c 00            	ds.b	1
-5022                     	xdef	_ns_own_meshid_L
-5023  008d               _ns_own_meshid_H:
-5024  008d 00            	ds.b	1
-5025                     	xdef	_ns_own_meshid_H
-5026  008e               _ns_phonenum:
-5027  008e 00            	ds.b	1
-5028                     	xdef	_ns_phonenum
-5029  008f               _ns_status:
-5030  008f 00            	ds.b	1
-5031                     	xdef	_ns_status
-5032  0090               _ns_signal:
-5033  0090 00            	ds.b	1
-5034                     	xdef	_ns_signal
-5035  0091               _sc:
-5036  0091 000000000000  	ds.b	836
-5037                     	xdef	_sc
-5038  03d5               _UART1Flag6_:
-5039  03d5 00            	ds.b	1
-5040                     	xdef	_UART1Flag6_
-5041  03d6               _UART1Flag5_:
-5042  03d6 00            	ds.b	1
-5043                     	xdef	_UART1Flag5_
-5044  03d7               _UART1Flag4_:
-5045  03d7 00            	ds.b	1
-5046                     	xdef	_UART1Flag4_
-5047  03d8               _UART1Flag3_:
-5048  03d8 00            	ds.b	1
-5049                     	xdef	_UART1Flag3_
-5050  03d9               _UART1Flag2_:
-5051  03d9 00            	ds.b	1
-5052                     	xdef	_UART1Flag2_
-5053  03da               _UART1Flag1_:
-5054  03da 00            	ds.b	1
-5055                     	xdef	_UART1Flag1_
-5056                     	xref	_UART2_ITConfig
-5057                     	xref	_UART2_Cmd
-5058                     	xref	_UART2_Init
-5059                     	xref	_UART2_DeInit
-5060                     	xref.b	c_lreg
-5061                     	xref.b	c_x
-5062                     	xref.b	c_y
-5082                     	xref	c_idiv
-5083                     	xref	c_lrzmp
-5084                     	xref	c_lgsbc
-5085                     	xref	c_ltor
-5086                     	end
+ 893                     	switch	.data
+ 894  0000               _BIT:
+ 895  0000 01            	dc.b	1
+ 896  0001 02            	dc.b	2
+ 897  0002 04            	dc.b	4
+ 898  0003 08            	dc.b	8
+ 899  0004 10            	dc.b	16
+ 900  0005 20            	dc.b	32
+ 901  0006 40            	dc.b	64
+ 902  0007 80            	dc.b	128
+ 980                     ; 34 void mymemcpy(void *des,void *src,u32 n)  
+ 980                     ; 35 {  
+ 982                     .text:	section	.text,new
+ 983  0000               _mymemcpy:
+ 985  0000 89            	pushw	x
+ 986  0001 5204          	subw	sp,#4
+ 987       00000004      OFST:	set	4
+ 990                     ; 36   u8 *xdes=des;
+ 992  0003 1f01          	ldw	(OFST-3,sp),x
+ 993                     ; 37 	u8 *xsrc=src; 
+ 995  0005 1e09          	ldw	x,(OFST+5,sp)
+ 996  0007 1f03          	ldw	(OFST-1,sp),x
+ 998  0009 2016          	jra	L335
+ 999  000b               L725:
+1000                     ; 38   while(n--)*xdes++=*xsrc++;  
+1002  000b 1e03          	ldw	x,(OFST-1,sp)
+1003  000d 1c0001        	addw	x,#1
+1004  0010 1f03          	ldw	(OFST-1,sp),x
+1005  0012 1d0001        	subw	x,#1
+1006  0015 f6            	ld	a,(x)
+1007  0016 1e01          	ldw	x,(OFST-3,sp)
+1008  0018 1c0001        	addw	x,#1
+1009  001b 1f01          	ldw	(OFST-3,sp),x
+1010  001d 1d0001        	subw	x,#1
+1011  0020 f7            	ld	(x),a
+1012  0021               L335:
+1015  0021 96            	ldw	x,sp
+1016  0022 1c000b        	addw	x,#OFST+7
+1017  0025 cd0000        	call	c_ltor
+1019  0028 96            	ldw	x,sp
+1020  0029 1c000b        	addw	x,#OFST+7
+1021  002c a601          	ld	a,#1
+1022  002e cd0000        	call	c_lgsbc
+1024  0031 cd0000        	call	c_lrzmp
+1026  0034 26d5          	jrne	L725
+1027                     ; 39 }  
+1030  0036 5b06          	addw	sp,#6
+1031  0038 81            	ret
+1077                     ; 44 void delay(u16 Count)
+1077                     ; 45 {
+1078                     .text:	section	.text,new
+1079  0000               _delay:
+1081  0000 89            	pushw	x
+1082  0001 89            	pushw	x
+1083       00000002      OFST:	set	2
+1086  0002 2014          	jra	L165
+1087  0004               L755:
+1088                     ; 50 		for(i=0; i<100; i++)
+1090  0004 0f01          	clr	(OFST-1,sp)
+1091  0006               L565:
+1092                     ; 51 		for(j=0; j<50; j++);
+1094  0006 0f02          	clr	(OFST+0,sp)
+1095  0008               L375:
+1099  0008 0c02          	inc	(OFST+0,sp)
+1102  000a 7b02          	ld	a,(OFST+0,sp)
+1103  000c a132          	cp	a,#50
+1104  000e 25f8          	jrult	L375
+1105                     ; 50 		for(i=0; i<100; i++)
+1107  0010 0c01          	inc	(OFST-1,sp)
+1110  0012 7b01          	ld	a,(OFST-1,sp)
+1111  0014 a164          	cp	a,#100
+1112  0016 25ee          	jrult	L565
+1113  0018               L165:
+1114                     ; 48 	while (Count--)//Count形参控制延时次数
+1116  0018 1e03          	ldw	x,(OFST+1,sp)
+1117  001a 1d0001        	subw	x,#1
+1118  001d 1f03          	ldw	(OFST+1,sp),x
+1119  001f 1c0001        	addw	x,#1
+1120  0022 a30000        	cpw	x,#0
+1121  0025 26dd          	jrne	L755
+1122                     ; 54 }
+1125  0027 5b04          	addw	sp,#4
+1126  0029 81            	ret
+1173                     ; 62 u8 random(u8 xxx)  
+1173                     ; 63 {  
+1174                     .text:	section	.text,new
+1175  0000               _random:
+1177  0000 88            	push	a
+1178  0001 89            	pushw	x
+1179       00000002      OFST:	set	2
+1182                     ; 65   for(iii=0;iii<xxx;iii++)  
+1184  0002 0f02          	clr	(OFST+0,sp)
+1186  0004 2011          	jra	L526
+1187  0006               L126:
+1188                     ; 67     value = rand() % (MAX + 1- MIN) + MIN; //获取一个随机数1~255
+1190  0006 cd0000        	call	_rand
+1192  0009 90ae00ff      	ldw	y,#255
+1193  000d cd0000        	call	c_idiv
+1195  0010 51            	exgw	x,y
+1196  0011 9f            	ld	a,xl
+1197  0012 4c            	inc	a
+1198  0013 6b01          	ld	(OFST-1,sp),a
+1199                     ; 65   for(iii=0;iii<xxx;iii++)  
+1201  0015 0c02          	inc	(OFST+0,sp)
+1202  0017               L526:
+1205  0017 7b02          	ld	a,(OFST+0,sp)
+1206  0019 1103          	cp	a,(OFST+1,sp)
+1207  001b 25e9          	jrult	L126
+1208                     ; 69   return value;  
+1210  001d 7b01          	ld	a,(OFST-1,sp)
+1213  001f 5b03          	addw	sp,#3
+1214  0021 81            	ret
+1217                     	switch	.data
+1218  0008               L136_id:
+1219  0008 00            	dc.b	0
+1250                     ; 84 u8 sicp_get_message_id(void)
+1250                     ; 85 {
+1251                     .text:	section	.text,new
+1252  0000               _sicp_get_message_id:
+1256                     ; 88 	id++;
+1258  0000 725c0008      	inc	L136_id
+1259                     ; 90 	if(id == 0){
+1261  0004 725d0008      	tnz	L136_id
+1262  0008 2604          	jrne	L746
+1263                     ; 91 		id = 1;
+1265  000a 35010008      	mov	L136_id,#1
+1266  000e               L746:
+1267                     ; 94 	return id;
+1269  000e c60008        	ld	a,L136_id
+1272  0011 81            	ret
+1275                     	switch	.data
+1276  0009               L156_id:
+1277  0009 00            	dc.b	0
+1308                     ; 103 u8 slcspc_get_message_id(void)
+1308                     ; 104 {
+1309                     .text:	section	.text,new
+1310  0000               _slcspc_get_message_id:
+1314                     ; 107 	id++;
+1316  0000 725c0009      	inc	L156_id
+1317                     ; 109 	if(id == 0){
+1319  0004 725d0009      	tnz	L156_id
+1320  0008 2604          	jrne	L766
+1321                     ; 110 		id = 1;
+1323  000a 35010009      	mov	L156_id,#1
+1324  000e               L766:
+1325                     ; 113 	return id;
+1327  000e c60009        	ld	a,L156_id
+1330  0011 81            	ret
+1357                     ; 123 void uart1_init(void)
+1357                     ; 124 {
+1358                     .text:	section	.text,new
+1359  0000               _uart1_init:
+1363                     ; 125 	UART1_DeInit();
+1365  0000 cd0000        	call	_UART1_DeInit
+1367                     ; 127 	UART1_Init((u32)57600, UART1_WORDLENGTH_8D, UART1_STOPBITS_1, 
+1367                     ; 128 		UART1_PARITY_NO, UART1_SYNCMODE_CLOCK_DISABLE, UART1_MODE_TXRX_ENABLE);
+1369  0003 4b0c          	push	#12
+1370  0005 4b80          	push	#128
+1371  0007 4b00          	push	#0
+1372  0009 4b00          	push	#0
+1373  000b 4b00          	push	#0
+1374  000d aee100        	ldw	x,#57600
+1375  0010 89            	pushw	x
+1376  0011 ae0000        	ldw	x,#0
+1377  0014 89            	pushw	x
+1378  0015 cd0000        	call	_UART1_Init
+1380  0018 5b09          	addw	sp,#9
+1381                     ; 129 	UART1_ITConfig(UART1_IT_TC, ENABLE);//发送完成中断
+1383  001a 4b01          	push	#1
+1384  001c ae0266        	ldw	x,#614
+1385  001f cd0000        	call	_UART1_ITConfig
+1387  0022 84            	pop	a
+1388                     ; 130 	UART1_ITConfig(UART1_IT_RXNE_OR, ENABLE);//接收非空中断
+1390  0023 4b01          	push	#1
+1391  0025 ae0205        	ldw	x,#517
+1392  0028 cd0000        	call	_UART1_ITConfig
+1394  002b 84            	pop	a
+1395                     ; 131 	UART1_Cmd(ENABLE);//启用uart1接口
+1397  002c a601          	ld	a,#1
+1398  002e cd0000        	call	_UART1_Cmd
+1400                     ; 132 }
+1403  0031 81            	ret
+1448                     ; 138 void uart1_send(u8 *buf, u16 len)
+1448                     ; 139 {
+1449                     .text:	section	.text,new
+1450  0000               _uart1_send:
+1452  0000 89            	pushw	x
+1453       00000000      OFST:	set	0
+1456                     ; 140 	if(len >= UART1_SEND_LEN)	len = UART1_SEND_LEN;
+1458  0001 1e05          	ldw	x,(OFST+5,sp)
+1459  0003 a30028        	cpw	x,#40
+1460  0006 2505          	jrult	L127
+1463  0008 ae0028        	ldw	x,#40
+1464  000b 1f05          	ldw	(OFST+5,sp),x
+1465  000d               L127:
+1466                     ; 142 	Uart2_Send_Length = len;
+1468  000d 7b06          	ld	a,(OFST+6,sp)
+1469  000f c700c8        	ld	_Uart2_Send_Length,a
+1470                     ; 143 	Uart2_Send_Cnt = 1;
+1472  0012 350100c7      	mov	_Uart2_Send_Cnt,#1
+1473                     ; 144 	UART1->DR = UART2_Send_Buf[0];
+1475  0016 5500c95231    	mov	21041,_UART2_Send_Buf
+1476                     ; 146 }
+1479  001b 85            	popw	x
+1480  001c 81            	ret
+1507                     ; 151 @interrupt void UART1_TX_ISR(void)
+1507                     ; 152 {
+1508                     .text:	section	.text,new
+1509  0000               _UART1_TX_ISR:
+1514                     ; 156 	UART1->SR &= ~0x40;//清除发送完成标志位
+1516  0000 721d5230      	bres	21040,#6
+1517                     ; 158 	if (Uart2_Send_Cnt < Uart2_Send_Length)
+1519  0004 c600c7        	ld	a,_Uart2_Send_Cnt
+1520  0007 c100c8        	cp	a,_Uart2_Send_Length
+1521  000a 2411          	jruge	L337
+1522                     ; 160 		UART1->DR = UART2_Send_Buf[Uart2_Send_Cnt];
+1524  000c c600c7        	ld	a,_Uart2_Send_Cnt
+1525  000f 5f            	clrw	x
+1526  0010 97            	ld	xl,a
+1527  0011 d600c9        	ld	a,(_UART2_Send_Buf,x)
+1528  0014 c75231        	ld	21041,a
+1529                     ; 161 		Uart2_Send_Cnt++;
+1531  0017 725c00c7      	inc	_Uart2_Send_Cnt
+1533  001b 2008          	jra	L537
+1534  001d               L337:
+1535                     ; 165 		Uart2_Send_Done = 1;
+1537  001d 350100c6      	mov	_Uart2_Send_Done,#1
+1538                     ; 166 		Uart2_Send_Cnt = 0;
+1540  0021 725f00c7      	clr	_Uart2_Send_Cnt
+1541  0025               L537:
+1542                     ; 168 }
+1545  0025 80            	iret
+1596                     ; 179 @interrupt void UART1_RX_ISR(void)
+1596                     ; 180 {
+1597                     .text:	section	.text,new
+1598  0000               _UART1_RX_ISR:
+1601       00000001      OFST:	set	1
+1602  0000 3b0002        	push	c_x+2
+1603  0003 be00          	ldw	x,c_x
+1604  0005 89            	pushw	x
+1605  0006 3b0002        	push	c_y+2
+1606  0009 be00          	ldw	x,c_y
+1607  000b 89            	pushw	x
+1608  000c 88            	push	a
+1611                     ; 183 	temp = UART1->DR;
+1613  000d c65231        	ld	a,21041
+1614  0010 6b01          	ld	(OFST+0,sp),a
+1615                     ; 184 	Uart2_Rece_Buf[Uart2_Rec_Cnt] = temp;
+1617  0012 c6009d        	ld	a,_Uart2_Rec_Cnt
+1618  0015 5f            	clrw	x
+1619  0016 97            	ld	xl,a
+1620  0017 7b01          	ld	a,(OFST+0,sp)
+1621  0019 d7009e        	ld	(_Uart2_Rece_Buf,x),a
+1622                     ; 185 	Uart2_Rec_Cnt++;
+1624  001c 725c009d      	inc	_Uart2_Rec_Cnt
+1625                     ; 187 	switch(Uart2_Rec_Cnt)
+1627  0020 c6009d        	ld	a,_Uart2_Rec_Cnt
+1629                     ; 246 			break;
+1630  0023 4a            	dec	a
+1631  0024 2722          	jreq	L737
+1632  0026 4a            	dec	a
+1633  0027 2739          	jreq	L147
+1634  0029 4a            	dec	a
+1635  002a 2603          	jrne	L62
+1636  002c cc0148        	jp	L577
+1637  002f               L62:
+1638  002f 4a            	dec	a
+1639  0030 2603          	jrne	L03
+1640  0032 cc0148        	jp	L577
+1641  0035               L03:
+1642  0035 4a            	dec	a
+1643  0036 2603          	jrne	L23
+1644  0038 cc0148        	jp	L577
+1645  003b               L23:
+1646  003b               L157:
+1647                     ; 204 		default:
+1647                     ; 205 			//防止接收错误后溢出
+1647                     ; 206 			if (Uart2_Rec_Cnt >= Uart2_Rec_Len) {
+1649  003b c6009d        	ld	a,_Uart2_Rec_Cnt
+1650  003e a128          	cp	a,#40
+1651  0040 2543          	jrult	L3001
+1652                     ; 207 				Uart2_Rec_Cnt = 0;
+1654  0042 725f009d      	clr	_Uart2_Rec_Cnt
+1655  0046 203d          	jra	L3001
+1656  0048               L737:
+1657                     ; 189 		case 1:
+1657                     ; 190 			if ((temp != 0xEE) && (temp != 0xDD)) Uart2_Rec_Cnt = 0;
+1659  0048 7b01          	ld	a,(OFST+0,sp)
+1660  004a a1ee          	cp	a,#238
+1661  004c 2603          	jrne	L43
+1662  004e cc0148        	jp	L577
+1663  0051               L43:
+1665  0051 7b01          	ld	a,(OFST+0,sp)
+1666  0053 a1dd          	cp	a,#221
+1667  0055 2603          	jrne	L63
+1668  0057 cc0148        	jp	L577
+1669  005a               L63:
+1672  005a 725f009d      	clr	_Uart2_Rec_Cnt
+1673  005e ac480148      	jpf	L577
+1674  0062               L147:
+1675                     ; 192 		case 2:
+1675                     ; 193 			if ((temp != 0xEE) && (temp != 0xAA) && (temp != 0xDD)) Uart2_Rec_Cnt = 0;
+1677  0062 7b01          	ld	a,(OFST+0,sp)
+1678  0064 a1ee          	cp	a,#238
+1679  0066 2603          	jrne	L04
+1680  0068 cc0148        	jp	L577
+1681  006b               L04:
+1683  006b 7b01          	ld	a,(OFST+0,sp)
+1684  006d a1aa          	cp	a,#170
+1685  006f 2603          	jrne	L24
+1686  0071 cc0148        	jp	L577
+1687  0074               L24:
+1689  0074 7b01          	ld	a,(OFST+0,sp)
+1690  0076 a1dd          	cp	a,#221
+1691  0078 2603          	jrne	L44
+1692  007a cc0148        	jp	L577
+1693  007d               L44:
+1696  007d 725f009d      	clr	_Uart2_Rec_Cnt
+1697  0081 ac480148      	jpf	L577
+1698  0085               L3001:
+1699                     ; 210 			if ((Uart2_Rece_Buf[0] == 0xEE) && ((Uart2_Rece_Buf[1] == 0xEE) || (Uart2_Rece_Buf[1] == 0xAA))){
+1701  0085 c6009e        	ld	a,_Uart2_Rece_Buf
+1702  0088 a1ee          	cp	a,#238
+1703  008a 266a          	jrne	L5001
+1705  008c c6009f        	ld	a,_Uart2_Rece_Buf+1
+1706  008f a1ee          	cp	a,#238
+1707  0091 2707          	jreq	L7001
+1709  0093 c6009f        	ld	a,_Uart2_Rece_Buf+1
+1710  0096 a1aa          	cp	a,#170
+1711  0098 265c          	jrne	L5001
+1712  009a               L7001:
+1713                     ; 212 				if (Uart2_Rec_Cnt > Uart2_Rece_Buf[5] + 2){ //接收数据完成
+1715  009a 9c            	rvf
+1716  009b c6009d        	ld	a,_Uart2_Rec_Cnt
+1717  009e 5f            	clrw	x
+1718  009f 97            	ld	xl,a
+1719  00a0 c600a3        	ld	a,_Uart2_Rece_Buf+5
+1720  00a3 905f          	clrw	y
+1721  00a5 9097          	ld	yl,a
+1722  00a7 905c          	incw	y
+1723  00a9 905c          	incw	y
+1724  00ab bf01          	ldw	c_x+1,x
+1725  00ad 90b301        	cpw	y,c_x+1
+1726  00b0 2f03          	jrslt	L64
+1727  00b2 cc0148        	jp	L577
+1728  00b5               L64:
+1729                     ; 214 					check_sum = Check_Sum(Uart2_Rece_Buf + 2, Uart2_Rece_Buf[5]);
+1731  00b5 3b00a3        	push	_Uart2_Rece_Buf+5
+1732  00b8 ae00a0        	ldw	x,#_Uart2_Rece_Buf+2
+1733  00bb cd0000        	call	_Check_Sum
+1735  00be 5b01          	addw	sp,#1
+1736  00c0 6b01          	ld	(OFST+0,sp),a
+1737                     ; 216 					if (check_sum == Uart2_Rece_Buf[Uart2_Rece_Buf[5] + 2]){		//校验正确	
+1739  00c2 c600a3        	ld	a,_Uart2_Rece_Buf+5
+1740  00c5 5f            	clrw	x
+1741  00c6 97            	ld	xl,a
+1742  00c7 d600a0        	ld	a,(_Uart2_Rece_Buf+2,x)
+1743  00ca 1101          	cp	a,(OFST+0,sp)
+1744  00cc 2622          	jrne	L3101
+1745                     ; 218 						if(sicp_rev_success == 0){
+1747  00ce c6058b        	ld	a,_UART1Flag1_
+1748  00d1 a501          	bcp	a,#1
+1749  00d3 261b          	jrne	L3101
+1750                     ; 219 							sicp_rev_success = 1;
+1752  00d5 7210058b      	bset	_UART1Flag1_,#0
+1753                     ; 220 							for (i = 0; i < Uart2_Rec_Cnt; i++){
+1755  00d9 0f01          	clr	(OFST+0,sp)
+1757  00db 200c          	jra	L3201
+1758  00dd               L7101:
+1759                     ; 221 								sicp_buf[i] = Uart2_Rece_Buf[i];
+1761  00dd 7b01          	ld	a,(OFST+0,sp)
+1762  00df 5f            	clrw	x
+1763  00e0 97            	ld	xl,a
+1764  00e1 d6009e        	ld	a,(_Uart2_Rece_Buf,x)
+1765  00e4 d70075        	ld	(_sicp_buf,x),a
+1766                     ; 220 							for (i = 0; i < Uart2_Rec_Cnt; i++){
+1768  00e7 0c01          	inc	(OFST+0,sp)
+1769  00e9               L3201:
+1772  00e9 7b01          	ld	a,(OFST+0,sp)
+1773  00eb c1009d        	cp	a,_Uart2_Rec_Cnt
+1774  00ee 25ed          	jrult	L7101
+1775  00f0               L3101:
+1776                     ; 226 					Uart2_Rec_Cnt = 0;
+1778  00f0 725f009d      	clr	_Uart2_Rec_Cnt
+1779  00f4 2052          	jra	L577
+1780  00f6               L5001:
+1781                     ; 230 			else if((Uart2_Rece_Buf[0] == 0xDD) && (Uart2_Rece_Buf[1] == 0xDD)){		//控制指令(网络状态帧)
+1783  00f6 c6009e        	ld	a,_Uart2_Rece_Buf
+1784  00f9 a1dd          	cp	a,#221
+1785  00fb 2647          	jrne	L1301
+1787  00fd c6009f        	ld	a,_Uart2_Rece_Buf+1
+1788  0100 a1dd          	cp	a,#221
+1789  0102 2640          	jrne	L1301
+1790                     ; 231 				if (Uart2_Rec_Cnt > Uart2_Rece_Buf[3] + 2){ //接收数据完成					
+1792  0104 9c            	rvf
+1793  0105 c6009d        	ld	a,_Uart2_Rec_Cnt
+1794  0108 5f            	clrw	x
+1795  0109 97            	ld	xl,a
+1796  010a c600a1        	ld	a,_Uart2_Rece_Buf+3
+1797  010d 905f          	clrw	y
+1798  010f 9097          	ld	yl,a
+1799  0111 905c          	incw	y
+1800  0113 905c          	incw	y
+1801  0115 bf01          	ldw	c_x+1,x
+1802  0117 90b301        	cpw	y,c_x+1
+1803  011a 2e2c          	jrsge	L577
+1804                     ; 233 					if(sicp_rev_success == 0){
+1806  011c c6058b        	ld	a,_UART1Flag1_
+1807  011f a501          	bcp	a,#1
+1808  0121 261b          	jrne	L5301
+1809                     ; 234 						sicp_rev_success = 1;
+1811  0123 7210058b      	bset	_UART1Flag1_,#0
+1812                     ; 235 						for (i = 0; i < Uart2_Rec_Cnt; i++){
+1814  0127 0f01          	clr	(OFST+0,sp)
+1816  0129 200c          	jra	L3401
+1817  012b               L7301:
+1818                     ; 236 							sicp_buf[i] = Uart2_Rece_Buf[i];
+1820  012b 7b01          	ld	a,(OFST+0,sp)
+1821  012d 5f            	clrw	x
+1822  012e 97            	ld	xl,a
+1823  012f d6009e        	ld	a,(_Uart2_Rece_Buf,x)
+1824  0132 d70075        	ld	(_sicp_buf,x),a
+1825                     ; 235 						for (i = 0; i < Uart2_Rec_Cnt; i++){
+1827  0135 0c01          	inc	(OFST+0,sp)
+1828  0137               L3401:
+1831  0137 7b01          	ld	a,(OFST+0,sp)
+1832  0139 c1009d        	cp	a,_Uart2_Rec_Cnt
+1833  013c 25ed          	jrult	L7301
+1834  013e               L5301:
+1835                     ; 240 					Uart2_Rec_Cnt = 0;
+1837  013e 725f009d      	clr	_Uart2_Rec_Cnt
+1838  0142 2004          	jra	L577
+1839  0144               L1301:
+1840                     ; 244 				Uart2_Rec_Cnt = 0;
+1842  0144 725f009d      	clr	_Uart2_Rec_Cnt
+1843  0148               L577:
+1844                     ; 250 	if (UART1->SR & 0x20){
+1846  0148 c65230        	ld	a,21040
+1847  014b a520          	bcp	a,#32
+1848  014d 2707          	jreq	L1501
+1849                     ; 251 		temp = UART1->DR;
+1851  014f 7b01          	ld	a,(OFST+0,sp)
+1852  0151 97            	ld	xl,a
+1853  0152 c65231        	ld	a,21041
+1854  0155 97            	ld	xl,a
+1855  0156               L1501:
+1856                     ; 254 }
+1859  0156 84            	pop	a
+1860  0157 85            	popw	x
+1861  0158 bf00          	ldw	c_y,x
+1862  015a 320002        	pop	c_y+2
+1863  015d 85            	popw	x
+1864  015e bf00          	ldw	c_x,x
+1865  0160 320002        	pop	c_x+2
+1866  0163 80            	iret
+1893                     ; 261 void uart3_init(void)
+1893                     ; 262 {
+1894                     .text:	section	.text,new
+1895  0000               _uart3_init:
+1899                     ; 263 	UART3_DeInit();
+1901  0000 cd0000        	call	_UART3_DeInit
+1903                     ; 265 	UART3_Init((u32)19200, UART3_WORDLENGTH_8D, UART3_STOPBITS_1, 
+1903                     ; 266 		UART3_PARITY_NO, UART3_MODE_TXRX_ENABLE);
+1905  0003 4b0c          	push	#12
+1906  0005 4b00          	push	#0
+1907  0007 4b00          	push	#0
+1908  0009 4b00          	push	#0
+1909  000b ae4b00        	ldw	x,#19200
+1910  000e 89            	pushw	x
+1911  000f ae0000        	ldw	x,#0
+1912  0012 89            	pushw	x
+1913  0013 cd0000        	call	_UART3_Init
+1915  0016 5b08          	addw	sp,#8
+1916                     ; 267 	UART3_ITConfig(UART3_IT_TC, ENABLE);//发送完成中断
+1918  0018 4b01          	push	#1
+1919  001a ae0266        	ldw	x,#614
+1920  001d cd0000        	call	_UART3_ITConfig
+1922  0020 84            	pop	a
+1923                     ; 268 	UART3_ITConfig(UART3_IT_RXNE_OR, ENABLE);//接收非空中断
+1925  0021 4b01          	push	#1
+1926  0023 ae0205        	ldw	x,#517
+1927  0026 cd0000        	call	_UART3_ITConfig
+1929  0029 84            	pop	a
+1930                     ; 269 	UART3_Cmd(ENABLE);//启用uart1接口
+1932  002a a601          	ld	a,#1
+1933  002c cd0000        	call	_UART3_Cmd
+1935                     ; 270 }
+1938  002f 81            	ret
+1962                     ; 276 @interrupt void UART3_TX_ISR(void)
+1962                     ; 277 {
+1963                     .text:	section	.text,new
+1964  0000               _UART3_TX_ISR:
+1969                     ; 281 	UART3->SR &= ~0x40; 	//清除发送完成标志位
+1971  0000 721d5240      	bres	21056,#6
+1972                     ; 283 	if (swuart_frame.txhas < swuart_frame.txlen){
+1974  0004 ce001b        	ldw	x,_swuart_frame+12
+1975  0007 c30019        	cpw	x,_swuart_frame+10
+1976  000a 2412          	jruge	L3701
+1977                     ; 285 		UART3->DR = swuart_frame.txbuf[swuart_frame.txhas];
+1979  000c ce001b        	ldw	x,_swuart_frame+12
+1980  000f d60047        	ld	a,(_swuart_frame+56,x)
+1981  0012 c75241        	ld	21057,a
+1982                     ; 286 		swuart_frame.txhas++;
+1984  0015 ce001b        	ldw	x,_swuart_frame+12
+1985  0018 1c0001        	addw	x,#1
+1986  001b cf001b        	ldw	_swuart_frame+12,x
+1987  001e               L3701:
+1988                     ; 290 }
+1991  001e 80            	iret
+2024                     ; 301 @interrupt void UART3_RX_ISR(void)
+2024                     ; 302 {
+2025                     .text:	section	.text,new
+2026  0000               _UART3_RX_ISR:
+2029       00000001      OFST:	set	1
+2030  0000 88            	push	a
+2033                     ; 303 	u8 temp = 0;
+2035  0001 0f01          	clr	(OFST+0,sp)
+2036                     ; 305 	temp = UART3->DR;
+2038  0003 c65241        	ld	a,21057
+2039  0006 6b01          	ld	(OFST+0,sp),a
+2040                     ; 307 	if(swuart_frame.rxtxflag == 2){		/* recv  */
+2042  0008 c6000f        	ld	a,_swuart_frame
+2043  000b a102          	cp	a,#2
+2044  000d 2625          	jrne	L1111
+2045                     ; 308 		swuart_frame.flow = 3;
+2047  000f 35030010      	mov	_swuart_frame+1,#3
+2048                     ; 309 		swuart_frame.rxbuf[swuart_frame.rxhas] = temp;
+2050  0013 7b01          	ld	a,(OFST+0,sp)
+2051  0015 ce0015        	ldw	x,_swuart_frame+6
+2052  0018 d7001f        	ld	(_swuart_frame+16,x),a
+2053                     ; 310 		swuart_frame.rxhas++;
+2055  001b ce0015        	ldw	x,_swuart_frame+6
+2056  001e 1c0001        	addw	x,#1
+2057  0021 cf0015        	ldw	_swuart_frame+6,x
+2058                     ; 311 		swuart_frame.rxOverWait = 0;
+2060  0024 5f            	clrw	x
+2061  0025 cf0017        	ldw	_swuart_frame+8,x
+2062                     ; 313 		if(swuart_frame.rxhas >= UART3_RECV_LEN){
+2064  0028 ce0015        	ldw	x,_swuart_frame+6
+2065  002b a30028        	cpw	x,#40
+2066  002e 2504          	jrult	L1111
+2067                     ; 314 			swuart_frame.rxhas = 0; 		/* 重新接收 */
+2069  0030 5f            	clrw	x
+2070  0031 cf0015        	ldw	_swuart_frame+6,x
+2071  0034               L1111:
+2072                     ; 318 	if (UART3->SR & 0x20){
+2074  0034 c65240        	ld	a,21056
+2075  0037 a520          	bcp	a,#32
+2076  0039 2705          	jreq	L5111
+2077                     ; 319 		temp = UART3->DR;
+2079  003b c65241        	ld	a,21057
+2080  003e 6b01          	ld	(OFST+0,sp),a
+2081  0040               L5111:
+2082                     ; 322 }
+2085  0040 84            	pop	a
+2086  0041 80            	iret
+2142                     ; 334 u8 Check_Sum(u8 *buf,u8 length)
+2142                     ; 335 {
+2143                     .text:	section	.text,new
+2144  0000               _Check_Sum:
+2146  0000 89            	pushw	x
+2147  0001 89            	pushw	x
+2148       00000002      OFST:	set	2
+2151                     ; 337 	u8 result = *buf++;
+2153  0002 1e03          	ldw	x,(OFST+1,sp)
+2154  0004 1c0001        	addw	x,#1
+2155  0007 1f03          	ldw	(OFST+1,sp),x
+2156  0009 1d0001        	subw	x,#1
+2157  000c f6            	ld	a,(x)
+2158  000d 6b01          	ld	(OFST-1,sp),a
+2159                     ; 338 	for(i = 1;i < length;i++)
+2161  000f a601          	ld	a,#1
+2162  0011 6b02          	ld	(OFST+0,sp),a
+2164  0013 2011          	jra	L7411
+2165  0015               L3411:
+2166                     ; 340 		result ^= *buf++;
+2168  0015 1e03          	ldw	x,(OFST+1,sp)
+2169  0017 1c0001        	addw	x,#1
+2170  001a 1f03          	ldw	(OFST+1,sp),x
+2171  001c 1d0001        	subw	x,#1
+2172  001f 7b01          	ld	a,(OFST-1,sp)
+2173  0021 f8            	xor	a,	(x)
+2174  0022 6b01          	ld	(OFST-1,sp),a
+2175                     ; 338 	for(i = 1;i < length;i++)
+2177  0024 0c02          	inc	(OFST+0,sp)
+2178  0026               L7411:
+2181  0026 7b02          	ld	a,(OFST+0,sp)
+2182  0028 1107          	cp	a,(OFST+5,sp)
+2183  002a 25e9          	jrult	L3411
+2184                     ; 342 	return result;
+2186  002c 7b01          	ld	a,(OFST-1,sp)
+2189  002e 5b04          	addw	sp,#4
+2190  0030 81            	ret
+2224                     ; 345 void clear_uart_buf(void)
+2224                     ; 346 {
+2225                     .text:	section	.text,new
+2226  0000               _clear_uart_buf:
+2228  0000 88            	push	a
+2229       00000001      OFST:	set	1
+2232                     ; 348 	for (i = 0;i < Uart2_Rec_Len;i++){
+2234  0001 0f01          	clr	(OFST+0,sp)
+2235  0003               L7611:
+2236                     ; 349 		sicp_buf[i] = Uart2_Rece_Buf[i] = 0;
+2238  0003 7b01          	ld	a,(OFST+0,sp)
+2239  0005 5f            	clrw	x
+2240  0006 97            	ld	xl,a
+2241  0007 724f009e      	clr	(_Uart2_Rece_Buf,x)
+2242  000b 7b01          	ld	a,(OFST+0,sp)
+2243  000d 5f            	clrw	x
+2244  000e 97            	ld	xl,a
+2245  000f 724f0075      	clr	(_sicp_buf,x)
+2246                     ; 348 	for (i = 0;i < Uart2_Rec_Len;i++){
+2248  0013 0c01          	inc	(OFST+0,sp)
+2251  0015 7b01          	ld	a,(OFST+0,sp)
+2252  0017 a128          	cp	a,#40
+2253  0019 25e8          	jrult	L7611
+2254                     ; 351 }
+2257  001b 84            	pop	a
+2258  001c 81            	ret
+2300                     ; 358 void host_meshid_save(u8 meshid_h, u8 meshid_l)
+2300                     ; 359 {
+2301                     .text:	section	.text,new
+2302  0000               _host_meshid_save:
+2304  0000 89            	pushw	x
+2305       00000000      OFST:	set	0
+2308                     ; 361 	if((ns_host_meshid_H != meshid_h) || (ns_host_meshid_L != meshid_l)){
+2310  0001 c600f5        	ld	a,_ns_host_meshid_H
+2311  0004 1101          	cp	a,(OFST+1,sp)
+2312  0006 2607          	jrne	L5121
+2314  0008 c600f4        	ld	a,_ns_host_meshid_L
+2315  000b 1102          	cp	a,(OFST+2,sp)
+2316  000d 271e          	jreq	L3121
+2317  000f               L5121:
+2318                     ; 363 		ns_host_meshid_H = meshid_h;
+2320  000f 7b01          	ld	a,(OFST+1,sp)
+2321  0011 c700f5        	ld	_ns_host_meshid_H,a
+2322                     ; 364 		ns_host_meshid_L = meshid_l;
+2324  0014 7b02          	ld	a,(OFST+2,sp)
+2325  0016 c700f4        	ld	_ns_host_meshid_L,a
+2326                     ; 366 		MEEPROM_WriteByte(EEPROM_MESHID_H_ADDRESS, ns_host_meshid_H);
+2328  0019 3b00f5        	push	_ns_host_meshid_H
+2329  001c ae0031        	ldw	x,#49
+2330  001f cd0000        	call	_MEEPROM_WriteByte
+2332  0022 84            	pop	a
+2333                     ; 367 		MEEPROM_WriteByte(EEPROM_MESHID_L_ADDRESS, ns_host_meshid_L);
+2335  0023 3b00f4        	push	_ns_host_meshid_L
+2336  0026 ae0032        	ldw	x,#50
+2337  0029 cd0000        	call	_MEEPROM_WriteByte
+2339  002c 84            	pop	a
+2340  002d               L3121:
+2341                     ; 371 }
+2344  002d 85            	popw	x
+2345  002e 81            	ret
+2374                     ; 377 void sicp_recv_DD(void)
+2374                     ; 378 {
+2375                     .text:	section	.text,new
+2376  0000               _sicp_recv_DD:
+2380                     ; 379 	switch(sicp_buf[4]){
+2382  0000 c60079        	ld	a,_sicp_buf+4
+2383  0003 a101          	cp	a,#1
+2384  0005 2619          	jrne	L7321
+2387  0007               L7121:
+2388                     ; 380 		case 0x01://网络状态帧
+2388                     ; 381 			ns_signal = sicp_buf[5];
+2390  0007 55007a00fa    	mov	_ns_signal,_sicp_buf+5
+2391                     ; 382 			ns_status = sicp_buf[6];
+2393  000c 55007b00f9    	mov	_ns_status,_sicp_buf+6
+2394                     ; 383 			ns_phonenum = sicp_buf[7];
+2396  0011 55007c00f8    	mov	_ns_phonenum,_sicp_buf+7
+2397                     ; 384 			ns_own_meshid_H = sicp_buf[8];
+2399  0016 55007d00f7    	mov	_ns_own_meshid_H,_sicp_buf+8
+2400                     ; 385 			ns_own_meshid_L = sicp_buf[9];
+2402  001b 55007e00f6    	mov	_ns_own_meshid_L,_sicp_buf+9
+2403                     ; 387 			break;
+2405  0020               L1221:
+2406                     ; 388 		case 0x02:		
+2406                     ; 389 
+2406                     ; 390 			break;
+2408  0020               L3221:
+2409                     ; 391 		case 0x03:		
+2409                     ; 392 
+2409                     ; 393 			break;
+2411  0020               L7321:
+2412                     ; 398 }
+2415  0020 81            	ret
+2481                     ; 404 void sicp_rev_anaylze(void)
+2481                     ; 405 {
+2482                     .text:	section	.text,new
+2483  0000               _sicp_rev_anaylze:
+2485  0000 89            	pushw	x
+2486       00000002      OFST:	set	2
+2489                     ; 409 	if (sicp_buf[0] == 0xDD){	//Network	Status	Reporting	{
+2491  0001 c60075        	ld	a,_sicp_buf
+2492  0004 a1dd          	cp	a,#221
+2493  0006 2603          	jrne	L3031
+2494                     ; 410 		sicp_recv_DD();
+2496  0008 cd0000        	call	_sicp_recv_DD
+2498  000b               L3031:
+2499                     ; 413 	if (sicp_buf[0] == 0xEE){
+2501  000b c60075        	ld	a,_sicp_buf
+2502  000e a1ee          	cp	a,#238
+2503  0010 2703          	jreq	L07
+2504  0012 cc01e5        	jp	L5031
+2505  0015               L07:
+2506                     ; 415 		cmd_led_flag = 1;
+2508  0015 35010000      	mov	_cmd_led_flag,#1
+2509                     ; 417 		rev_message_id 	= sicp_buf[2];
+2511  0019 55007700f3    	mov	_rev_message_id,_sicp_buf+2
+2512                     ; 418 		rev_mesh_id_H	= sicp_buf[3];
+2514  001e 55007800f2    	mov	_rev_mesh_id_H,_sicp_buf+3
+2515                     ; 419 		rev_mesh_id_L  	= sicp_buf[4];
+2517  0023 55007900f1    	mov	_rev_mesh_id_L,_sicp_buf+4
+2518                     ; 427 		switch(sicp_buf[6]){
+2520  0028 c6007b        	ld	a,_sicp_buf+6
+2522                     ; 508 			default:
+2522                     ; 509 				break;
+2523  002b a010          	sub	a,#16
+2524  002d 272a          	jreq	L1421
+2525  002f a041          	sub	a,#65
+2526  0031 2738          	jreq	L3421
+2527  0033 a004          	sub	a,#4
+2528  0035 2603          	jrne	L27
+2529  0037 cc00c6        	jp	L5421
+2530  003a               L27:
+2531  003a a002          	sub	a,#2
+2532  003c 2603          	jrne	L47
+2533  003e cc0137        	jp	L7421
+2534  0041               L47:
+2535  0041 4a            	dec	a
+2536  0042 2603          	jrne	L67
+2537  0044 cc0162        	jp	L1521
+2538  0047               L67:
+2539  0047 a052          	sub	a,#82
+2540  0049 2603          	jrne	L001
+2541  004b cc019c        	jp	L3521
+2542  004e               L001:
+2543  004e a006          	sub	a,#6
+2544  0050 2603          	jrne	L201
+2545  0052 cc01a6        	jp	L7521
+2546  0055               L201:
+2547  0055 ace501e5      	jpf	L5031
+2548  0059               L1421:
+2549                     ; 428 			case 0x10:		//heartbeat获取当前设备状态信息(灯亮度，开关等)
+2549                     ; 429 				if(sicp_buf[7] == 0x02){
+2551  0059 c6007c        	ld	a,_sicp_buf+7
+2552  005c a102          	cp	a,#2
+2553  005e 2703          	jreq	L401
+2554  0060 cc01e5        	jp	L5031
+2555  0063               L401:
+2556                     ; 430 					sicp_heart_beat(SICP_RECV);
+2558  0063 4f            	clr	a
+2559  0064 cd0000        	call	_sicp_heart_beat
+2561  0067 ace501e5      	jpf	L5031
+2562  006b               L3421:
+2563                     ; 433 			case 0x51:	//一个SC下单个SLC多个通道调光
+2563                     ; 434 //			case 0x52:
+2563                     ; 435 //			case 0x53:
+2563                     ; 436 //			case 0x54:				
+2563                     ; 437 				mdid = sicp_buf[7] >> 4;
+2565  006b c6007c        	ld	a,_sicp_buf+7
+2566  006e 4e            	swap	a
+2567  006f a40f          	and	a,#15
+2568  0071 6b01          	ld	(OFST-1,sp),a
+2569                     ; 438 				ret = slcspc_single_action_dimmer(sicp_buf[6], sicp_buf[7], sicp_buf[8], sicp_buf[9]);
+2571  0073 3b007e        	push	_sicp_buf+9
+2572  0076 3b007d        	push	_sicp_buf+8
+2573  0079 c6007c        	ld	a,_sicp_buf+7
+2574  007c 97            	ld	xl,a
+2575  007d c6007b        	ld	a,_sicp_buf+6
+2576  0080 95            	ld	xh,a
+2577  0081 cd0000        	call	_slcspc_single_action_dimmer
+2579  0084 85            	popw	x
+2580  0085 6b02          	ld	(OFST+0,sp),a
+2581                     ; 439 				if(ret == 0){		
+2583  0087 0d02          	tnz	(OFST+0,sp)
+2584  0089 2626          	jrne	L5131
+2585                     ; 440 					sicp_receipt(0x02, rev_message_id, rev_mesh_id_H, rev_mesh_id_L);
+2587  008b 3b00f1        	push	_rev_mesh_id_L
+2588  008e 3b00f2        	push	_rev_mesh_id_H
+2589  0091 c600f3        	ld	a,_rev_message_id
+2590  0094 97            	ld	xl,a
+2591  0095 a602          	ld	a,#2
+2592  0097 95            	ld	xh,a
+2593  0098 cd0000        	call	_sicp_receipt
+2595  009b 85            	popw	x
+2596                     ; 443 					sc.slc[mdid -1].singleDimmer = sicp_buf[9] + SLC_DIMMER_DELAY_TIME;
+2598  009c 7b01          	ld	a,(OFST-1,sp)
+2599  009e 97            	ld	xl,a
+2600  009f a624          	ld	a,#36
+2601  00a1 42            	mul	x,a
+2602  00a2 1d0024        	subw	x,#36
+2603  00a5 c6007e        	ld	a,_sicp_buf+9
+2604  00a8 ab0a          	add	a,#10
+2605  00aa d70389        	ld	(_sc+654,x),a
+2607  00ad ace501e5      	jpf	L5031
+2608  00b1               L5131:
+2609                     ; 446 					sicp_receipt(0x03, rev_message_id, rev_mesh_id_H, rev_mesh_id_L);
+2611  00b1 3b00f1        	push	_rev_mesh_id_L
+2612  00b4 3b00f2        	push	_rev_mesh_id_H
+2613  00b7 c600f3        	ld	a,_rev_message_id
+2614  00ba 97            	ld	xl,a
+2615  00bb a603          	ld	a,#3
+2616  00bd 95            	ld	xh,a
+2617  00be cd0000        	call	_sicp_receipt
+2619  00c1 85            	popw	x
+2620  00c2 ace501e5      	jpf	L5031
+2621  00c6               L5421:
+2622                     ; 450 			case 0x55:	//打开或关闭开关	
+2622                     ; 451 				mdid = sicp_buf[7] >> 4;
+2624  00c6 c6007c        	ld	a,_sicp_buf+7
+2625  00c9 4e            	swap	a
+2626  00ca a40f          	and	a,#15
+2627  00cc 6b01          	ld	(OFST-1,sp),a
+2628                     ; 452 				ret = slcspc_action_plug(sicp_buf[6], sicp_buf[7], sicp_buf[8], sicp_buf[9]);				
+2630  00ce 3b007e        	push	_sicp_buf+9
+2631  00d1 3b007d        	push	_sicp_buf+8
+2632  00d4 c6007c        	ld	a,_sicp_buf+7
+2633  00d7 97            	ld	xl,a
+2634  00d8 c6007b        	ld	a,_sicp_buf+6
+2635  00db 95            	ld	xh,a
+2636  00dc cd0000        	call	_slcspc_action_plug
+2638  00df 85            	popw	x
+2639  00e0 6b02          	ld	(OFST+0,sp),a
+2640                     ; 453 				if(ret == 0) {
+2642  00e2 0d02          	tnz	(OFST+0,sp)
+2643  00e4 263c          	jrne	L1231
+2644                     ; 454 					sicp_receipt_Done(0x05, rev_message_id, rev_mesh_id_H, rev_mesh_id_L, 0x02, mdid);
+2646  00e6 7b01          	ld	a,(OFST-1,sp)
+2647  00e8 88            	push	a
+2648  00e9 4b02          	push	#2
+2649  00eb 3b00f1        	push	_rev_mesh_id_L
+2650  00ee 3b00f2        	push	_rev_mesh_id_H
+2651  00f1 c600f3        	ld	a,_rev_message_id
+2652  00f4 97            	ld	xl,a
+2653  00f5 a605          	ld	a,#5
+2654  00f7 95            	ld	xh,a
+2655  00f8 cd0000        	call	_sicp_receipt_Done
+2657  00fb 5b04          	addw	sp,#4
+2658                     ; 456 					if((rev_mesh_id_H != ns_host_meshid_H) || (rev_mesh_id_L != ns_host_meshid_L)){
+2660  00fd c600f2        	ld	a,_rev_mesh_id_H
+2661  0100 c100f5        	cp	a,_ns_host_meshid_H
+2662  0103 260b          	jrne	L5231
+2664  0105 c600f1        	ld	a,_rev_mesh_id_L
+2665  0108 c100f4        	cp	a,_ns_host_meshid_L
+2666  010b 2603          	jrne	L601
+2667  010d cc01e5        	jp	L5031
+2668  0110               L601:
+2669  0110               L5231:
+2670                     ; 458 						sc.spc[mdid -1].syncTimes = SPC_SYNC_DELAY_TIME;
+2672  0110 7b01          	ld	a,(OFST-1,sp)
+2673  0112 97            	ld	xl,a
+2674  0113 a627          	ld	a,#39
+2675  0115 42            	mul	x,a
+2676  0116 1d0027        	subw	x,#39
+2677  0119 a60a          	ld	a,#10
+2678  011b d70143        	ld	(_sc+72,x),a
+2679  011e ace501e5      	jpf	L5031
+2680  0122               L1231:
+2681                     ; 461 					sicp_receipt(0x03, rev_message_id, rev_mesh_id_H, rev_mesh_id_L);
+2683  0122 3b00f1        	push	_rev_mesh_id_L
+2684  0125 3b00f2        	push	_rev_mesh_id_H
+2685  0128 c600f3        	ld	a,_rev_message_id
+2686  012b 97            	ld	xl,a
+2687  012c a603          	ld	a,#3
+2688  012e 95            	ld	xh,a
+2689  012f cd0000        	call	_sicp_receipt
+2691  0132 85            	popw	x
+2692  0133 ace501e5      	jpf	L5031
+2693  0137               L7421:
+2694                     ; 465 			case 0x57:	//一个SC下多个SLC多个通道调光
+2694                     ; 466 				num = sicp_buf[7];
+2696  0137 c6007c        	ld	a,_sicp_buf+7
+2697  013a 6b02          	ld	(OFST+0,sp),a
+2698                     ; 467 				sicp_receipt(0x02, rev_message_id, rev_mesh_id_H, rev_mesh_id_L);
+2700  013c 3b00f1        	push	_rev_mesh_id_L
+2701  013f 3b00f2        	push	_rev_mesh_id_H
+2702  0142 c600f3        	ld	a,_rev_message_id
+2703  0145 97            	ld	xl,a
+2704  0146 a602          	ld	a,#2
+2705  0148 95            	ld	xh,a
+2706  0149 cd0000        	call	_sicp_receipt
+2708  014c 85            	popw	x
+2709                     ; 469 				slcspc_multiple_action_dimmer(num);
+2711  014d 7b02          	ld	a,(OFST+0,sp)
+2712  014f cd0000        	call	_slcspc_multiple_action_dimmer
+2714                     ; 472 				sc.slcMultipleDimmer = sicp_buf[9 + num] + SLC_DIMMER_DELAY_TIME;
+2716  0152 7b02          	ld	a,(OFST+0,sp)
+2717  0154 5f            	clrw	x
+2718  0155 97            	ld	xl,a
+2719  0156 d6007e        	ld	a,(_sicp_buf+9,x)
+2720  0159 ab0a          	add	a,#10
+2721  015b c7011e        	ld	_sc+35,a
+2722                     ; 473 				break;
+2724  015e ace501e5      	jpf	L5031
+2725  0162               L1521:
+2726                     ; 475 			case 0x58:	//多个SPC多个通道开关 直接回复心跳包
+2726                     ; 476 				num = sicp_buf[7];
+2728  0162 c6007c        	ld	a,_sicp_buf+7
+2729  0165 6b02          	ld	(OFST+0,sp),a
+2730                     ; 477 				ret = slcspc_multiple_action_plug(num);
+2732  0167 7b02          	ld	a,(OFST+0,sp)
+2733  0169 97            	ld	xl,a
+2734  016a 7b02          	ld	a,(OFST+0,sp)
+2735  016c cd0000        	call	_slcspc_multiple_action_plug
+2737                     ; 478 				if((rev_mesh_id_H == ns_host_meshid_H) && (rev_mesh_id_L == ns_host_meshid_L)){			/* SS的控制 */
+2739  016f c600f2        	ld	a,_rev_mesh_id_H
+2740  0172 c100f5        	cp	a,_ns_host_meshid_H
+2741  0175 260e          	jrne	L1331
+2743  0177 c600f1        	ld	a,_rev_mesh_id_L
+2744  017a c100f4        	cp	a,_ns_host_meshid_L
+2745  017d 2606          	jrne	L1331
+2746                     ; 479 					sicp_heart_beat(SICP_RECV);
+2748  017f 4f            	clr	a
+2749  0180 cd0000        	call	_sicp_heart_beat
+2752  0183 2060          	jra	L5031
+2753  0185               L1331:
+2754                     ; 481 					sicp_receipt(0x02, rev_message_id, rev_mesh_id_H, rev_mesh_id_L);
+2756  0185 3b00f1        	push	_rev_mesh_id_L
+2757  0188 3b00f2        	push	_rev_mesh_id_H
+2758  018b c600f3        	ld	a,_rev_message_id
+2759  018e 97            	ld	xl,a
+2760  018f a602          	ld	a,#2
+2761  0191 95            	ld	xh,a
+2762  0192 cd0000        	call	_sicp_receipt
+2764  0195 85            	popw	x
+2765                     ; 482 					sc.spcMultipleSync = SPC_SYNC_DELAY_TIME;
+2767  0196 350a011f      	mov	_sc+36,#10
+2768  019a 2049          	jra	L5031
+2769  019c               L3521:
+2770                     ; 487 			case 0xAA:	/* 接收回执 */	
+2770                     ; 488 				malfunction_sended_confirm(rev_message_id);
+2772  019c c600f3        	ld	a,_rev_message_id
+2773  019f cd0000        	call	_malfunction_sended_confirm
+2775                     ; 489 				break;
+2777  01a2 2041          	jra	L5031
+2778  01a4               L5521:
+2779                     ; 491 			case 0x05:	//Alert Command,SC接收到该条指令不用做任何处理
+2779                     ; 492 				break;
+2781  01a4 203f          	jra	L5031
+2782  01a6               L7521:
+2783                     ; 494 			case 0xB0:	//Gateway	Mesh	ID	Broadcasting
+2783                     ; 495 				if(rev_message_id == 0){
+2785  01a6 725d00f3      	tnz	_rev_message_id
+2786  01aa 2639          	jrne	L5031
+2787                     ; 497 					if((sc.deviceID[0] == sicp_buf[7]) && (sc.deviceID[1] == sicp_buf[8]) && 
+2787                     ; 498 					    (sc.deviceID[2] == sicp_buf[9]) && (sc.deviceID[3] == sicp_buf[10])){
+2789  01ac c600fb        	ld	a,_sc
+2790  01af c1007c        	cp	a,_sicp_buf+7
+2791  01b2 2631          	jrne	L5031
+2793  01b4 c600fc        	ld	a,_sc+1
+2794  01b7 c1007d        	cp	a,_sicp_buf+8
+2795  01ba 2629          	jrne	L5031
+2797  01bc c600fd        	ld	a,_sc+2
+2798  01bf c1007e        	cp	a,_sicp_buf+9
+2799  01c2 2621          	jrne	L5031
+2801  01c4 c600fe        	ld	a,_sc+3
+2802  01c7 c1007f        	cp	a,_sicp_buf+10
+2803  01ca 2619          	jrne	L5031
+2804                     ; 500 						host_meshid_save(rev_mesh_id_H, rev_mesh_id_L);
+2806  01cc c600f1        	ld	a,_rev_mesh_id_L
+2807  01cf 97            	ld	xl,a
+2808  01d0 c600f2        	ld	a,_rev_mesh_id_H
+2809  01d3 95            	ld	xh,a
+2810  01d4 cd0000        	call	_host_meshid_save
+2812                     ; 501 						rev_ssbroadcast = 1;
+2814  01d7 7214058a      	bset	_UART1Flag2_,#2
+2815                     ; 502 						send_device_info_all(0xAA, rev_message_id);
+2817  01db c600f3        	ld	a,_rev_message_id
+2818  01de 97            	ld	xl,a
+2819  01df a6aa          	ld	a,#170
+2820  01e1 95            	ld	xh,a
+2821  01e2 cd0000        	call	_send_device_info_all
+2823  01e5               L1621:
+2824                     ; 508 			default:
+2824                     ; 509 				break;
+2826  01e5               L1131:
+2827  01e5               L5031:
+2828                     ; 515 }
+2831  01e5 85            	popw	x
+2832  01e6 81            	ret
+2933                     ; 518 void sicp_send_message(SICP_Message *tx,u8 payload_len)
+2933                     ; 519 {
+2934                     .text:	section	.text,new
+2935  0000               _sicp_send_message:
+2937  0000 89            	pushw	x
+2938       00000000      OFST:	set	0
+2941                     ; 522 	UART2_Send_Buf[0] = tx->frame_h1;
+2943  0001 f6            	ld	a,(x)
+2944  0002 c700c9        	ld	_UART2_Send_Buf,a
+2945                     ; 523 	UART2_Send_Buf[1] = tx->frame_h2;
+2947  0005 e601          	ld	a,(1,x)
+2948  0007 c700ca        	ld	_UART2_Send_Buf+1,a
+2949                     ; 524 	UART2_Send_Buf[2] = tx->message_id;
+2951  000a e602          	ld	a,(2,x)
+2952  000c c700cb        	ld	_UART2_Send_Buf+2,a
+2953                     ; 525 	UART2_Send_Buf[3] = tx->mesh_id_H;
+2955  000f e603          	ld	a,(3,x)
+2956  0011 c700cc        	ld	_UART2_Send_Buf+3,a
+2957                     ; 526 	UART2_Send_Buf[4] = tx->mesh_id_L;
+2959  0014 e604          	ld	a,(4,x)
+2960  0016 c700cd        	ld	_UART2_Send_Buf+4,a
+2961                     ; 527 	UART2_Send_Buf[5] = 4+payload_len;
+2963  0019 7b05          	ld	a,(OFST+5,sp)
+2964  001b ab04          	add	a,#4
+2965  001d c700ce        	ld	_UART2_Send_Buf+5,a
+2966                     ; 528 	mymemcpy(&UART2_Send_Buf[6],tx->payload,payload_len);
+2968  0020 7b05          	ld	a,(OFST+5,sp)
+2969  0022 b703          	ld	c_lreg+3,a
+2970  0024 3f02          	clr	c_lreg+2
+2971  0026 3f01          	clr	c_lreg+1
+2972  0028 3f00          	clr	c_lreg
+2973  002a be02          	ldw	x,c_lreg+2
+2974  002c 89            	pushw	x
+2975  002d be00          	ldw	x,c_lreg
+2976  002f 89            	pushw	x
+2977  0030 1e05          	ldw	x,(OFST+5,sp)
+2978  0032 1c0005        	addw	x,#5
+2979  0035 89            	pushw	x
+2980  0036 ae00cf        	ldw	x,#_UART2_Send_Buf+6
+2981  0039 cd0000        	call	_mymemcpy
+2983  003c 5b06          	addw	sp,#6
+2984                     ; 529 	UART2_Send_Buf[6+payload_len] = Check_Sum(&UART2_Send_Buf[2],UART2_Send_Buf[5]);
+2986  003e 7b05          	ld	a,(OFST+5,sp)
+2987  0040 5f            	clrw	x
+2988  0041 97            	ld	xl,a
+2989  0042 89            	pushw	x
+2990  0043 3b00ce        	push	_UART2_Send_Buf+5
+2991  0046 ae00cb        	ldw	x,#_UART2_Send_Buf+2
+2992  0049 cd0000        	call	_Check_Sum
+2994  004c 5b01          	addw	sp,#1
+2995  004e 85            	popw	x
+2996  004f d700cf        	ld	(_UART2_Send_Buf+6,x),a
+2997                     ; 530 	uart1_send(UART2_Send_Buf,7+payload_len);
+2999  0052 7b05          	ld	a,(OFST+5,sp)
+3000  0054 5f            	clrw	x
+3001  0055 97            	ld	xl,a
+3002  0056 1c0007        	addw	x,#7
+3003  0059 89            	pushw	x
+3004  005a ae00c9        	ldw	x,#_UART2_Send_Buf
+3005  005d cd0000        	call	_uart1_send
+3007  0060 85            	popw	x
+3009  0061               L7041:
+3010                     ; 531 	while(!Uart2_Send_Done);	Uart2_Send_Done = 0;//等待这包数据发送完成
+3012  0061 725d00c6      	tnz	_Uart2_Send_Done
+3013  0065 27fa          	jreq	L7041
+3016  0067 725f00c6      	clr	_Uart2_Send_Done
+3017                     ; 532 }
+3020  006b 85            	popw	x
+3021  006c 81            	ret
+3085                     ; 538 void sicp_receipt(u8 type,u8 msgid,u8 meshid_h,u8 meshid_l)
+3085                     ; 539 {
+3086                     .text:	section	.text,new
+3087  0000               _sicp_receipt:
+3089  0000 89            	pushw	x
+3090  0001 5237          	subw	sp,#55
+3091       00000037      OFST:	set	55
+3094                     ; 542 	receipt.frame_h1 = 0xEE;
+3096  0003 a6ee          	ld	a,#238
+3097  0005 6b01          	ld	(OFST-54,sp),a
+3098                     ; 543 	receipt.frame_h2 = 0xAA;
+3100  0007 a6aa          	ld	a,#170
+3101  0009 6b02          	ld	(OFST-53,sp),a
+3102                     ; 544 	receipt.message_id = msgid;
+3104  000b 9f            	ld	a,xl
+3105  000c 6b03          	ld	(OFST-52,sp),a
+3106                     ; 545 	receipt.mesh_id_H = meshid_h;
+3108  000e 7b3c          	ld	a,(OFST+5,sp)
+3109  0010 6b04          	ld	(OFST-51,sp),a
+3110                     ; 546 	receipt.mesh_id_L = meshid_l;
+3112  0012 7b3d          	ld	a,(OFST+6,sp)
+3113  0014 6b05          	ld	(OFST-50,sp),a
+3114                     ; 547 	receipt.payload[0] = 0xAA;
+3116  0016 a6aa          	ld	a,#170
+3117  0018 6b06          	ld	(OFST-49,sp),a
+3118                     ; 548 	receipt.payload[1] = type;
+3120  001a 9e            	ld	a,xh
+3121  001b 6b07          	ld	(OFST-48,sp),a
+3122                     ; 550 	sicp_send_message(&receipt, 2);
+3124  001d 4b02          	push	#2
+3125  001f 96            	ldw	x,sp
+3126  0020 1c0002        	addw	x,#OFST-53
+3127  0023 cd0000        	call	_sicp_send_message
+3129  0026 84            	pop	a
+3130                     ; 551 }
+3133  0027 5b39          	addw	sp,#57
+3134  0029 81            	ret
+3213                     ; 555 void sicp_receipt_Done(u8 type, u8 msgid, u8 meshid_h, u8 meshid_l, u8 method, u8 mdid)
+3213                     ; 556 {
+3214                     .text:	section	.text,new
+3215  0000               _sicp_receipt_Done:
+3217  0000 89            	pushw	x
+3218  0001 5237          	subw	sp,#55
+3219       00000037      OFST:	set	55
+3222                     ; 558 	receipt.frame_h1 = 0xEE;
+3224  0003 a6ee          	ld	a,#238
+3225  0005 6b01          	ld	(OFST-54,sp),a
+3226                     ; 559 	receipt.frame_h2 = 0xAA;
+3228  0007 a6aa          	ld	a,#170
+3229  0009 6b02          	ld	(OFST-53,sp),a
+3230                     ; 560 	receipt.message_id = msgid;
+3232  000b 9f            	ld	a,xl
+3233  000c 6b03          	ld	(OFST-52,sp),a
+3234                     ; 561 	receipt.mesh_id_H = meshid_h;
+3236  000e 7b3c          	ld	a,(OFST+5,sp)
+3237  0010 6b04          	ld	(OFST-51,sp),a
+3238                     ; 562 	receipt.mesh_id_L = meshid_l;
+3240  0012 7b3d          	ld	a,(OFST+6,sp)
+3241  0014 6b05          	ld	(OFST-50,sp),a
+3242                     ; 563 	receipt.payload[0] = 0xAA;
+3244  0016 a6aa          	ld	a,#170
+3245  0018 6b06          	ld	(OFST-49,sp),a
+3246                     ; 564 	receipt.payload[1] = type;
+3248  001a 9e            	ld	a,xh
+3249  001b 6b07          	ld	(OFST-48,sp),a
+3250                     ; 565 	switch(method){
+3252  001d 7b3e          	ld	a,(OFST+7,sp)
+3254                     ; 583 		default:
+3254                     ; 584 			break;
+3255  001f 4a            	dec	a
+3256  0020 2706          	jreq	L1441
+3257  0022 4a            	dec	a
+3258  0023 274b          	jreq	L3441
+3259  0025 cc00b6        	jra	L3051
+3260  0028               L1441:
+3261                     ; 566 		case 0x01:	//action Dimmer调光的执行回执
+3261                     ; 567 			receipt.payload[2] = mdid;
+3263  0028 7b3f          	ld	a,(OFST+8,sp)
+3264  002a 6b08          	ld	(OFST-47,sp),a
+3265                     ; 568 			receipt.payload[3] = sc.slc[mdid-1].ch1_status;
+3267  002c 7b3f          	ld	a,(OFST+8,sp)
+3268  002e 97            	ld	xl,a
+3269  002f a624          	ld	a,#36
+3270  0031 42            	mul	x,a
+3271  0032 1d0024        	subw	x,#36
+3272  0035 d60384        	ld	a,(_sc+649,x)
+3273  0038 6b09          	ld	(OFST-46,sp),a
+3274                     ; 569 			receipt.payload[4] = sc.slc[mdid-1].ch2_status;
+3276  003a 7b3f          	ld	a,(OFST+8,sp)
+3277  003c 97            	ld	xl,a
+3278  003d a624          	ld	a,#36
+3279  003f 42            	mul	x,a
+3280  0040 1d0024        	subw	x,#36
+3281  0043 d60385        	ld	a,(_sc+650,x)
+3282  0046 6b0a          	ld	(OFST-45,sp),a
+3283                     ; 570 			receipt.payload[5] = sc.slc[mdid-1].ch3_status;
+3285  0048 7b3f          	ld	a,(OFST+8,sp)
+3286  004a 97            	ld	xl,a
+3287  004b a624          	ld	a,#36
+3288  004d 42            	mul	x,a
+3289  004e 1d0024        	subw	x,#36
+3290  0051 d60386        	ld	a,(_sc+651,x)
+3291  0054 6b0b          	ld	(OFST-44,sp),a
+3292                     ; 571 			receipt.payload[6] = sc.slc[mdid-1].ch4_status;
+3294  0056 7b3f          	ld	a,(OFST+8,sp)
+3295  0058 97            	ld	xl,a
+3296  0059 a624          	ld	a,#36
+3297  005b 42            	mul	x,a
+3298  005c 1d0024        	subw	x,#36
+3299  005f d60387        	ld	a,(_sc+652,x)
+3300  0062 6b0c          	ld	(OFST-43,sp),a
+3301                     ; 572 			sicp_send_message(&receipt,7);
+3303  0064 4b07          	push	#7
+3304  0066 96            	ldw	x,sp
+3305  0067 1c0002        	addw	x,#OFST-53
+3306  006a cd0000        	call	_sicp_send_message
+3308  006d 84            	pop	a
+3309                     ; 574 			break;
+3311  006e 2046          	jra	L3051
+3312  0070               L3441:
+3313                     ; 575 		case 0x02:	//action plug switch打开或关闭开关的执行回执
+3313                     ; 576 			receipt.payload[2] = mdid;
+3315  0070 7b3f          	ld	a,(OFST+8,sp)
+3316  0072 6b08          	ld	(OFST-47,sp),a
+3317                     ; 577 			receipt.payload[3] = sc.spc[mdid-1].ch1_status;
+3319  0074 7b3f          	ld	a,(OFST+8,sp)
+3320  0076 97            	ld	xl,a
+3321  0077 a627          	ld	a,#39
+3322  0079 42            	mul	x,a
+3323  007a 1d0027        	subw	x,#39
+3324  007d d6013b        	ld	a,(_sc+64,x)
+3325  0080 6b09          	ld	(OFST-46,sp),a
+3326                     ; 578 			receipt.payload[4] = sc.spc[mdid-1].ch2_status;
+3328  0082 7b3f          	ld	a,(OFST+8,sp)
+3329  0084 97            	ld	xl,a
+3330  0085 a627          	ld	a,#39
+3331  0087 42            	mul	x,a
+3332  0088 1d0027        	subw	x,#39
+3333  008b d6013c        	ld	a,(_sc+65,x)
+3334  008e 6b0a          	ld	(OFST-45,sp),a
+3335                     ; 579 			receipt.payload[5] = sc.spc[mdid-1].ch3_status;
+3337  0090 7b3f          	ld	a,(OFST+8,sp)
+3338  0092 97            	ld	xl,a
+3339  0093 a627          	ld	a,#39
+3340  0095 42            	mul	x,a
+3341  0096 1d0027        	subw	x,#39
+3342  0099 d6013d        	ld	a,(_sc+66,x)
+3343  009c 6b0b          	ld	(OFST-44,sp),a
+3344                     ; 580 			receipt.payload[6] = sc.spc[mdid-1].ch4_status;
+3346  009e 7b3f          	ld	a,(OFST+8,sp)
+3347  00a0 97            	ld	xl,a
+3348  00a1 a627          	ld	a,#39
+3349  00a3 42            	mul	x,a
+3350  00a4 1d0027        	subw	x,#39
+3351  00a7 d6013e        	ld	a,(_sc+67,x)
+3352  00aa 6b0c          	ld	(OFST-43,sp),a
+3353                     ; 581 			sicp_send_message(&receipt, 7);
+3355  00ac 4b07          	push	#7
+3356  00ae 96            	ldw	x,sp
+3357  00af 1c0002        	addw	x,#OFST-53
+3358  00b2 cd0000        	call	_sicp_send_message
+3360  00b5 84            	pop	a
+3361                     ; 582 			break;
+3363  00b6               L5441:
+3364                     ; 583 		default:
+3364                     ; 584 			break;
+3366  00b6               L3051:
+3367                     ; 588 }
+3370  00b6 5b39          	addw	sp,#57
+3371  00b8 81            	ret
+3477                     ; 593 void sicp_heart_beat(SICP_RXTX_TYPE s)
+3477                     ; 594 {
+3478                     .text:	section	.text,new
+3479  0000               _sicp_heart_beat:
+3481  0000 88            	push	a
+3482  0001 523e          	subw	sp,#62
+3483       0000003e      OFST:	set	62
+3486                     ; 598 	cmd_data.frame_h1 = 0xEE;
+3488  0003 a6ee          	ld	a,#238
+3489  0005 6b06          	ld	(OFST-56,sp),a
+3490                     ; 599 	if(s == SICP_RECV){
+3492  0007 0d3f          	tnz	(OFST+1,sp)
+3493  0009 260b          	jrne	L1551
+3494                     ; 600 		cmd_data.frame_h2 = 0xAA;
+3496  000b a6aa          	ld	a,#170
+3497  000d 6b07          	ld	(OFST-55,sp),a
+3498                     ; 601 		cmd_data.message_id = rev_message_id;
+3500  000f c600f3        	ld	a,_rev_message_id
+3501  0012 6b08          	ld	(OFST-54,sp),a
+3503  0014 2009          	jra	L3551
+3504  0016               L1551:
+3505                     ; 603 		cmd_data.frame_h2 = 0xEE;
+3507  0016 a6ee          	ld	a,#238
+3508  0018 6b07          	ld	(OFST-55,sp),a
+3509                     ; 604 		cmd_data.message_id = sicp_get_message_id();
+3511  001a cd0000        	call	_sicp_get_message_id
+3513  001d 6b08          	ld	(OFST-54,sp),a
+3514  001f               L3551:
+3515                     ; 607 	cmd_data.mesh_id_H = ns_host_meshid_H;
+3517  001f c600f5        	ld	a,_ns_host_meshid_H
+3518  0022 6b09          	ld	(OFST-53,sp),a
+3519                     ; 608 	cmd_data.mesh_id_L = ns_host_meshid_L;
+3521  0024 c600f4        	ld	a,_ns_host_meshid_L
+3522  0027 6b0a          	ld	(OFST-52,sp),a
+3523                     ; 609 	cmd_data.payload[0] = 0x11;
+3525  0029 a611          	ld	a,#17
+3526  002b 6b0b          	ld	(OFST-51,sp),a
+3527                     ; 611  	len = 9;	
+3529  002d a609          	ld	a,#9
+3530  002f 6b03          	ld	(OFST-59,sp),a
+3531                     ; 612 	data = 0;
+3533  0031 0f04          	clr	(OFST-58,sp)
+3534                     ; 613 	cnt = 0;
+3536  0033 0f05          	clr	(OFST-57,sp)
+3537                     ; 614 	for(i = 0; i < 15; i++){
+3539  0035 0f3e          	clr	(OFST+0,sp)
+3540  0037               L5551:
+3541                     ; 615 		cnt++;
+3543  0037 0c05          	inc	(OFST-57,sp)
+3544                     ; 616 		tmp = 0;
+3546  0039 0f3d          	clr	(OFST-1,sp)
+3547                     ; 617 		if(sc.slc[i].MDID){
+3549  003b 7b3e          	ld	a,(OFST+0,sp)
+3550  003d 97            	ld	xl,a
+3551  003e a624          	ld	a,#36
+3552  0040 42            	mul	x,a
+3553  0041 724d0383      	tnz	(_sc+648,x)
+3554  0045 2603          	jrne	L061
+3555  0047 cc00e6        	jp	L3651
+3556  004a               L061:
+3557                     ; 618 			tmp |= sc.slc[i].ch1_status ? 0x01 : 0;
+3559  004a 7b3e          	ld	a,(OFST+0,sp)
+3560  004c 97            	ld	xl,a
+3561  004d a624          	ld	a,#36
+3562  004f 42            	mul	x,a
+3563  0050 724d0384      	tnz	(_sc+649,x)
+3564  0054 2704          	jreq	L021
+3565  0056 a601          	ld	a,#1
+3566  0058 2001          	jra	L221
+3567  005a               L021:
+3568  005a 4f            	clr	a
+3569  005b               L221:
+3570  005b 1a3d          	or	a,(OFST-1,sp)
+3571  005d 6b3d          	ld	(OFST-1,sp),a
+3572                     ; 619 			tmp |= sc.slc[i].ch2_status ? 0x02 : 0;
+3574  005f 7b3e          	ld	a,(OFST+0,sp)
+3575  0061 97            	ld	xl,a
+3576  0062 a624          	ld	a,#36
+3577  0064 42            	mul	x,a
+3578  0065 724d0385      	tnz	(_sc+650,x)
+3579  0069 2704          	jreq	L421
+3580  006b a602          	ld	a,#2
+3581  006d 2001          	jra	L621
+3582  006f               L421:
+3583  006f 4f            	clr	a
+3584  0070               L621:
+3585  0070 1a3d          	or	a,(OFST-1,sp)
+3586  0072 6b3d          	ld	(OFST-1,sp),a
+3587                     ; 620 			tmp |= 0x08;
+3589  0074 7b3d          	ld	a,(OFST-1,sp)
+3590  0076 aa08          	or	a,#8
+3591  0078 6b3d          	ld	(OFST-1,sp),a
+3592                     ; 621 			data |= (cnt == 1) ? (tmp << 4) : tmp;
+3594  007a 7b05          	ld	a,(OFST-57,sp)
+3595  007c a101          	cp	a,#1
+3596  007e 2609          	jrne	L031
+3597  0080 7b3d          	ld	a,(OFST-1,sp)
+3598  0082 97            	ld	xl,a
+3599  0083 a610          	ld	a,#16
+3600  0085 42            	mul	x,a
+3601  0086 9f            	ld	a,xl
+3602  0087 2002          	jra	L231
+3603  0089               L031:
+3604  0089 7b3d          	ld	a,(OFST-1,sp)
+3605  008b               L231:
+3606  008b 1a04          	or	a,(OFST-58,sp)
+3607  008d 6b04          	ld	(OFST-58,sp),a
+3608                     ; 623 			if(sc.slc[i].ch1_status){ cmd_data.payload[len++] = sc.slc[i].ch1_status;}
+3610  008f 7b3e          	ld	a,(OFST+0,sp)
+3611  0091 97            	ld	xl,a
+3612  0092 a624          	ld	a,#36
+3613  0094 42            	mul	x,a
+3614  0095 724d0384      	tnz	(_sc+649,x)
+3615  0099 271d          	jreq	L5651
+3618  009b 96            	ldw	x,sp
+3619  009c 1c000b        	addw	x,#OFST-51
+3620  009f 1f01          	ldw	(OFST-61,sp),x
+3621  00a1 7b03          	ld	a,(OFST-59,sp)
+3622  00a3 97            	ld	xl,a
+3623  00a4 0c03          	inc	(OFST-59,sp)
+3624  00a6 9f            	ld	a,xl
+3625  00a7 5f            	clrw	x
+3626  00a8 97            	ld	xl,a
+3627  00a9 72fb01        	addw	x,(OFST-61,sp)
+3628  00ac 89            	pushw	x
+3629  00ad 7b40          	ld	a,(OFST+2,sp)
+3630  00af 97            	ld	xl,a
+3631  00b0 a624          	ld	a,#36
+3632  00b2 42            	mul	x,a
+3633  00b3 d60384        	ld	a,(_sc+649,x)
+3634  00b6 85            	popw	x
+3635  00b7 f7            	ld	(x),a
+3636  00b8               L5651:
+3637                     ; 624 			if(sc.slc[i].ch2_status){ cmd_data.payload[len++] = sc.slc[i].ch2_status;}
+3639  00b8 7b3e          	ld	a,(OFST+0,sp)
+3640  00ba 97            	ld	xl,a
+3641  00bb a624          	ld	a,#36
+3642  00bd 42            	mul	x,a
+3643  00be 724d0385      	tnz	(_sc+650,x)
+3644  00c2 2603          	jrne	L261
+3645  00c4 cc015b        	jp	L1751
+3646  00c7               L261:
+3649  00c7 96            	ldw	x,sp
+3650  00c8 1c000b        	addw	x,#OFST-51
+3651  00cb 1f01          	ldw	(OFST-61,sp),x
+3652  00cd 7b03          	ld	a,(OFST-59,sp)
+3653  00cf 97            	ld	xl,a
+3654  00d0 0c03          	inc	(OFST-59,sp)
+3655  00d2 9f            	ld	a,xl
+3656  00d3 5f            	clrw	x
+3657  00d4 97            	ld	xl,a
+3658  00d5 72fb01        	addw	x,(OFST-61,sp)
+3659  00d8 89            	pushw	x
+3660  00d9 7b40          	ld	a,(OFST+2,sp)
+3661  00db 97            	ld	xl,a
+3662  00dc a624          	ld	a,#36
+3663  00de 42            	mul	x,a
+3664  00df d60385        	ld	a,(_sc+650,x)
+3665  00e2 85            	popw	x
+3666  00e3 f7            	ld	(x),a
+3667  00e4 2075          	jra	L1751
+3668  00e6               L3651:
+3669                     ; 626 		}else if(sc.spc[i].MDID){
+3671  00e6 7b3e          	ld	a,(OFST+0,sp)
+3672  00e8 97            	ld	xl,a
+3673  00e9 a627          	ld	a,#39
+3674  00eb 42            	mul	x,a
+3675  00ec 724d013a      	tnz	(_sc+63,x)
+3676  00f0 2756          	jreq	L3751
+3677                     ; 627 			tmp |= sc.spc[i].ch1_status ? 0x01 : 0;
+3679  00f2 7b3e          	ld	a,(OFST+0,sp)
+3680  00f4 97            	ld	xl,a
+3681  00f5 a627          	ld	a,#39
+3682  00f7 42            	mul	x,a
+3683  00f8 724d013b      	tnz	(_sc+64,x)
+3684  00fc 2704          	jreq	L431
+3685  00fe a601          	ld	a,#1
+3686  0100 2001          	jra	L631
+3687  0102               L431:
+3688  0102 4f            	clr	a
+3689  0103               L631:
+3690  0103 1a3d          	or	a,(OFST-1,sp)
+3691  0105 6b3d          	ld	(OFST-1,sp),a
+3692                     ; 628 			tmp |= sc.spc[i].ch2_status ? 0x02 : 0;
+3694  0107 7b3e          	ld	a,(OFST+0,sp)
+3695  0109 97            	ld	xl,a
+3696  010a a627          	ld	a,#39
+3697  010c 42            	mul	x,a
+3698  010d 724d013c      	tnz	(_sc+65,x)
+3699  0111 2704          	jreq	L041
+3700  0113 a602          	ld	a,#2
+3701  0115 2001          	jra	L241
+3702  0117               L041:
+3703  0117 4f            	clr	a
+3704  0118               L241:
+3705  0118 1a3d          	or	a,(OFST-1,sp)
+3706  011a 6b3d          	ld	(OFST-1,sp),a
+3707                     ; 629 			tmp |= sc.spc[i].ch3_status ? 0x04 : 0;
+3709  011c 7b3e          	ld	a,(OFST+0,sp)
+3710  011e 97            	ld	xl,a
+3711  011f a627          	ld	a,#39
+3712  0121 42            	mul	x,a
+3713  0122 724d013d      	tnz	(_sc+66,x)
+3714  0126 2704          	jreq	L441
+3715  0128 a604          	ld	a,#4
+3716  012a 2001          	jra	L641
+3717  012c               L441:
+3718  012c 4f            	clr	a
+3719  012d               L641:
+3720  012d 1a3d          	or	a,(OFST-1,sp)
+3721  012f 6b3d          	ld	(OFST-1,sp),a
+3722                     ; 630 			data |= (cnt == 1) ? (tmp << 4) : tmp;
+3724  0131 7b05          	ld	a,(OFST-57,sp)
+3725  0133 a101          	cp	a,#1
+3726  0135 2609          	jrne	L051
+3727  0137 7b3d          	ld	a,(OFST-1,sp)
+3728  0139 97            	ld	xl,a
+3729  013a a610          	ld	a,#16
+3730  013c 42            	mul	x,a
+3731  013d 9f            	ld	a,xl
+3732  013e 2002          	jra	L251
+3733  0140               L051:
+3734  0140 7b3d          	ld	a,(OFST-1,sp)
+3735  0142               L251:
+3736  0142 1a04          	or	a,(OFST-58,sp)
+3737  0144 6b04          	ld	(OFST-58,sp),a
+3739  0146 2013          	jra	L1751
+3740  0148               L3751:
+3741                     ; 633 			tmp = 0x0c;
+3743  0148 7b3d          	ld	a,(OFST-1,sp)
+3744  014a 97            	ld	xl,a
+3745                     ; 634 			data |= (cnt == 1) ? (tmp << 4) : tmp;
+3747  014b 7b05          	ld	a,(OFST-57,sp)
+3748  014d a101          	cp	a,#1
+3749  014f 2604          	jrne	L451
+3750  0151 a6c0          	ld	a,#192
+3751  0153 2002          	jra	L651
+3752  0155               L451:
+3753  0155 a60c          	ld	a,#12
+3754  0157               L651:
+3755  0157 1a04          	or	a,(OFST-58,sp)
+3756  0159 6b04          	ld	(OFST-58,sp),a
+3757  015b               L1751:
+3758                     ; 637 		if(cnt >= 2){		/* 一个字节完成 */
+3760  015b 7b05          	ld	a,(OFST-57,sp)
+3761  015d a102          	cp	a,#2
+3762  015f 251a          	jrult	L7751
+3763                     ; 638 			cmd_data.payload[(i + 1) /2] = data;
+3765  0161 96            	ldw	x,sp
+3766  0162 1c000b        	addw	x,#OFST-51
+3767  0165 1f01          	ldw	(OFST-61,sp),x
+3768  0167 7b3e          	ld	a,(OFST+0,sp)
+3769  0169 5f            	clrw	x
+3770  016a 97            	ld	xl,a
+3771  016b 5c            	incw	x
+3772  016c a602          	ld	a,#2
+3773  016e cd0000        	call	c_sdivx
+3775  0171 72fb01        	addw	x,(OFST-61,sp)
+3776  0174 7b04          	ld	a,(OFST-58,sp)
+3777  0176 f7            	ld	(x),a
+3778                     ; 639 			data = 0;
+3780  0177 0f04          	clr	(OFST-58,sp)
+3781                     ; 640 			cnt = 0;
+3783  0179 0f05          	clr	(OFST-57,sp)
+3784  017b               L7751:
+3785                     ; 614 	for(i = 0; i < 15; i++){
+3787  017b 0c3e          	inc	(OFST+0,sp)
+3790  017d 7b3e          	ld	a,(OFST+0,sp)
+3791  017f a10f          	cp	a,#15
+3792  0181 2403          	jruge	L461
+3793  0183 cc0037        	jp	L5551
+3794  0186               L461:
+3795                     ; 643 	cmd_data.payload[8] = data;
+3797  0186 7b04          	ld	a,(OFST-58,sp)
+3798  0188 6b13          	ld	(OFST-43,sp),a
+3799                     ; 645 	sicp_send_message(&cmd_data, len);
+3801  018a 7b03          	ld	a,(OFST-59,sp)
+3802  018c 88            	push	a
+3803  018d 96            	ldw	x,sp
+3804  018e 1c0007        	addw	x,#OFST-55
+3805  0191 cd0000        	call	_sicp_send_message
+3807  0194 84            	pop	a
+3808                     ; 647 }
+3811  0195 5b3f          	addw	sp,#63
+3812  0197 81            	ret
+3815                     	switch	.data
+3816  000a               L1061_eg_timeout:
+3817  000a 00            	dc.b	0
+3818  000b               L3061_counts:
+3819  000b 00            	dc.b	0
+3820  000c               L5061_i:
+3821  000c 00            	dc.b	0
+3882                     ; 654 void report_energy_consum(void)
+3882                     ; 655 {
+3883                     .text:	section	.text,new
+3884  0000               _report_energy_consum:
+3888                     ; 662 	counts++;
+3890  0000 725c000b      	inc	L3061_counts
+3891                     ; 697 }
+3894  0004 81            	ret
+3897                     	switch	.data
+3898  000d               L3361_counts:
+3899  000d 0000          	dc.w	0
+3947                     ; 707 u8 send_device_info_active(void)
+3947                     ; 708 {
+3948                     .text:	section	.text,new
+3949  0000               _send_device_info_active:
+3951  0000 89            	pushw	x
+3952       00000002      OFST:	set	2
+3955                     ; 710 	u8 ret = 0;
+3957  0001 0f02          	clr	(OFST+0,sp)
+3958                     ; 711 	u8 waits = 60 + (ns_host_meshid_L & 0x0f);
+3960  0003 c600f4        	ld	a,_ns_host_meshid_L
+3961  0006 a40f          	and	a,#15
+3962  0008 ab3c          	add	a,#60
+3963  000a 6b01          	ld	(OFST-1,sp),a
+3964                     ; 713 	if(ns_host_meshid_H){			/* meshid 存在 */
+3966  000c 725d00f5      	tnz	_ns_host_meshid_H
+3967  0010 2725          	jreq	L5561
+3968                     ; 715 		counts++;
+3970  0012 ce000d        	ldw	x,L3361_counts
+3971  0015 1c0001        	addw	x,#1
+3972  0018 cf000d        	ldw	L3361_counts,x
+3973                     ; 717 		if(counts >= waits){
+3975  001b 7b01          	ld	a,(OFST-1,sp)
+3976  001d 5f            	clrw	x
+3977  001e 97            	ld	xl,a
+3978  001f bf00          	ldw	c_x,x
+3979  0021 ce000d        	ldw	x,L3361_counts
+3980  0024 b300          	cpw	x,c_x
+3981  0026 250f          	jrult	L5561
+3982                     ; 718 			send_device_info_all(0xEE, 0);
+3984  0028 5f            	clrw	x
+3985  0029 a6ee          	ld	a,#238
+3986  002b 95            	ld	xh,a
+3987  002c cd0000        	call	_send_device_info_all
+3989                     ; 719 			counts = 0;
+3991  002f 5f            	clrw	x
+3992  0030 cf000d        	ldw	L3361_counts,x
+3993                     ; 720 			ret = 1;
+3995  0033 a601          	ld	a,#1
+3996  0035 6b02          	ld	(OFST+0,sp),a
+3997  0037               L5561:
+3998                     ; 723 	return ret;
+4000  0037 7b02          	ld	a,(OFST+0,sp)
+4003  0039 85            	popw	x
+4004  003a 81            	ret
+4074                     ; 733 void send_device_info_all(u8 type, u8 msgid)
+4074                     ; 734 {
+4075                     .text:	section	.text,new
+4076  0000               _send_device_info_all:
+4078  0000 89            	pushw	x
+4079  0001 5239          	subw	sp,#57
+4080       00000039      OFST:	set	57
+4083                     ; 738 	di.frame_h1 = 0xEE;
+4085  0003 a6ee          	ld	a,#238
+4086  0005 6b01          	ld	(OFST-56,sp),a
+4087                     ; 739 	di.frame_h2 = type;
+4089  0007 9e            	ld	a,xh
+4090  0008 6b02          	ld	(OFST-55,sp),a
+4091                     ; 740 	if(type == 0xEE){
+4093  000a 9e            	ld	a,xh
+4094  000b a1ee          	cp	a,#238
+4095  000d 2605          	jrne	L7071
+4096                     ; 741 		di.message_id = sicp_get_message_id();
+4098  000f cd0000        	call	_sicp_get_message_id
+4100  0012 6b03          	ld	(OFST-54,sp),a
+4101  0014               L7071:
+4102                     ; 743 	if(type == 0xAA){
+4104  0014 7b3a          	ld	a,(OFST+1,sp)
+4105  0016 a1aa          	cp	a,#170
+4106  0018 2604          	jrne	L1171
+4107                     ; 744 		di.message_id = msgid;
+4109  001a 7b3b          	ld	a,(OFST+2,sp)
+4110  001c 6b03          	ld	(OFST-54,sp),a
+4111  001e               L1171:
+4112                     ; 746 	di.mesh_id_H = ns_host_meshid_H;
+4114  001e c600f5        	ld	a,_ns_host_meshid_H
+4115  0021 6b04          	ld	(OFST-53,sp),a
+4116                     ; 747 	di.mesh_id_L = ns_host_meshid_L;
+4118  0023 c600f4        	ld	a,_ns_host_meshid_L
+4119  0026 6b05          	ld	(OFST-52,sp),a
+4120                     ; 748 	di.payload[0] = 0xB1;
+4122  0028 a6b1          	ld	a,#177
+4123  002a 6b06          	ld	(OFST-51,sp),a
+4124                     ; 749 	di.payload[1] =	sc.deviceID[0];
+4126  002c c600fb        	ld	a,_sc
+4127  002f 6b07          	ld	(OFST-50,sp),a
+4128                     ; 750 	di.payload[2] =	sc.deviceID[1];
+4130  0031 c600fc        	ld	a,_sc+1
+4131  0034 6b08          	ld	(OFST-49,sp),a
+4132                     ; 751 	di.payload[3] =	sc.deviceID[2];
+4134  0036 c600fd        	ld	a,_sc+2
+4135  0039 6b09          	ld	(OFST-48,sp),a
+4136                     ; 752 	di.payload[4] =	sc.deviceID[3];
+4138  003b c600fe        	ld	a,_sc+3
+4139  003e 6b0a          	ld	(OFST-47,sp),a
+4140                     ; 753 	di.payload[5] =	sc.model;
+4142  0040 c60100        	ld	a,_sc+5
+4143  0043 6b0b          	ld	(OFST-46,sp),a
+4144                     ; 754 	di.payload[6] = sc.firmware_version;
+4146  0045 c60101        	ld	a,_sc+6
+4147  0048 6b0c          	ld	(OFST-45,sp),a
+4148                     ; 755 	di.payload[7] = sc.HWTtest;
+4150  004a c60117        	ld	a,_sc+28
+4151  004d 6b0d          	ld	(OFST-44,sp),a
+4152                     ; 757 	tmp = 0;
+4154  004f 0f38          	clr	(OFST-1,sp)
+4155                     ; 758 	for(i=1; i<8; i++){
+4157  0051 a601          	ld	a,#1
+4158  0053 6b39          	ld	(OFST+0,sp),a
+4159  0055               L3171:
+4160                     ; 759 		if(sc.slc[i -1].MDID){
+4162  0055 7b39          	ld	a,(OFST+0,sp)
+4163  0057 97            	ld	xl,a
+4164  0058 a624          	ld	a,#36
+4165  005a 42            	mul	x,a
+4166  005b 1d0024        	subw	x,#36
+4167  005e 724d0383      	tnz	(_sc+648,x)
+4168  0062 270b          	jreq	L1271
+4169                     ; 760 			tmp |= BIT[i];
+4171  0064 7b39          	ld	a,(OFST+0,sp)
+4172  0066 5f            	clrw	x
+4173  0067 97            	ld	xl,a
+4174  0068 7b38          	ld	a,(OFST-1,sp)
+4175  006a da0000        	or	a,(_BIT,x)
+4176  006d 6b38          	ld	(OFST-1,sp),a
+4177  006f               L1271:
+4178                     ; 758 	for(i=1; i<8; i++){
+4180  006f 0c39          	inc	(OFST+0,sp)
+4183  0071 7b39          	ld	a,(OFST+0,sp)
+4184  0073 a108          	cp	a,#8
+4185  0075 25de          	jrult	L3171
+4186                     ; 763 	di.payload[8] = tmp;
+4188  0077 7b38          	ld	a,(OFST-1,sp)
+4189  0079 6b0e          	ld	(OFST-43,sp),a
+4190                     ; 765 	tmp = 0;
+4192  007b 0f38          	clr	(OFST-1,sp)
+4193                     ; 766 	for(i=0; i<8; i++){
+4195  007d 0f39          	clr	(OFST+0,sp)
+4196  007f               L3271:
+4197                     ; 767 		if(sc.slc[i+7].MDID){
+4199  007f 7b39          	ld	a,(OFST+0,sp)
+4200  0081 97            	ld	xl,a
+4201  0082 a624          	ld	a,#36
+4202  0084 42            	mul	x,a
+4203  0085 724d047f      	tnz	(_sc+900,x)
+4204  0089 270b          	jreq	L1371
+4205                     ; 768 			tmp |= BIT[i];
+4207  008b 7b39          	ld	a,(OFST+0,sp)
+4208  008d 5f            	clrw	x
+4209  008e 97            	ld	xl,a
+4210  008f 7b38          	ld	a,(OFST-1,sp)
+4211  0091 da0000        	or	a,(_BIT,x)
+4212  0094 6b38          	ld	(OFST-1,sp),a
+4213  0096               L1371:
+4214                     ; 766 	for(i=0; i<8; i++){
+4216  0096 0c39          	inc	(OFST+0,sp)
+4219  0098 7b39          	ld	a,(OFST+0,sp)
+4220  009a a108          	cp	a,#8
+4221  009c 25e1          	jrult	L3271
+4222                     ; 771 	di.payload[9] = tmp;
+4224  009e 7b38          	ld	a,(OFST-1,sp)
+4225  00a0 6b0f          	ld	(OFST-42,sp),a
+4226                     ; 773 	tmp = 0;
+4228  00a2 0f38          	clr	(OFST-1,sp)
+4229                     ; 774 	for(i=1; i<8; i++){
+4231  00a4 a601          	ld	a,#1
+4232  00a6 6b39          	ld	(OFST+0,sp),a
+4233  00a8               L3371:
+4234                     ; 775 		if(sc.spc[i -1].MDID){
+4236  00a8 7b39          	ld	a,(OFST+0,sp)
+4237  00aa 97            	ld	xl,a
+4238  00ab a627          	ld	a,#39
+4239  00ad 42            	mul	x,a
+4240  00ae 1d0027        	subw	x,#39
+4241  00b1 724d013a      	tnz	(_sc+63,x)
+4242  00b5 270b          	jreq	L1471
+4243                     ; 776 			tmp |= BIT[i];
+4245  00b7 7b39          	ld	a,(OFST+0,sp)
+4246  00b9 5f            	clrw	x
+4247  00ba 97            	ld	xl,a
+4248  00bb 7b38          	ld	a,(OFST-1,sp)
+4249  00bd da0000        	or	a,(_BIT,x)
+4250  00c0 6b38          	ld	(OFST-1,sp),a
+4251  00c2               L1471:
+4252                     ; 774 	for(i=1; i<8; i++){
+4254  00c2 0c39          	inc	(OFST+0,sp)
+4257  00c4 7b39          	ld	a,(OFST+0,sp)
+4258  00c6 a108          	cp	a,#8
+4259  00c8 25de          	jrult	L3371
+4260                     ; 779 	di.payload[10] = tmp;
+4262  00ca 7b38          	ld	a,(OFST-1,sp)
+4263  00cc 6b10          	ld	(OFST-41,sp),a
+4264                     ; 781 	tmp = 0;
+4266  00ce 0f38          	clr	(OFST-1,sp)
+4267                     ; 782 	for(i=0; i<8; i++){
+4269  00d0 0f39          	clr	(OFST+0,sp)
+4270  00d2               L3471:
+4271                     ; 783 		if(sc.spc[i+7].MDID){
+4273  00d2 7b39          	ld	a,(OFST+0,sp)
+4274  00d4 97            	ld	xl,a
+4275  00d5 a627          	ld	a,#39
+4276  00d7 42            	mul	x,a
+4277  00d8 724d024b      	tnz	(_sc+336,x)
+4278  00dc 270b          	jreq	L1571
+4279                     ; 784 			tmp |= BIT[i];
+4281  00de 7b39          	ld	a,(OFST+0,sp)
+4282  00e0 5f            	clrw	x
+4283  00e1 97            	ld	xl,a
+4284  00e2 7b38          	ld	a,(OFST-1,sp)
+4285  00e4 da0000        	or	a,(_BIT,x)
+4286  00e7 6b38          	ld	(OFST-1,sp),a
+4287  00e9               L1571:
+4288                     ; 782 	for(i=0; i<8; i++){
+4290  00e9 0c39          	inc	(OFST+0,sp)
+4293  00eb 7b39          	ld	a,(OFST+0,sp)
+4294  00ed a108          	cp	a,#8
+4295  00ef 25e1          	jrult	L3471
+4296                     ; 787 	di.payload[11] = tmp;
+4298  00f1 7b38          	ld	a,(OFST-1,sp)
+4299  00f3 6b11          	ld	(OFST-40,sp),a
+4300                     ; 789 	sicp_send_message(&di, 12);
+4302  00f5 4b0c          	push	#12
+4303  00f7 96            	ldw	x,sp
+4304  00f8 1c0002        	addw	x,#OFST-55
+4305  00fb cd0000        	call	_sicp_send_message
+4307  00fe 84            	pop	a
+4308                     ; 791 }
+4311  00ff 5b3b          	addw	sp,#59
+4312  0101 81            	ret
+4360                     ; 795 void send_slc_device_info(u8 i)
+4360                     ; 796 {
+4361                     .text:	section	.text,new
+4362  0000               _send_slc_device_info:
+4364  0000 88            	push	a
+4365  0001 5237          	subw	sp,#55
+4366       00000037      OFST:	set	55
+4369                     ; 799 	di.frame_h1 = 0xEE;
+4371  0003 a6ee          	ld	a,#238
+4372  0005 6b01          	ld	(OFST-54,sp),a
+4373                     ; 800 	di.frame_h2 = 0xEE;
+4375  0007 a6ee          	ld	a,#238
+4376  0009 6b02          	ld	(OFST-53,sp),a
+4377                     ; 801 	di.message_id = sicp_get_message_id();
+4379  000b cd0000        	call	_sicp_get_message_id
+4381  000e 6b03          	ld	(OFST-52,sp),a
+4382                     ; 802 	di.mesh_id_H = ns_host_meshid_H;
+4384  0010 c600f5        	ld	a,_ns_host_meshid_H
+4385  0013 6b04          	ld	(OFST-51,sp),a
+4386                     ; 803 	di.mesh_id_L = ns_host_meshid_L;
+4388  0015 c600f4        	ld	a,_ns_host_meshid_L
+4389  0018 6b05          	ld	(OFST-50,sp),a
+4390                     ; 804 	di.payload[0] = 0xB2;
+4392  001a a6b2          	ld	a,#178
+4393  001c 6b06          	ld	(OFST-49,sp),a
+4394                     ; 805 	di.payload[1] =	sc.slc[i].deviceID[0];
+4396  001e 7b38          	ld	a,(OFST+1,sp)
+4397  0020 97            	ld	xl,a
+4398  0021 a624          	ld	a,#36
+4399  0023 42            	mul	x,a
+4400  0024 d60369        	ld	a,(_sc+622,x)
+4401  0027 6b07          	ld	(OFST-48,sp),a
+4402                     ; 806 	di.payload[2] =	sc.slc[i].deviceID[1];
+4404  0029 7b38          	ld	a,(OFST+1,sp)
+4405  002b 97            	ld	xl,a
+4406  002c a624          	ld	a,#36
+4407  002e 42            	mul	x,a
+4408  002f d6036a        	ld	a,(_sc+623,x)
+4409  0032 6b08          	ld	(OFST-47,sp),a
+4410                     ; 807 	di.payload[3] =	sc.slc[i].deviceID[2];
+4412  0034 7b38          	ld	a,(OFST+1,sp)
+4413  0036 97            	ld	xl,a
+4414  0037 a624          	ld	a,#36
+4415  0039 42            	mul	x,a
+4416  003a d6036b        	ld	a,(_sc+624,x)
+4417  003d 6b09          	ld	(OFST-46,sp),a
+4418                     ; 808 	di.payload[4] =	sc.slc[i].deviceID[3];
+4420  003f 7b38          	ld	a,(OFST+1,sp)
+4421  0041 97            	ld	xl,a
+4422  0042 a624          	ld	a,#36
+4423  0044 42            	mul	x,a
+4424  0045 d6036c        	ld	a,(_sc+625,x)
+4425  0048 6b0a          	ld	(OFST-45,sp),a
+4426                     ; 809 	di.payload[5] =	sc.slc[i].model;
+4428  004a 7b38          	ld	a,(OFST+1,sp)
+4429  004c 97            	ld	xl,a
+4430  004d a624          	ld	a,#36
+4431  004f 42            	mul	x,a
+4432  0050 d6036d        	ld	a,(_sc+626,x)
+4433  0053 6b0b          	ld	(OFST-44,sp),a
+4434                     ; 810 	di.payload[6] = sc.slc[i].firmware_version;
+4436  0055 7b38          	ld	a,(OFST+1,sp)
+4437  0057 97            	ld	xl,a
+4438  0058 a624          	ld	a,#36
+4439  005a 42            	mul	x,a
+4440  005b d6036e        	ld	a,(_sc+627,x)
+4441  005e 6b0c          	ld	(OFST-43,sp),a
+4442                     ; 811 	di.payload[7] = sc.slc[i].HWTtest;
+4444  0060 7b38          	ld	a,(OFST+1,sp)
+4445  0062 97            	ld	xl,a
+4446  0063 a624          	ld	a,#36
+4447  0065 42            	mul	x,a
+4448  0066 d6038a        	ld	a,(_sc+655,x)
+4449  0069 6b0d          	ld	(OFST-42,sp),a
+4450                     ; 812 	di.payload[8] = sc.slc[i].MDID;
+4452  006b 7b38          	ld	a,(OFST+1,sp)
+4453  006d 97            	ld	xl,a
+4454  006e a624          	ld	a,#36
+4455  0070 42            	mul	x,a
+4456  0071 d60383        	ld	a,(_sc+648,x)
+4457  0074 6b0e          	ld	(OFST-41,sp),a
+4458                     ; 813 	sicp_send_message(&di,9);
+4460  0076 4b09          	push	#9
+4461  0078 96            	ldw	x,sp
+4462  0079 1c0002        	addw	x,#OFST-53
+4463  007c cd0000        	call	_sicp_send_message
+4465  007f 84            	pop	a
+4466                     ; 815 }
+4469  0080 5b38          	addw	sp,#56
+4470  0082 81            	ret
+4518                     ; 818 void send_spc_device_info(u8 i)
+4518                     ; 819 {
+4519                     .text:	section	.text,new
+4520  0000               _send_spc_device_info:
+4522  0000 88            	push	a
+4523  0001 5237          	subw	sp,#55
+4524       00000037      OFST:	set	55
+4527                     ; 821 	di.frame_h1 = 0xEE;
+4529  0003 a6ee          	ld	a,#238
+4530  0005 6b01          	ld	(OFST-54,sp),a
+4531                     ; 822 	di.frame_h2 = 0xEE;
+4533  0007 a6ee          	ld	a,#238
+4534  0009 6b02          	ld	(OFST-53,sp),a
+4535                     ; 823 	di.message_id = sicp_get_message_id();
+4537  000b cd0000        	call	_sicp_get_message_id
+4539  000e 6b03          	ld	(OFST-52,sp),a
+4540                     ; 824 	di.mesh_id_H = ns_host_meshid_H;
+4542  0010 c600f5        	ld	a,_ns_host_meshid_H
+4543  0013 6b04          	ld	(OFST-51,sp),a
+4544                     ; 825 	di.mesh_id_L = ns_host_meshid_L;
+4546  0015 c600f4        	ld	a,_ns_host_meshid_L
+4547  0018 6b05          	ld	(OFST-50,sp),a
+4548                     ; 826 	di.payload[0] = 0xB3;
+4550  001a a6b3          	ld	a,#179
+4551  001c 6b06          	ld	(OFST-49,sp),a
+4552                     ; 827 	di.payload[1] =	sc.spc[i].deviceID[0];
+4554  001e 7b38          	ld	a,(OFST+1,sp)
+4555  0020 97            	ld	xl,a
+4556  0021 a627          	ld	a,#39
+4557  0023 42            	mul	x,a
+4558  0024 d60120        	ld	a,(_sc+37,x)
+4559  0027 6b07          	ld	(OFST-48,sp),a
+4560                     ; 828 	di.payload[2] =	sc.spc[i].deviceID[1];
+4562  0029 7b38          	ld	a,(OFST+1,sp)
+4563  002b 97            	ld	xl,a
+4564  002c a627          	ld	a,#39
+4565  002e 42            	mul	x,a
+4566  002f d60121        	ld	a,(_sc+38,x)
+4567  0032 6b08          	ld	(OFST-47,sp),a
+4568                     ; 829 	di.payload[3] =	sc.spc[i].deviceID[2];
+4570  0034 7b38          	ld	a,(OFST+1,sp)
+4571  0036 97            	ld	xl,a
+4572  0037 a627          	ld	a,#39
+4573  0039 42            	mul	x,a
+4574  003a d60122        	ld	a,(_sc+39,x)
+4575  003d 6b09          	ld	(OFST-46,sp),a
+4576                     ; 830 	di.payload[4] =	sc.spc[i].deviceID[3];
+4578  003f 7b38          	ld	a,(OFST+1,sp)
+4579  0041 97            	ld	xl,a
+4580  0042 a627          	ld	a,#39
+4581  0044 42            	mul	x,a
+4582  0045 d60123        	ld	a,(_sc+40,x)
+4583  0048 6b0a          	ld	(OFST-45,sp),a
+4584                     ; 831 	di.payload[5] =	sc.spc[i].model;
+4586  004a 7b38          	ld	a,(OFST+1,sp)
+4587  004c 97            	ld	xl,a
+4588  004d a627          	ld	a,#39
+4589  004f 42            	mul	x,a
+4590  0050 d60124        	ld	a,(_sc+41,x)
+4591  0053 6b0b          	ld	(OFST-44,sp),a
+4592                     ; 832 	di.payload[6] = sc.spc[i].firmware_version;
+4594  0055 7b38          	ld	a,(OFST+1,sp)
+4595  0057 97            	ld	xl,a
+4596  0058 a627          	ld	a,#39
+4597  005a 42            	mul	x,a
+4598  005b d60125        	ld	a,(_sc+42,x)
+4599  005e 6b0c          	ld	(OFST-43,sp),a
+4600                     ; 833 	di.payload[7] = sc.spc[i].HWTtest;
+4602  0060 7b38          	ld	a,(OFST+1,sp)
+4603  0062 97            	ld	xl,a
+4604  0063 a627          	ld	a,#39
+4605  0065 42            	mul	x,a
+4606  0066 d60144        	ld	a,(_sc+73,x)
+4607  0069 6b0d          	ld	(OFST-42,sp),a
+4608                     ; 834 	di.payload[8] = sc.spc[i].MDID;
+4610  006b 7b38          	ld	a,(OFST+1,sp)
+4611  006d 97            	ld	xl,a
+4612  006e a627          	ld	a,#39
+4613  0070 42            	mul	x,a
+4614  0071 d6013a        	ld	a,(_sc+63,x)
+4615  0074 6b0e          	ld	(OFST-41,sp),a
+4616                     ; 835 	sicp_send_message(&di,9);
+4618  0076 4b09          	push	#9
+4619  0078 96            	ldw	x,sp
+4620  0079 1c0002        	addw	x,#OFST-53
+4621  007c cd0000        	call	_sicp_send_message
+4623  007f 84            	pop	a
+4624                     ; 837 }
+4627  0080 5b38          	addw	sp,#56
+4628  0082 81            	ret
+4665                     ; 840 void send_device_info(void)
+4665                     ; 841 {
+4666                     .text:	section	.text,new
+4667  0000               _send_device_info:
+4669  0000 88            	push	a
+4670       00000001      OFST:	set	1
+4673                     ; 845 	delay(200);
+4675  0001 ae00c8        	ldw	x,#200
+4676  0004 cd0000        	call	_delay
+4678                     ; 847 	for(i = 0; i < 15;i++){
+4680  0007 0f01          	clr	(OFST+0,sp)
+4681  0009               L7202:
+4682                     ; 848 		if(sc.slc[i].MDID){		//MDID不为零说明I2C收到回复
+4684  0009 7b01          	ld	a,(OFST+0,sp)
+4685  000b 97            	ld	xl,a
+4686  000c a624          	ld	a,#36
+4687  000e 42            	mul	x,a
+4688  000f 724d0383      	tnz	(_sc+648,x)
+4689  0013 270b          	jreq	L5302
+4690                     ; 849 			send_slc_device_info(i);
+4692  0015 7b01          	ld	a,(OFST+0,sp)
+4693  0017 cd0000        	call	_send_slc_device_info
+4695                     ; 850 			delay(100);
+4697  001a ae0064        	ldw	x,#100
+4698  001d cd0000        	call	_delay
+4700  0020               L5302:
+4701                     ; 847 	for(i = 0; i < 15;i++){
+4703  0020 0c01          	inc	(OFST+0,sp)
+4706  0022 7b01          	ld	a,(OFST+0,sp)
+4707  0024 a10f          	cp	a,#15
+4708  0026 25e1          	jrult	L7202
+4709                     ; 854 	for(i = 0; i < 15;i++){
+4711  0028 0f01          	clr	(OFST+0,sp)
+4712  002a               L7302:
+4713                     ; 855 		if(sc.spc[i].MDID){//MDID不为零说明I2C收到回复
+4715  002a 7b01          	ld	a,(OFST+0,sp)
+4716  002c 97            	ld	xl,a
+4717  002d a627          	ld	a,#39
+4718  002f 42            	mul	x,a
+4719  0030 724d013a      	tnz	(_sc+63,x)
+4720  0034 270b          	jreq	L5402
+4721                     ; 856 			send_spc_device_info(i);
+4723  0036 7b01          	ld	a,(OFST+0,sp)
+4724  0038 cd0000        	call	_send_spc_device_info
+4726                     ; 857 			delay(100);
+4728  003b ae0064        	ldw	x,#100
+4729  003e cd0000        	call	_delay
+4731  0041               L5402:
+4732                     ; 854 	for(i = 0; i < 15;i++){
+4734  0041 0c01          	inc	(OFST+0,sp)
+4737  0043 7b01          	ld	a,(OFST+0,sp)
+4738  0045 a10f          	cp	a,#15
+4739  0047 25e1          	jrult	L7302
+4740                     ; 860 	di_timeout = 5;
+4742  0049 35050070      	mov	_di_timeout,#5
+4743                     ; 862 }
+4746  004d 84            	pop	a
+4747  004e 81            	ret
+4801                     ; 869 void send_malfunction(u8 mdid, u8 devType)
+4801                     ; 870 {
+4802                     .text:	section	.text,new
+4803  0000               _send_malfunction:
+4805  0000 89            	pushw	x
+4806  0001 5237          	subw	sp,#55
+4807       00000037      OFST:	set	55
+4810                     ; 873 	mal.frame_h1 = 0xEE;
+4812  0003 a6ee          	ld	a,#238
+4813  0005 6b01          	ld	(OFST-54,sp),a
+4814                     ; 874 	mal.frame_h2 = 0xEE;
+4816  0007 a6ee          	ld	a,#238
+4817  0009 6b02          	ld	(OFST-53,sp),a
+4818                     ; 875 	mal.message_id = sicp_get_message_id();
+4820  000b cd0000        	call	_sicp_get_message_id
+4822  000e 6b03          	ld	(OFST-52,sp),a
+4823                     ; 876 	mal.mesh_id_H = ns_host_meshid_H;
+4825  0010 c600f5        	ld	a,_ns_host_meshid_H
+4826  0013 6b04          	ld	(OFST-51,sp),a
+4827                     ; 877 	mal.mesh_id_L = ns_host_meshid_L;
+4829  0015 c600f4        	ld	a,_ns_host_meshid_L
+4830  0018 6b05          	ld	(OFST-50,sp),a
+4831                     ; 878 	mal.payload[0] = 0x0A;
+4833  001a a60a          	ld	a,#10
+4834  001c 6b06          	ld	(OFST-49,sp),a
+4835                     ; 879 	mal.payload[1] = devType;
+4837  001e 7b39          	ld	a,(OFST+2,sp)
+4838  0020 6b07          	ld	(OFST-48,sp),a
+4839                     ; 880 	mal.payload[2] = mdid;
+4841  0022 7b38          	ld	a,(OFST+1,sp)
+4842  0024 6b08          	ld	(OFST-47,sp),a
+4843                     ; 882 	if(devType == DEVICE_SC){
+4845  0026 7b39          	ld	a,(OFST+2,sp)
+4846  0028 a1b1          	cp	a,#177
+4847  002a 260c          	jrne	L1702
+4848                     ; 883 		mal.payload[3] = sc.HWTtest;
+4850  002c c60117        	ld	a,_sc+28
+4851  002f 6b09          	ld	(OFST-46,sp),a
+4852                     ; 884 		sc.malfunction_msgid = mal.message_id;		
+4854  0031 7b03          	ld	a,(OFST-52,sp)
+4855  0033 c70118        	ld	_sc+29,a
+4857  0036 2040          	jra	L3702
+4858  0038               L1702:
+4859                     ; 886 	}else if(devType == DEVICE_SLC){
+4861  0038 7b39          	ld	a,(OFST+2,sp)
+4862  003a a1b2          	cp	a,#178
+4863  003c 261e          	jrne	L5702
+4864                     ; 887 		mal.payload[3] = sc.slc[mdid -1].HWTtest;
+4866  003e 7b38          	ld	a,(OFST+1,sp)
+4867  0040 97            	ld	xl,a
+4868  0041 a624          	ld	a,#36
+4869  0043 42            	mul	x,a
+4870  0044 1d0024        	subw	x,#36
+4871  0047 d6038a        	ld	a,(_sc+655,x)
+4872  004a 6b09          	ld	(OFST-46,sp),a
+4873                     ; 888 		sc.slc[mdid - 1].malfunction_msgid = mal.message_id;
+4875  004c 7b38          	ld	a,(OFST+1,sp)
+4876  004e 97            	ld	xl,a
+4877  004f a624          	ld	a,#36
+4878  0051 42            	mul	x,a
+4879  0052 1d0024        	subw	x,#36
+4880  0055 7b03          	ld	a,(OFST-52,sp)
+4881  0057 d70388        	ld	(_sc+653,x),a
+4883  005a 201c          	jra	L3702
+4884  005c               L5702:
+4885                     ; 891 		mal.payload[3] = sc.spc[mdid -1].HWTtest;
+4887  005c 7b38          	ld	a,(OFST+1,sp)
+4888  005e 97            	ld	xl,a
+4889  005f a627          	ld	a,#39
+4890  0061 42            	mul	x,a
+4891  0062 1d0027        	subw	x,#39
+4892  0065 d60144        	ld	a,(_sc+73,x)
+4893  0068 6b09          	ld	(OFST-46,sp),a
+4894                     ; 892 		sc.spc[mdid -1].malfunction_msgid = mal.message_id;
+4896  006a 7b38          	ld	a,(OFST+1,sp)
+4897  006c 97            	ld	xl,a
+4898  006d a627          	ld	a,#39
+4899  006f 42            	mul	x,a
+4900  0070 1d0027        	subw	x,#39
+4901  0073 7b03          	ld	a,(OFST-52,sp)
+4902  0075 d7013f        	ld	(_sc+68,x),a
+4903  0078               L3702:
+4904                     ; 895 	sicp_send_message(&mal, 4);
+4906  0078 4b04          	push	#4
+4907  007a 96            	ldw	x,sp
+4908  007b 1c0002        	addw	x,#OFST-53
+4909  007e cd0000        	call	_sicp_send_message
+4911  0081 84            	pop	a
+4912                     ; 897 }
+4915  0082 5b39          	addw	sp,#57
+4916  0084 81            	ret
+4957                     ; 904 void malfunction_sended_confirm(u8 recvMsgid)
+4957                     ; 905 {
+4958                     .text:	section	.text,new
+4959  0000               _malfunction_sended_confirm:
+4961  0000 88            	push	a
+4962  0001 88            	push	a
+4963       00000001      OFST:	set	1
+4966                     ; 908 	if(recvMsgid > 0){
+4968  0002 4d            	tnz	a
+4969  0003 2745          	jreq	L7112
+4970                     ; 910 		if(sc.malfunction_msgid == recvMsgid){		/* SC */
+4972  0005 c60118        	ld	a,_sc+29
+4973  0008 1102          	cp	a,(OFST+1,sp)
+4974  000a 2606          	jrne	L1212
+4975                     ; 911 			sc.malfunction_msgid = 0;
+4977  000c 725f0118      	clr	_sc+29
+4979  0010 2038          	jra	L7112
+4980  0012               L1212:
+4981                     ; 915 			for(i = 0; i < 15; i++){
+4983  0012 0f01          	clr	(OFST+0,sp)
+4984  0014               L5212:
+4985                     ; 917 				if(sc.slc[i].malfunction_msgid == recvMsgid){ 
+4987  0014 7b01          	ld	a,(OFST+0,sp)
+4988  0016 97            	ld	xl,a
+4989  0017 a624          	ld	a,#36
+4990  0019 42            	mul	x,a
+4991  001a d60388        	ld	a,(_sc+653,x)
+4992  001d 1102          	cp	a,(OFST+1,sp)
+4993  001f 260a          	jrne	L3312
+4994                     ; 918 					sc.slc[i].malfunction_msgid = 0;
+4996  0021 7b01          	ld	a,(OFST+0,sp)
+4997  0023 97            	ld	xl,a
+4998  0024 a624          	ld	a,#36
+4999  0026 42            	mul	x,a
+5000  0027 724f0388      	clr	(_sc+653,x)
+5001  002b               L3312:
+5002                     ; 921 				if(sc.spc[i].malfunction_msgid == recvMsgid){ 
+5004  002b 7b01          	ld	a,(OFST+0,sp)
+5005  002d 97            	ld	xl,a
+5006  002e a627          	ld	a,#39
+5007  0030 42            	mul	x,a
+5008  0031 d6013f        	ld	a,(_sc+68,x)
+5009  0034 1102          	cp	a,(OFST+1,sp)
+5010  0036 260a          	jrne	L5312
+5011                     ; 922 					sc.spc[i].malfunction_msgid = 0;
+5013  0038 7b01          	ld	a,(OFST+0,sp)
+5014  003a 97            	ld	xl,a
+5015  003b a627          	ld	a,#39
+5016  003d 42            	mul	x,a
+5017  003e 724f013f      	clr	(_sc+68,x)
+5018  0042               L5312:
+5019                     ; 915 			for(i = 0; i < 15; i++){
+5021  0042 0c01          	inc	(OFST+0,sp)
+5024  0044 7b01          	ld	a,(OFST+0,sp)
+5025  0046 a10f          	cp	a,#15
+5026  0048 25ca          	jrult	L5212
+5027  004a               L7112:
+5028                     ; 930 }
+5031  004a 85            	popw	x
+5032  004b 81            	ret
+5035                     	switch	.data
+5036  000f               L7312_sc_HWTest:
+5037  000f 00            	dc.b	0
+5038  0010               L1412_slcspc_HWTest:
+5039  0010 00            	dc.b	0
+5040  0011 000000000000  	ds.b	14
+5041  001f               L3412_i:
+5042  001f 00            	dc.b	0
+5043  0020               L5412_j:
+5044  0020 00            	dc.b	0
+5100                     ; 937 void malfunction_detect(void)
+5100                     ; 938 {
+5101                     .text:	section	.text,new
+5102  0000               _malfunction_detect:
+5104  0000 88            	push	a
+5105       00000001      OFST:	set	1
+5108                     ; 945 	if(sc.HWTtest != sc_HWTest){		/* SC */
+5110  0001 c60117        	ld	a,_sc+28
+5111  0004 c1000f        	cp	a,L7312_sc_HWTest
+5112  0007 2603          	jrne	L012
+5113  0009 cc00ab        	jp	L1022
+5114  000c               L012:
+5115                     ; 946 		sc_HWTest = sc.HWTtest;
+5117  000c 550117000f    	mov	L7312_sc_HWTest,_sc+28
+5118                     ; 947 		send_malfunction(0, DEVICE_SC);
+5120  0011 ae00b1        	ldw	x,#177
+5121  0014 4f            	clr	a
+5122  0015 95            	ld	xh,a
+5123  0016 cd0000        	call	_send_malfunction
+5125                     ; 948 		return;
+5128  0019 84            	pop	a
+5129  001a 81            	ret
+5130  001b               L5712:
+5131                     ; 953 		if(sc.slc[i].MDID){	
+5133  001b c6001f        	ld	a,L3412_i
+5134  001e 97            	ld	xl,a
+5135  001f a624          	ld	a,#36
+5136  0021 42            	mul	x,a
+5137  0022 724d0383      	tnz	(_sc+648,x)
+5138  0026 2739          	jreq	L5022
+5139                     ; 954 			if(sc.slc[i].HWTtest != slcspc_HWTest[i]){
+5141  0028 c6001f        	ld	a,L3412_i
+5142  002b 5f            	clrw	x
+5143  002c 97            	ld	xl,a
+5144  002d d60010        	ld	a,(L1412_slcspc_HWTest,x)
+5145  0030 6b01          	ld	(OFST+0,sp),a
+5146  0032 c6001f        	ld	a,L3412_i
+5147  0035 97            	ld	xl,a
+5148  0036 a624          	ld	a,#36
+5149  0038 42            	mul	x,a
+5150  0039 d6038a        	ld	a,(_sc+655,x)
+5151  003c 1101          	cp	a,(OFST+0,sp)
+5152  003e 2721          	jreq	L5022
+5153                     ; 955 				slcspc_HWTest[i] = sc.slc[i].HWTtest;		/* 保证故障不会被重复发送 */
+5155  0040 c6001f        	ld	a,L3412_i
+5156  0043 5f            	clrw	x
+5157  0044 97            	ld	xl,a
+5158  0045 89            	pushw	x
+5159  0046 c6001f        	ld	a,L3412_i
+5160  0049 97            	ld	xl,a
+5161  004a a624          	ld	a,#36
+5162  004c 42            	mul	x,a
+5163  004d d6038a        	ld	a,(_sc+655,x)
+5164  0050 85            	popw	x
+5165  0051 d70010        	ld	(L1412_slcspc_HWTest,x),a
+5166                     ; 956 				send_malfunction(i + 1, DEVICE_SLC);	
+5168  0054 ae00b2        	ldw	x,#178
+5169  0057 c6001f        	ld	a,L3412_i
+5170  005a 4c            	inc	a
+5171  005b 95            	ld	xh,a
+5172  005c cd0000        	call	_send_malfunction
+5174                     ; 957 				return;
+5177  005f 84            	pop	a
+5178  0060 81            	ret
+5179  0061               L5022:
+5180                     ; 960 		if(sc.spc[i].MDID){ 
+5182  0061 c6001f        	ld	a,L3412_i
+5183  0064 97            	ld	xl,a
+5184  0065 a627          	ld	a,#39
+5185  0067 42            	mul	x,a
+5186  0068 724d013a      	tnz	(_sc+63,x)
+5187  006c 2739          	jreq	L1122
+5188                     ; 961 			if(sc.spc[i].HWTtest != slcspc_HWTest[i]){		
+5190  006e c6001f        	ld	a,L3412_i
+5191  0071 5f            	clrw	x
+5192  0072 97            	ld	xl,a
+5193  0073 d60010        	ld	a,(L1412_slcspc_HWTest,x)
+5194  0076 6b01          	ld	(OFST+0,sp),a
+5195  0078 c6001f        	ld	a,L3412_i
+5196  007b 97            	ld	xl,a
+5197  007c a627          	ld	a,#39
+5198  007e 42            	mul	x,a
+5199  007f d60144        	ld	a,(_sc+73,x)
+5200  0082 1101          	cp	a,(OFST+0,sp)
+5201  0084 2721          	jreq	L1122
+5202                     ; 962 				slcspc_HWTest[i] = sc.spc[i].HWTtest;
+5204  0086 c6001f        	ld	a,L3412_i
+5205  0089 5f            	clrw	x
+5206  008a 97            	ld	xl,a
+5207  008b 89            	pushw	x
+5208  008c c6001f        	ld	a,L3412_i
+5209  008f 97            	ld	xl,a
+5210  0090 a627          	ld	a,#39
+5211  0092 42            	mul	x,a
+5212  0093 d60144        	ld	a,(_sc+73,x)
+5213  0096 85            	popw	x
+5214  0097 d70010        	ld	(L1412_slcspc_HWTest,x),a
+5215                     ; 963 				send_malfunction(i + 1, DEVICE_SPC);					
+5217  009a ae00b3        	ldw	x,#179
+5218  009d c6001f        	ld	a,L3412_i
+5219  00a0 4c            	inc	a
+5220  00a1 95            	ld	xh,a
+5221  00a2 cd0000        	call	_send_malfunction
+5223                     ; 964 				return;
+5226  00a5 84            	pop	a
+5227  00a6 81            	ret
+5228  00a7               L1122:
+5229                     ; 951 	for( ; i < 15; i++){
+5231  00a7 725c001f      	inc	L3412_i
+5232  00ab               L1022:
+5235  00ab c6001f        	ld	a,L3412_i
+5236  00ae a10f          	cp	a,#15
+5237  00b0 2403          	jruge	L212
+5238  00b2 cc001b        	jp	L5712
+5239  00b5               L212:
+5240                     ; 968 	i = 0;
+5242  00b5 725f001f      	clr	L3412_i
+5243                     ; 972 	if(sc.malfunction_msgid){			/* 没收到回执 */		
+5245  00b9 725d0118      	tnz	_sc+29
+5246  00bd 2762          	jreq	L3222
+5247                     ; 973 		send_malfunction(0, DEVICE_SC);		
+5249  00bf ae00b1        	ldw	x,#177
+5250  00c2 4f            	clr	a
+5251  00c3 95            	ld	xh,a
+5252  00c4 cd0000        	call	_send_malfunction
+5254                     ; 974 		return;
+5257  00c7 84            	pop	a
+5258  00c8 81            	ret
+5259  00c9               L7122:
+5260                     ; 979 		if(sc.slc[j].MDID && sc.slc[j].malfunction_msgid){		/* 没收到回执 */		
+5262  00c9 c60020        	ld	a,L5412_j
+5263  00cc 97            	ld	xl,a
+5264  00cd a624          	ld	a,#36
+5265  00cf 42            	mul	x,a
+5266  00d0 724d0383      	tnz	(_sc+648,x)
+5267  00d4 271d          	jreq	L7222
+5269  00d6 c60020        	ld	a,L5412_j
+5270  00d9 97            	ld	xl,a
+5271  00da a624          	ld	a,#36
+5272  00dc 42            	mul	x,a
+5273  00dd 724d0388      	tnz	(_sc+653,x)
+5274  00e1 2710          	jreq	L7222
+5275                     ; 980 			j++;									/* 保证故障不会被重复发送 */
+5277  00e3 725c0020      	inc	L5412_j
+5278                     ; 981 			send_malfunction(j, DEVICE_SLC);					
+5280  00e7 ae00b2        	ldw	x,#178
+5281  00ea c60020        	ld	a,L5412_j
+5282  00ed 95            	ld	xh,a
+5283  00ee cd0000        	call	_send_malfunction
+5285                     ; 982 			return;
+5288  00f1 84            	pop	a
+5289  00f2 81            	ret
+5290  00f3               L7222:
+5291                     ; 984 		if(sc.spc[j].MDID && sc.spc[j].malfunction_msgid){		/* 没收到回执 */	
+5293  00f3 c60020        	ld	a,L5412_j
+5294  00f6 97            	ld	xl,a
+5295  00f7 a627          	ld	a,#39
+5296  00f9 42            	mul	x,a
+5297  00fa 724d013a      	tnz	(_sc+63,x)
+5298  00fe 271d          	jreq	L1322
+5300  0100 c60020        	ld	a,L5412_j
+5301  0103 97            	ld	xl,a
+5302  0104 a627          	ld	a,#39
+5303  0106 42            	mul	x,a
+5304  0107 724d013f      	tnz	(_sc+68,x)
+5305  010b 2710          	jreq	L1322
+5306                     ; 985 			j++;									/* 保证故障不会被重复发送 */
+5308  010d 725c0020      	inc	L5412_j
+5309                     ; 986 			send_malfunction(j, DEVICE_SPC);					
+5311  0111 ae00b3        	ldw	x,#179
+5312  0114 c60020        	ld	a,L5412_j
+5313  0117 95            	ld	xh,a
+5314  0118 cd0000        	call	_send_malfunction
+5316                     ; 987 			return;
+5319  011b 84            	pop	a
+5320  011c 81            	ret
+5321  011d               L1322:
+5322                     ; 977 	for( ; j < 15; j++){
+5324  011d 725c0020      	inc	L5412_j
+5325  0121               L3222:
+5328  0121 c60020        	ld	a,L5412_j
+5329  0124 a10f          	cp	a,#15
+5330  0126 25a1          	jrult	L7122
+5331                     ; 990 	j = 0;
+5333  0128 725f0020      	clr	L5412_j
+5334                     ; 992 }
+5337  012c 84            	pop	a
+5338  012d 81            	ret
+5394                     ; 1001 u8 slcspc_check_sum(u8 *buf, u8 length)
+5394                     ; 1002 {
+5395                     .text:	section	.text,new
+5396  0000               _slcspc_check_sum:
+5398  0000 89            	pushw	x
+5399  0001 89            	pushw	x
+5400       00000002      OFST:	set	2
+5403                     ; 1004 	u8 result = *buf++;
+5405  0002 1e03          	ldw	x,(OFST+1,sp)
+5406  0004 1c0001        	addw	x,#1
+5407  0007 1f03          	ldw	(OFST+1,sp),x
+5408  0009 1d0001        	subw	x,#1
+5409  000c f6            	ld	a,(x)
+5410  000d 6b01          	ld	(OFST-1,sp),a
+5411                     ; 1006 	for(i = 1; i < length; i++)
+5413  000f a601          	ld	a,#1
+5414  0011 6b02          	ld	(OFST+0,sp),a
+5416  0013 2011          	jra	L3622
+5417  0015               L7522:
+5418                     ; 1008 		result ^= *buf++;
+5420  0015 1e03          	ldw	x,(OFST+1,sp)
+5421  0017 1c0001        	addw	x,#1
+5422  001a 1f03          	ldw	(OFST+1,sp),x
+5423  001c 1d0001        	subw	x,#1
+5424  001f 7b01          	ld	a,(OFST-1,sp)
+5425  0021 f8            	xor	a,	(x)
+5426  0022 6b01          	ld	(OFST-1,sp),a
+5427                     ; 1006 	for(i = 1; i < length; i++)
+5429  0024 0c02          	inc	(OFST+0,sp)
+5430  0026               L3622:
+5433  0026 7b02          	ld	a,(OFST+0,sp)
+5434  0028 1107          	cp	a,(OFST+5,sp)
+5435  002a 25e9          	jrult	L7522
+5436                     ; 1011 	return result;
+5438  002c 7b01          	ld	a,(OFST-1,sp)
+5441  002e 5b04          	addw	sp,#4
+5442  0030 81            	ret
+5476                     ; 1017 void slcspc_send_and_recv(void)
+5476                     ; 1018 {
+5477                     .text:	section	.text,new
+5478  0000               _slcspc_send_and_recv:
+5480  0000 88            	push	a
+5481       00000001      OFST:	set	1
+5484                     ; 1019 	u8 status = 0;
+5486  0001 0f01          	clr	(OFST+0,sp)
+5487                     ; 1021 	swuart_frame.rxhas = 0;
+5489  0003 5f            	clrw	x
+5490  0004 cf0015        	ldw	_swuart_frame+6,x
+5491                     ; 1022 	swuart_frame.rxlen = 0;
+5493  0007 5f            	clrw	x
+5494  0008 cf0013        	ldw	_swuart_frame+4,x
+5495                     ; 1024 	swuart_frame.txhas = 1;
+5497  000b ae0001        	ldw	x,#1
+5498  000e cf001b        	ldw	_swuart_frame+12,x
+5499                     ; 1025 	UART3->DR = swuart_frame.txbuf[0];
+5501  0011 5500475241    	mov	21057,_swuart_frame+56
+5503  0016               L7032:
+5504                     ; 1027 	while(swuart_frame.txhas < swuart_frame.txlen);	/* 等待发送完成 */
+5506  0016 ce001b        	ldw	x,_swuart_frame+12
+5507  0019 c30019        	cpw	x,_swuart_frame+10
+5508  001c 25f8          	jrult	L7032
+5509                     ; 1029 	swuart_frame.txhas = 0;
+5511  001e 5f            	clrw	x
+5512  001f cf001b        	ldw	_swuart_frame+12,x
+5513                     ; 1030 	swuart_frame.txlen = 0;
+5515  0022 5f            	clrw	x
+5516  0023 cf0019        	ldw	_swuart_frame+10,x
+5517                     ; 1033 	swuart_frame.rxtxflag = 2;
+5519  0026 3502000f      	mov	_swuart_frame,#2
+5520                     ; 1034 	swuart_frame.flow  = 2;
+5522  002a 35020010      	mov	_swuart_frame+1,#2
+5523                     ; 1035 	swuart_frame.rxhas = 0;
+5525  002e 5f            	clrw	x
+5526  002f cf0015        	ldw	_swuart_frame+6,x
+5527                     ; 1036 	swuart_frame.rxlen = 0;
+5529  0032 5f            	clrw	x
+5530  0033 cf0013        	ldw	_swuart_frame+4,x
+5531                     ; 1037 	swuart_frame.txOverWait = 0;	
+5533  0036 5f            	clrw	x
+5534  0037 cf001d        	ldw	_swuart_frame+14,x
+5536  003a 200e          	jra	L7132
+5537  003c               L3132:
+5538                     ; 1041 		if(swuart_frame.txOverWait > SWUART_TX_OVER_WAIT_TIME){
+5540  003c ce001d        	ldw	x,_swuart_frame+14
+5541  003f a3001f        	cpw	x,#31
+5542  0042 2506          	jrult	L7132
+5543                     ; 1042 			swuart_frame.rxtxflag = 0;			/* 超时，结束接收  */
+5545  0044 725f000f      	clr	_swuart_frame
+5546                     ; 1043 			return;
+5549  0048 84            	pop	a
+5550  0049 81            	ret
+5551  004a               L7132:
+5552                     ; 1040 	while(swuart_frame.flow == 2){
+5554  004a c60010        	ld	a,_swuart_frame+1
+5555  004d a102          	cp	a,#2
+5556  004f 27eb          	jreq	L3132
+5558  0051 2010          	jra	L7232
+5559  0053               L5232:
+5560                     ; 1049 		if(swuart_frame.rxOverWait > SWUART_RX_OVER_WAIT_TIME){
+5562  0053 ce0017        	ldw	x,_swuart_frame+8
+5563  0056 a30007        	cpw	x,#7
+5564  0059 2508          	jrult	L7232
+5565                     ; 1050 			swuart_frame.flow = 4;				/* 接收完成 */
+5567  005b 35040010      	mov	_swuart_frame+1,#4
+5568                     ; 1051 			swuart_frame.rxtxflag = 0;	
+5570  005f 725f000f      	clr	_swuart_frame
+5571  0063               L7232:
+5572                     ; 1048 	while(swuart_frame.flow == 3){
+5574  0063 c60010        	ld	a,_swuart_frame+1
+5575  0066 a103          	cp	a,#3
+5576  0068 27e9          	jreq	L5232
+5577                     ; 1055 }
+5580  006a 84            	pop	a
+5581  006b 81            	ret
+5684                     ; 1063 u8 slcspc_one_process(I2C_Message *tx, u8 payload_len, u8 addr)
+5684                     ; 1064 {
+5685                     .text:	section	.text,new
+5686  0000               _slcspc_one_process:
+5688  0000 89            	pushw	x
+5689  0001 88            	push	a
+5690       00000001      OFST:	set	1
+5693                     ; 1065 	u8 i = addr - 1;
+5695  0002 7b07          	ld	a,(OFST+6,sp)
+5696  0004 4a            	dec	a
+5697  0005 6b01          	ld	(OFST+0,sp),a
+5698                     ; 1067 	swuart_frame.txbuf[0] = tx->frame_h1;	//0x7e
+5700  0007 f6            	ld	a,(x)
+5701  0008 c70047        	ld	_swuart_frame+56,a
+5702                     ; 1068 	swuart_frame.txbuf[1] = tx->frame_h2;	//0x7e
+5704  000b e601          	ld	a,(1,x)
+5705  000d c70048        	ld	_swuart_frame+57,a
+5706                     ; 1069 	swuart_frame.txbuf[2] = addr;			//addr
+5708  0010 7b07          	ld	a,(OFST+6,sp)
+5709  0012 c70049        	ld	_swuart_frame+58,a
+5710                     ; 1070 	swuart_frame.txbuf[3] = tx->message_id;	//msg id
+5712  0015 e602          	ld	a,(2,x)
+5713  0017 c7004a        	ld	_swuart_frame+59,a
+5714                     ; 1071 	swuart_frame.txbuf[4] = payload_len + 3;			//len
+5716  001a 7b06          	ld	a,(OFST+5,sp)
+5717  001c ab03          	add	a,#3
+5718  001e c7004b        	ld	_swuart_frame+60,a
+5719                     ; 1072 	mymemcpy(&swuart_frame.txbuf[5], tx->payload, payload_len);
+5721  0021 7b06          	ld	a,(OFST+5,sp)
+5722  0023 b703          	ld	c_lreg+3,a
+5723  0025 3f02          	clr	c_lreg+2
+5724  0027 3f01          	clr	c_lreg+1
+5725  0029 3f00          	clr	c_lreg
+5726  002b be02          	ldw	x,c_lreg+2
+5727  002d 89            	pushw	x
+5728  002e be00          	ldw	x,c_lreg
+5729  0030 89            	pushw	x
+5730  0031 1e06          	ldw	x,(OFST+5,sp)
+5731  0033 1c0003        	addw	x,#3
+5732  0036 89            	pushw	x
+5733  0037 ae004c        	ldw	x,#_swuart_frame+61
+5734  003a cd0000        	call	_mymemcpy
+5736  003d 5b06          	addw	sp,#6
+5737                     ; 1073 	swuart_frame.txbuf[payload_len + 5] = Check_Sum(&swuart_frame.txbuf[2], swuart_frame.txbuf[4]);
+5739  003f 7b06          	ld	a,(OFST+5,sp)
+5740  0041 5f            	clrw	x
+5741  0042 97            	ld	xl,a
+5742  0043 89            	pushw	x
+5743  0044 3b004b        	push	_swuart_frame+60
+5744  0047 ae0049        	ldw	x,#_swuart_frame+58
+5745  004a cd0000        	call	_Check_Sum
+5747  004d 5b01          	addw	sp,#1
+5748  004f 85            	popw	x
+5749  0050 d7004c        	ld	(_swuart_frame+61,x),a
+5750                     ; 1075 	swuart_frame.txhas = 0;
+5752  0053 5f            	clrw	x
+5753  0054 cf001b        	ldw	_swuart_frame+12,x
+5754                     ; 1076 	swuart_frame.txlen = payload_len + 6;
+5756  0057 a600          	ld	a,#0
+5757  0059 97            	ld	xl,a
+5758  005a a606          	ld	a,#6
+5759  005c 1b06          	add	a,(OFST+5,sp)
+5760  005e 2401          	jrnc	L222
+5761  0060 5c            	incw	x
+5762  0061               L222:
+5763  0061 c7001a        	ld	_swuart_frame+11,a
+5764  0064 9f            	ld	a,xl
+5765  0065 c70019        	ld	_swuart_frame+10,a
+5766                     ; 1077 	swuart_frame.rxtxflag = 1;
+5768  0068 3501000f      	mov	_swuart_frame,#1
+5769                     ; 1078 	swuart_frame.flow = 0;
+5771  006c 725f0010      	clr	_swuart_frame+1
+5772                     ; 1079 	swuart_frame.rxbuf[0] = 0;
+5774  0070 725f001f      	clr	_swuart_frame+16
+5775                     ; 1080 	swuart_frame.rxbuf[1] = 0;
+5777  0074 725f0020      	clr	_swuart_frame+17
+5778                     ; 1082 	slcspc_select_channel(addr);
+5780  0078 7b07          	ld	a,(OFST+6,sp)
+5781  007a cd0000        	call	_slcspc_select_channel
+5783                     ; 1083 	slcspc_send_and_recv();			/* 等待发送接收流程处理结束 */
+5785  007d cd0000        	call	_slcspc_send_and_recv
+5787                     ; 1084 	slcspc_select_channel_reset();
+5789  0080 cd0000        	call	_slcspc_select_channel_reset
+5791                     ; 1086 	if(swuart_frame.flow == 4){		/* 接收完成 */	
+5793  0083 c60010        	ld	a,_swuart_frame+1
+5794  0086 a104          	cp	a,#4
+5795  0088 266d          	jrne	L1042
+5796                     ; 1087 		if(swuart_frame.rxbuf[0] == 0x7e && swuart_frame.rxbuf[1] == 0x7e){
+5798  008a c6001f        	ld	a,_swuart_frame+16
+5799  008d a17e          	cp	a,#126
+5800  008f 2666          	jrne	L1042
+5802  0091 c60020        	ld	a,_swuart_frame+17
+5803  0094 a17e          	cp	a,#126
+5804  0096 265f          	jrne	L1042
+5805                     ; 1088 			if(Check_Sum(&swuart_frame.rxbuf[2], swuart_frame.rxbuf[4]) == swuart_frame.rxbuf[swuart_frame.rxhas - 1]){//校验正确
+5807  0098 3b0023        	push	_swuart_frame+20
+5808  009b ae0021        	ldw	x,#_swuart_frame+18
+5809  009e cd0000        	call	_Check_Sum
+5811  00a1 5b01          	addw	sp,#1
+5812  00a3 ce0015        	ldw	x,_swuart_frame+6
+5813  00a6 5a            	decw	x
+5814  00a7 d1001f        	cp	a,(_swuart_frame+16,x)
+5815  00aa 264b          	jrne	L1042
+5816                     ; 1090 				if(sc.slc[i].MDID){ 		/* slc */
+5818  00ac 7b01          	ld	a,(OFST+0,sp)
+5819  00ae 97            	ld	xl,a
+5820  00af a624          	ld	a,#36
+5821  00b1 42            	mul	x,a
+5822  00b2 724d0383      	tnz	(_sc+648,x)
+5823  00b6 2718          	jreq	L7042
+5824                     ; 1091 					sc.slc[i].offLineCnt = 0;
+5826  00b8 7b01          	ld	a,(OFST+0,sp)
+5827  00ba 97            	ld	xl,a
+5828  00bb a624          	ld	a,#36
+5829  00bd 42            	mul	x,a
+5830  00be 724f038b      	clr	(_sc+656,x)
+5831                     ; 1092 					sc.slc[i].HWTtest &= ~SLCSPC_OFFLINE_BIT;
+5833  00c2 7b01          	ld	a,(OFST+0,sp)
+5834  00c4 97            	ld	xl,a
+5835  00c5 a624          	ld	a,#36
+5836  00c7 42            	mul	x,a
+5837  00c8 d6038a        	ld	a,(_sc+655,x)
+5838  00cb a4fe          	and	a,#254
+5839  00cd d7038a        	ld	(_sc+655,x),a
+5840  00d0               L7042:
+5841                     ; 1094 				if(sc.spc[i].MDID){		/* spc */
+5843  00d0 7b01          	ld	a,(OFST+0,sp)
+5844  00d2 97            	ld	xl,a
+5845  00d3 a627          	ld	a,#39
+5846  00d5 42            	mul	x,a
+5847  00d6 724d013a      	tnz	(_sc+63,x)
+5848  00da 2718          	jreq	L1142
+5849                     ; 1095 					sc.spc[i].offLineCnt = 0;
+5851  00dc 7b01          	ld	a,(OFST+0,sp)
+5852  00de 97            	ld	xl,a
+5853  00df a627          	ld	a,#39
+5854  00e1 42            	mul	x,a
+5855  00e2 724f0145      	clr	(_sc+74,x)
+5856                     ; 1096 					sc.spc[i].HWTtest &= ~SLCSPC_OFFLINE_BIT;
+5858  00e6 7b01          	ld	a,(OFST+0,sp)
+5859  00e8 97            	ld	xl,a
+5860  00e9 a627          	ld	a,#39
+5861  00eb 42            	mul	x,a
+5862  00ec d60144        	ld	a,(_sc+73,x)
+5863  00ef a4fe          	and	a,#254
+5864  00f1 d70144        	ld	(_sc+73,x),a
+5865  00f4               L1142:
+5866                     ; 1099 				return 0;
+5868  00f4 4f            	clr	a
+5870  00f5 2064          	jra	L422
+5871  00f7               L1042:
+5872                     ; 1104 	if(sc.slc[i].MDID){			/* slc */
+5874  00f7 7b01          	ld	a,(OFST+0,sp)
+5875  00f9 97            	ld	xl,a
+5876  00fa a624          	ld	a,#36
+5877  00fc 42            	mul	x,a
+5878  00fd 724d0383      	tnz	(_sc+648,x)
+5879  0101 2725          	jreq	L3142
+5880                     ; 1105 		sc.slc[i].offLineCnt++;
+5882  0103 7b01          	ld	a,(OFST+0,sp)
+5883  0105 97            	ld	xl,a
+5884  0106 a624          	ld	a,#36
+5885  0108 42            	mul	x,a
+5886  0109 724c038b      	inc	(_sc+656,x)
+5887                     ; 1106 		if(sc.slc[i].offLineCnt >= 5){sc.slc[i].HWTtest |= SLCSPC_OFFLINE_BIT;} 		/* 连续5次不通讯都不成功，则判断为离线 */
+5889  010d 7b01          	ld	a,(OFST+0,sp)
+5890  010f 97            	ld	xl,a
+5891  0110 a624          	ld	a,#36
+5892  0112 42            	mul	x,a
+5893  0113 d6038b        	ld	a,(_sc+656,x)
+5894  0116 a105          	cp	a,#5
+5895  0118 250e          	jrult	L3142
+5898  011a 7b01          	ld	a,(OFST+0,sp)
+5899  011c 97            	ld	xl,a
+5900  011d a624          	ld	a,#36
+5901  011f 42            	mul	x,a
+5902  0120 d6038a        	ld	a,(_sc+655,x)
+5903  0123 aa01          	or	a,#1
+5904  0125 d7038a        	ld	(_sc+655,x),a
+5905  0128               L3142:
+5906                     ; 1108 	if(sc.spc[i].MDID){			/* spc */
+5908  0128 7b01          	ld	a,(OFST+0,sp)
+5909  012a 97            	ld	xl,a
+5910  012b a627          	ld	a,#39
+5911  012d 42            	mul	x,a
+5912  012e 724d013a      	tnz	(_sc+63,x)
+5913  0132 2725          	jreq	L7142
+5914                     ; 1109 		sc.spc[i].offLineCnt++;
+5916  0134 7b01          	ld	a,(OFST+0,sp)
+5917  0136 97            	ld	xl,a
+5918  0137 a627          	ld	a,#39
+5919  0139 42            	mul	x,a
+5920  013a 724c0145      	inc	(_sc+74,x)
+5921                     ; 1110 		if(sc.spc[i].offLineCnt >= 5){sc.spc[i].HWTtest |= SLCSPC_OFFLINE_BIT;} 		/* 连续5次不通讯都不成功，则判断为离线 */
+5923  013e 7b01          	ld	a,(OFST+0,sp)
+5924  0140 97            	ld	xl,a
+5925  0141 a627          	ld	a,#39
+5926  0143 42            	mul	x,a
+5927  0144 d60145        	ld	a,(_sc+74,x)
+5928  0147 a105          	cp	a,#5
+5929  0149 250e          	jrult	L7142
+5932  014b 7b01          	ld	a,(OFST+0,sp)
+5933  014d 97            	ld	xl,a
+5934  014e a627          	ld	a,#39
+5935  0150 42            	mul	x,a
+5936  0151 d60144        	ld	a,(_sc+73,x)
+5937  0154 aa01          	or	a,#1
+5938  0156 d70144        	ld	(_sc+73,x),a
+5939  0159               L7142:
+5940                     ; 1113 	return 1; 
+5942  0159 a601          	ld	a,#1
+5944  015b               L422:
+5946  015b 5b03          	addw	sp,#3
+5947  015d 81            	ret
+6000                     ; 1122 void slcspc_device_info(void)
+6000                     ; 1123 {
+6001                     .text:	section	.text,new
+6002  0000               _slcspc_device_info:
+6004  0000 5223          	subw	sp,#35
+6005       00000023      OFST:	set	35
+6008                     ; 1127 	swuart_frame.devflag = 0;
+6010  0002 5f            	clrw	x
+6011  0003 cf0011        	ldw	_swuart_frame+2,x
+6012                     ; 1129 	for(i = 1; i <= 15; i++){
+6014  0006 a601          	ld	a,#1
+6015  0008 6b23          	ld	(OFST+0,sp),a
+6016  000a               L5442:
+6017                     ; 1131 		di.frame_h1 = 0x7E;
+6019  000a a67e          	ld	a,#126
+6020  000c 6b02          	ld	(OFST-33,sp),a
+6021                     ; 1132 		di.frame_h2 = 0x7E;
+6023  000e a67e          	ld	a,#126
+6024  0010 6b03          	ld	(OFST-32,sp),a
+6025                     ; 1133 		di.message_id = slcspc_get_message_id();
+6027  0012 cd0000        	call	_slcspc_get_message_id
+6029  0015 6b04          	ld	(OFST-31,sp),a
+6030                     ; 1134 		di.payload[0] = 0xFE;		//自己定义
+6032  0017 a6fe          	ld	a,#254
+6033  0019 6b05          	ld	(OFST-30,sp),a
+6034                     ; 1135 		di.payload[1] = 0x01;		//自己定义
+6036  001b a601          	ld	a,#1
+6037  001d 6b06          	ld	(OFST-29,sp),a
+6038                     ; 1137 		sc.slc[i -1].MDID = 0;
+6040  001f 7b23          	ld	a,(OFST+0,sp)
+6041  0021 97            	ld	xl,a
+6042  0022 a624          	ld	a,#36
+6043  0024 42            	mul	x,a
+6044  0025 1d0024        	subw	x,#36
+6045  0028 724f0383      	clr	(_sc+648,x)
+6046                     ; 1138 		sc.spc[i -1].MDID = 0;
+6048  002c 7b23          	ld	a,(OFST+0,sp)
+6049  002e 97            	ld	xl,a
+6050  002f a627          	ld	a,#39
+6051  0031 42            	mul	x,a
+6052  0032 1d0027        	subw	x,#39
+6053  0035 724f013a      	clr	(_sc+63,x)
+6054                     ; 1139 		ret = slcspc_one_process(&di, 2, i);
+6056  0039 7b23          	ld	a,(OFST+0,sp)
+6057  003b 88            	push	a
+6058  003c 4b02          	push	#2
+6059  003e 96            	ldw	x,sp
+6060  003f 1c0004        	addw	x,#OFST-31
+6061  0042 cd0000        	call	_slcspc_one_process
+6063  0045 85            	popw	x
+6064  0046 6b01          	ld	(OFST-34,sp),a
+6065                     ; 1141 		if (ret == 0){
+6067  0048 0d01          	tnz	(OFST-34,sp)
+6068  004a 2703          	jreq	L432
+6069  004c cc0164        	jp	L3542
+6070  004f               L432:
+6071                     ; 1145 				swuart_frame.devflag |= (1 << ( i -1));
+6073  004f ae0001        	ldw	x,#1
+6074  0052 7b23          	ld	a,(OFST+0,sp)
+6075  0054 4a            	dec	a
+6076  0055 4d            	tnz	a
+6077  0056 2704          	jreq	L032
+6078  0058               L232:
+6079  0058 58            	sllw	x
+6080  0059 4a            	dec	a
+6081  005a 26fc          	jrne	L232
+6082  005c               L032:
+6083  005c 01            	rrwa	x,a
+6084  005d ca0012        	or	a,_swuart_frame+3
+6085  0060 01            	rrwa	x,a
+6086  0061 ca0011        	or	a,_swuart_frame+2
+6087  0064 01            	rrwa	x,a
+6088  0065 cf0011        	ldw	_swuart_frame+2,x
+6089                     ; 1147 				if(swuart_frame.rxbuf[5] == 0xB2){		//此为SLC
+6091  0068 c60024        	ld	a,_swuart_frame+21
+6092  006b a1b2          	cp	a,#178
+6093  006d 2677          	jrne	L5542
+6094                     ; 1148 					sc.slc[i-1].MDID = i;
+6096  006f 7b23          	ld	a,(OFST+0,sp)
+6097  0071 97            	ld	xl,a
+6098  0072 a624          	ld	a,#36
+6099  0074 42            	mul	x,a
+6100  0075 1d0024        	subw	x,#36
+6101  0078 7b23          	ld	a,(OFST+0,sp)
+6102  007a d70383        	ld	(_sc+648,x),a
+6103                     ; 1149 					sc.slc[i-1].deviceID[0] = swuart_frame.rxbuf[6];
+6105  007d 7b23          	ld	a,(OFST+0,sp)
+6106  007f 97            	ld	xl,a
+6107  0080 a624          	ld	a,#36
+6108  0082 42            	mul	x,a
+6109  0083 1d0024        	subw	x,#36
+6110  0086 c60025        	ld	a,_swuart_frame+22
+6111  0089 d70369        	ld	(_sc+622,x),a
+6112                     ; 1150 					sc.slc[i-1].deviceID[1] = swuart_frame.rxbuf[7];
+6114  008c 7b23          	ld	a,(OFST+0,sp)
+6115  008e 97            	ld	xl,a
+6116  008f a624          	ld	a,#36
+6117  0091 42            	mul	x,a
+6118  0092 1d0024        	subw	x,#36
+6119  0095 c60026        	ld	a,_swuart_frame+23
+6120  0098 d7036a        	ld	(_sc+623,x),a
+6121                     ; 1151 					sc.slc[i-1].deviceID[2] = swuart_frame.rxbuf[8];
+6123  009b 7b23          	ld	a,(OFST+0,sp)
+6124  009d 97            	ld	xl,a
+6125  009e a624          	ld	a,#36
+6126  00a0 42            	mul	x,a
+6127  00a1 1d0024        	subw	x,#36
+6128  00a4 c60027        	ld	a,_swuart_frame+24
+6129  00a7 d7036b        	ld	(_sc+624,x),a
+6130                     ; 1152 					sc.slc[i-1].deviceID[3] = swuart_frame.rxbuf[9];
+6132  00aa 7b23          	ld	a,(OFST+0,sp)
+6133  00ac 97            	ld	xl,a
+6134  00ad a624          	ld	a,#36
+6135  00af 42            	mul	x,a
+6136  00b0 1d0024        	subw	x,#36
+6137  00b3 c60028        	ld	a,_swuart_frame+25
+6138  00b6 d7036c        	ld	(_sc+625,x),a
+6139                     ; 1153 					sc.slc[i-1].model = swuart_frame.rxbuf[10];
+6141  00b9 7b23          	ld	a,(OFST+0,sp)
+6142  00bb 97            	ld	xl,a
+6143  00bc a624          	ld	a,#36
+6144  00be 42            	mul	x,a
+6145  00bf 1d0024        	subw	x,#36
+6146  00c2 c60029        	ld	a,_swuart_frame+26
+6147  00c5 d7036d        	ld	(_sc+626,x),a
+6148                     ; 1154 					sc.slc[i-1].firmware_version = swuart_frame.rxbuf[11];
+6150  00c8 7b23          	ld	a,(OFST+0,sp)
+6151  00ca 97            	ld	xl,a
+6152  00cb a624          	ld	a,#36
+6153  00cd 42            	mul	x,a
+6154  00ce 1d0024        	subw	x,#36
+6155  00d1 c6002a        	ld	a,_swuart_frame+27
+6156  00d4 d7036e        	ld	(_sc+627,x),a
+6157                     ; 1155 					sc.slc[i-1].HWTtest = swuart_frame.rxbuf[12];	
+6159  00d7 7b23          	ld	a,(OFST+0,sp)
+6160  00d9 97            	ld	xl,a
+6161  00da a624          	ld	a,#36
+6162  00dc 42            	mul	x,a
+6163  00dd 1d0024        	subw	x,#36
+6164  00e0 c6002b        	ld	a,_swuart_frame+28
+6165  00e3 d7038a        	ld	(_sc+655,x),a
+6166  00e6               L5542:
+6167                     ; 1157 				if(swuart_frame.rxbuf[5] == 0xB3){	//此为SPC
+6169  00e6 c60024        	ld	a,_swuart_frame+21
+6170  00e9 a1b3          	cp	a,#179
+6171  00eb 2677          	jrne	L3542
+6172                     ; 1158 					sc.spc[i-1].MDID = i;
+6174  00ed 7b23          	ld	a,(OFST+0,sp)
+6175  00ef 97            	ld	xl,a
+6176  00f0 a627          	ld	a,#39
+6177  00f2 42            	mul	x,a
+6178  00f3 1d0027        	subw	x,#39
+6179  00f6 7b23          	ld	a,(OFST+0,sp)
+6180  00f8 d7013a        	ld	(_sc+63,x),a
+6181                     ; 1159 					sc.spc[i-1].deviceID[0] = swuart_frame.rxbuf[6];
+6183  00fb 7b23          	ld	a,(OFST+0,sp)
+6184  00fd 97            	ld	xl,a
+6185  00fe a627          	ld	a,#39
+6186  0100 42            	mul	x,a
+6187  0101 1d0027        	subw	x,#39
+6188  0104 c60025        	ld	a,_swuart_frame+22
+6189  0107 d70120        	ld	(_sc+37,x),a
+6190                     ; 1160 					sc.spc[i-1].deviceID[1] = swuart_frame.rxbuf[7];
+6192  010a 7b23          	ld	a,(OFST+0,sp)
+6193  010c 97            	ld	xl,a
+6194  010d a627          	ld	a,#39
+6195  010f 42            	mul	x,a
+6196  0110 1d0027        	subw	x,#39
+6197  0113 c60026        	ld	a,_swuart_frame+23
+6198  0116 d70121        	ld	(_sc+38,x),a
+6199                     ; 1161 					sc.spc[i-1].deviceID[2] = swuart_frame.rxbuf[8];
+6201  0119 7b23          	ld	a,(OFST+0,sp)
+6202  011b 97            	ld	xl,a
+6203  011c a627          	ld	a,#39
+6204  011e 42            	mul	x,a
+6205  011f 1d0027        	subw	x,#39
+6206  0122 c60027        	ld	a,_swuart_frame+24
+6207  0125 d70122        	ld	(_sc+39,x),a
+6208                     ; 1162 					sc.spc[i-1].deviceID[3] = swuart_frame.rxbuf[9];
+6210  0128 7b23          	ld	a,(OFST+0,sp)
+6211  012a 97            	ld	xl,a
+6212  012b a627          	ld	a,#39
+6213  012d 42            	mul	x,a
+6214  012e 1d0027        	subw	x,#39
+6215  0131 c60028        	ld	a,_swuart_frame+25
+6216  0134 d70123        	ld	(_sc+40,x),a
+6217                     ; 1163 					sc.spc[i-1].model = swuart_frame.rxbuf[10];
+6219  0137 7b23          	ld	a,(OFST+0,sp)
+6220  0139 97            	ld	xl,a
+6221  013a a627          	ld	a,#39
+6222  013c 42            	mul	x,a
+6223  013d 1d0027        	subw	x,#39
+6224  0140 c60029        	ld	a,_swuart_frame+26
+6225  0143 d70124        	ld	(_sc+41,x),a
+6226                     ; 1164 					sc.spc[i-1].firmware_version = swuart_frame.rxbuf[11];
+6228  0146 7b23          	ld	a,(OFST+0,sp)
+6229  0148 97            	ld	xl,a
+6230  0149 a627          	ld	a,#39
+6231  014b 42            	mul	x,a
+6232  014c 1d0027        	subw	x,#39
+6233  014f c6002a        	ld	a,_swuart_frame+27
+6234  0152 d70125        	ld	(_sc+42,x),a
+6235                     ; 1165 					sc.spc[i-1].HWTtest = swuart_frame.rxbuf[12];	
+6237  0155 7b23          	ld	a,(OFST+0,sp)
+6238  0157 97            	ld	xl,a
+6239  0158 a627          	ld	a,#39
+6240  015a 42            	mul	x,a
+6241  015b 1d0027        	subw	x,#39
+6242  015e c6002b        	ld	a,_swuart_frame+28
+6243  0161 d70144        	ld	(_sc+73,x),a
+6244  0164               L3542:
+6245                     ; 1129 	for(i = 1; i <= 15; i++){
+6247  0164 0c23          	inc	(OFST+0,sp)
+6250  0166 7b23          	ld	a,(OFST+0,sp)
+6251  0168 a110          	cp	a,#16
+6252  016a 2403          	jruge	L632
+6253  016c cc000a        	jp	L5442
+6254  016f               L632:
+6255                     ; 1176 }
+6258  016f 5b23          	addw	sp,#35
+6259  0171 81            	ret
+6312                     ; 1186 void slcspc_heartbeat(void)
+6312                     ; 1187 {
+6313                     .text:	section	.text,new
+6314  0000               _slcspc_heartbeat:
+6316  0000 5223          	subw	sp,#35
+6317       00000023      OFST:	set	35
+6320                     ; 1191 	for(j = 0; j < 15; j++){
+6322  0002 0f23          	clr	(OFST+0,sp)
+6323  0004               L3052:
+6324                     ; 1193 		if(sc.slc[j].MDID || sc.spc[j].MDID){
+6326  0004 7b23          	ld	a,(OFST+0,sp)
+6327  0006 97            	ld	xl,a
+6328  0007 a624          	ld	a,#36
+6329  0009 42            	mul	x,a
+6330  000a 724d0383      	tnz	(_sc+648,x)
+6331  000e 260f          	jrne	L3152
+6333  0010 7b23          	ld	a,(OFST+0,sp)
+6334  0012 97            	ld	xl,a
+6335  0013 a627          	ld	a,#39
+6336  0015 42            	mul	x,a
+6337  0016 724d013a      	tnz	(_sc+63,x)
+6338  001a 2603          	jrne	L242
+6339  001c cc00c0        	jp	L1152
+6340  001f               L242:
+6341  001f               L3152:
+6342                     ; 1195 			hb.frame_h1 = 0x7E;
+6344  001f a67e          	ld	a,#126
+6345  0021 6b02          	ld	(OFST-33,sp),a
+6346                     ; 1196 			hb.frame_h2 = 0x7E;
+6348  0023 a67e          	ld	a,#126
+6349  0025 6b03          	ld	(OFST-32,sp),a
+6350                     ; 1197 			hb.message_id = slcspc_get_message_id();
+6352  0027 cd0000        	call	_slcspc_get_message_id
+6354  002a 6b04          	ld	(OFST-31,sp),a
+6355                     ; 1198 			hb.payload[0] = 0x03;
+6357  002c a603          	ld	a,#3
+6358  002e 6b05          	ld	(OFST-30,sp),a
+6359                     ; 1199 			hb.payload[1] = 0x03;
+6361  0030 a603          	ld	a,#3
+6362  0032 6b06          	ld	(OFST-29,sp),a
+6363                     ; 1200 			hb.payload[2] = j + 1;
+6365  0034 7b23          	ld	a,(OFST+0,sp)
+6366  0036 4c            	inc	a
+6367  0037 6b07          	ld	(OFST-28,sp),a
+6368                     ; 1202 			ret = slcspc_one_process(&hb, 3, j + 1);
+6370  0039 7b23          	ld	a,(OFST+0,sp)
+6371  003b 4c            	inc	a
+6372  003c 88            	push	a
+6373  003d 4b03          	push	#3
+6374  003f 96            	ldw	x,sp
+6375  0040 1c0004        	addw	x,#OFST-31
+6376  0043 cd0000        	call	_slcspc_one_process
+6378  0046 85            	popw	x
+6379  0047 6b01          	ld	(OFST-34,sp),a
+6380                     ; 1204 			if (ret == 0){
+6382  0049 0d01          	tnz	(OFST-34,sp)
+6383  004b 2673          	jrne	L1152
+6384                     ; 1207 					if(swuart_frame.rxbuf[5] == 0x06){
+6386  004d c60024        	ld	a,_swuart_frame+21
+6387  0050 a106          	cp	a,#6
+6388  0052 266c          	jrne	L1152
+6389                     ; 1209 						if(sc.slc[j].MDID){
+6391  0054 7b23          	ld	a,(OFST+0,sp)
+6392  0056 97            	ld	xl,a
+6393  0057 a624          	ld	a,#36
+6394  0059 42            	mul	x,a
+6395  005a 724d0383      	tnz	(_sc+648,x)
+6396  005e 2724          	jreq	L1252
+6397                     ; 1210 							sc.slc[j].ch1_status = swuart_frame.rxbuf[7];
+6399  0060 7b23          	ld	a,(OFST+0,sp)
+6400  0062 97            	ld	xl,a
+6401  0063 a624          	ld	a,#36
+6402  0065 42            	mul	x,a
+6403  0066 c60026        	ld	a,_swuart_frame+23
+6404  0069 d70384        	ld	(_sc+649,x),a
+6405                     ; 1211 							sc.slc[j].ch2_status = swuart_frame.rxbuf[8];
+6407  006c 7b23          	ld	a,(OFST+0,sp)
+6408  006e 97            	ld	xl,a
+6409  006f a624          	ld	a,#36
+6410  0071 42            	mul	x,a
+6411  0072 c60027        	ld	a,_swuart_frame+24
+6412  0075 d70385        	ld	(_sc+650,x),a
+6413                     ; 1214 							sc.slc[j].HWTtest = swuart_frame.rxbuf[11];								
+6415  0078 7b23          	ld	a,(OFST+0,sp)
+6416  007a 97            	ld	xl,a
+6417  007b a624          	ld	a,#36
+6418  007d 42            	mul	x,a
+6419  007e c6002a        	ld	a,_swuart_frame+27
+6420  0081 d7038a        	ld	(_sc+655,x),a
+6421  0084               L1252:
+6422                     ; 1216 						if(sc.spc[j].MDID){
+6424  0084 7b23          	ld	a,(OFST+0,sp)
+6425  0086 97            	ld	xl,a
+6426  0087 a627          	ld	a,#39
+6427  0089 42            	mul	x,a
+6428  008a 724d013a      	tnz	(_sc+63,x)
+6429  008e 2730          	jreq	L1152
+6430                     ; 1218 							sc.spc[j].ch1_status = swuart_frame.rxbuf[7];
+6432  0090 7b23          	ld	a,(OFST+0,sp)
+6433  0092 97            	ld	xl,a
+6434  0093 a627          	ld	a,#39
+6435  0095 42            	mul	x,a
+6436  0096 c60026        	ld	a,_swuart_frame+23
+6437  0099 d7013b        	ld	(_sc+64,x),a
+6438                     ; 1219 							sc.spc[j].ch2_status = swuart_frame.rxbuf[8];
+6440  009c 7b23          	ld	a,(OFST+0,sp)
+6441  009e 97            	ld	xl,a
+6442  009f a627          	ld	a,#39
+6443  00a1 42            	mul	x,a
+6444  00a2 c60027        	ld	a,_swuart_frame+24
+6445  00a5 d7013c        	ld	(_sc+65,x),a
+6446                     ; 1220 							sc.spc[j].ch3_status = swuart_frame.rxbuf[9];
+6448  00a8 7b23          	ld	a,(OFST+0,sp)
+6449  00aa 97            	ld	xl,a
+6450  00ab a627          	ld	a,#39
+6451  00ad 42            	mul	x,a
+6452  00ae c60028        	ld	a,_swuart_frame+25
+6453  00b1 d7013d        	ld	(_sc+66,x),a
+6454                     ; 1222 							sc.spc[j].HWTtest = swuart_frame.rxbuf[11];	
+6456  00b4 7b23          	ld	a,(OFST+0,sp)
+6457  00b6 97            	ld	xl,a
+6458  00b7 a627          	ld	a,#39
+6459  00b9 42            	mul	x,a
+6460  00ba c6002a        	ld	a,_swuart_frame+27
+6461  00bd d70144        	ld	(_sc+73,x),a
+6462  00c0               L1152:
+6463                     ; 1191 	for(j = 0; j < 15; j++){
+6465  00c0 0c23          	inc	(OFST+0,sp)
+6468  00c2 7b23          	ld	a,(OFST+0,sp)
+6469  00c4 a10f          	cp	a,#15
+6470  00c6 2403          	jruge	L442
+6471  00c8 cc0004        	jp	L3052
+6472  00cb               L442:
+6473                     ; 1235 }
+6476  00cb 5b23          	addw	sp,#35
+6477  00cd 81            	ret
+6531                     ; 1246 u8 slcspc_get_energy_consum(u8 i)
+6531                     ; 1247 {
+6532                     .text:	section	.text,new
+6533  0000               _slcspc_get_energy_consum:
+6535  0000 88            	push	a
+6536  0001 5224          	subw	sp,#36
+6537       00000024      OFST:	set	36
+6540                     ; 1251 	msg.frame_h1 = 0x7E;
+6542  0003 a67e          	ld	a,#126
+6543  0005 6b04          	ld	(OFST-32,sp),a
+6544                     ; 1252 	msg.frame_h2 = 0x7E;
+6546  0007 a67e          	ld	a,#126
+6547  0009 6b05          	ld	(OFST-31,sp),a
+6548                     ; 1253 	msg.message_id = slcspc_get_message_id();
+6550  000b cd0000        	call	_slcspc_get_message_id
+6552  000e 6b06          	ld	(OFST-30,sp),a
+6553                     ; 1254 	msg.payload[0] = 0xFE;		//自己定义
+6555  0010 a6fe          	ld	a,#254
+6556  0012 6b07          	ld	(OFST-29,sp),a
+6557                     ; 1255 	msg.payload[1] = 0x02;		//自己定义
+6559  0014 a602          	ld	a,#2
+6560  0016 6b08          	ld	(OFST-28,sp),a
+6561                     ; 1257 	sc.spc[i].energy_consume = 0;
+6563  0018 7b25          	ld	a,(OFST+1,sp)
+6564  001a 97            	ld	xl,a
+6565  001b a627          	ld	a,#39
+6566  001d 42            	mul	x,a
+6567  001e 905f          	clrw	y
+6568  0020 df0141        	ldw	(_sc+70,x),y
+6569                     ; 1259 	ret = slcspc_one_process(&msg, 2, i + 1);		
+6571  0023 7b25          	ld	a,(OFST+1,sp)
+6572  0025 4c            	inc	a
+6573  0026 88            	push	a
+6574  0027 4b02          	push	#2
+6575  0029 96            	ldw	x,sp
+6576  002a 1c0006        	addw	x,#OFST-30
+6577  002d cd0000        	call	_slcspc_one_process
+6579  0030 85            	popw	x
+6580  0031 6b03          	ld	(OFST-33,sp),a
+6581                     ; 1260 	if (ret == 0){
+6583  0033 0d03          	tnz	(OFST-33,sp)
+6584  0035 2635          	jrne	L7452
+6585                     ; 1261 		if(swuart_frame.rxbuf[5] == 0x2A){
+6587  0037 c60024        	ld	a,_swuart_frame+21
+6588  003a a12a          	cp	a,#42
+6589  003c 262e          	jrne	L7452
+6590                     ; 1262 			if(sc.spc[i].MDID == swuart_frame.rxbuf[8]){
+6592  003e 7b25          	ld	a,(OFST+1,sp)
+6593  0040 97            	ld	xl,a
+6594  0041 a627          	ld	a,#39
+6595  0043 42            	mul	x,a
+6596  0044 d6013a        	ld	a,(_sc+63,x)
+6597  0047 c10027        	cp	a,_swuart_frame+24
+6598  004a 2620          	jrne	L7452
+6599                     ; 1263 				sc.spc[i].energy_consume = swuart_frame.rxbuf[6] * 256 + swuart_frame.rxbuf[7];
+6601  004c c60025        	ld	a,_swuart_frame+22
+6602  004f 5f            	clrw	x
+6603  0050 97            	ld	xl,a
+6604  0051 4f            	clr	a
+6605  0052 02            	rlwa	x,a
+6606  0053 01            	rrwa	x,a
+6607  0054 cb0026        	add	a,_swuart_frame+23
+6608  0057 2401          	jrnc	L052
+6609  0059 5c            	incw	x
+6610  005a               L052:
+6611  005a 02            	rlwa	x,a
+6612  005b 1f01          	ldw	(OFST-35,sp),x
+6613  005d 01            	rrwa	x,a
+6614  005e 7b25          	ld	a,(OFST+1,sp)
+6615  0060 97            	ld	xl,a
+6616  0061 a627          	ld	a,#39
+6617  0063 42            	mul	x,a
+6618  0064 1601          	ldw	y,(OFST-35,sp)
+6619  0066 df0141        	ldw	(_sc+70,x),y
+6620                     ; 1264 				return 0;
+6622  0069 4f            	clr	a
+6624  006a 2002          	jra	L252
+6625  006c               L7452:
+6626                     ; 1270 	return 1;	
+6628  006c a601          	ld	a,#1
+6630  006e               L252:
+6632  006e 5b25          	addw	sp,#37
+6633  0070 81            	ret
+6713                     ; 1288 u8 slcspc_single_action_dimmer(u8 action, u8 mdid_channel, u8 value, u8 ext)
+6713                     ; 1289 {
+6714                     .text:	section	.text,new
+6715  0000               _slcspc_single_action_dimmer:
+6717  0000 89            	pushw	x
+6718  0001 5222          	subw	sp,#34
+6719       00000022      OFST:	set	34
+6722                     ; 1292 	u8 mdid = mdid_channel >> 4;
+6724  0003 9f            	ld	a,xl
+6725  0004 4e            	swap	a
+6726  0005 a40f          	and	a,#15
+6727  0007 6b01          	ld	(OFST-33,sp),a
+6728                     ; 1294 	msg.frame_h1 = 0x7E;
+6730  0009 a67e          	ld	a,#126
+6731  000b 6b02          	ld	(OFST-32,sp),a
+6732                     ; 1295 	msg.frame_h2 = 0x7E;
+6734  000d a67e          	ld	a,#126
+6735  000f 6b03          	ld	(OFST-31,sp),a
+6736                     ; 1296 	msg.message_id = slcspc_get_message_id();
+6738  0011 cd0000        	call	_slcspc_get_message_id
+6740  0014 6b04          	ld	(OFST-30,sp),a
+6741                     ; 1297 	msg.payload[0] = action;
+6743  0016 7b23          	ld	a,(OFST+1,sp)
+6744  0018 6b05          	ld	(OFST-29,sp),a
+6745                     ; 1298 	msg.payload[1] = mdid_channel;
+6747  001a 7b24          	ld	a,(OFST+2,sp)
+6748  001c 6b06          	ld	(OFST-28,sp),a
+6749                     ; 1299 	msg.payload[2] = value;
+6751  001e 7b27          	ld	a,(OFST+5,sp)
+6752  0020 6b07          	ld	(OFST-27,sp),a
+6753                     ; 1300 	msg.payload[3] = ext;
+6755  0022 7b28          	ld	a,(OFST+6,sp)
+6756  0024 6b08          	ld	(OFST-26,sp),a
+6757                     ; 1303 	ret = slcspc_one_process(&msg, 4, mdid);		
+6759  0026 7b01          	ld	a,(OFST-33,sp)
+6760  0028 88            	push	a
+6761  0029 4b04          	push	#4
+6762  002b 96            	ldw	x,sp
+6763  002c 1c0004        	addw	x,#OFST-30
+6764  002f cd0000        	call	_slcspc_one_process
+6766  0032 85            	popw	x
+6767  0033 6b01          	ld	(OFST-33,sp),a
+6768                     ; 1305 	return ret;
+6770  0035 7b01          	ld	a,(OFST-33,sp)
+6773  0037 5b24          	addw	sp,#36
+6774  0039 81            	ret
+6828                     ; 1314 u8 slcspc_single_action_dimmer_result(u8 mdid)
+6828                     ; 1315 {
+6829                     .text:	section	.text,new
+6830  0000               _slcspc_single_action_dimmer_result:
+6832  0000 88            	push	a
+6833  0001 5222          	subw	sp,#34
+6834       00000022      OFST:	set	34
+6837                     ; 1319 	msg.frame_h1 = 0x7E;
+6839  0003 a67e          	ld	a,#126
+6840  0005 6b02          	ld	(OFST-32,sp),a
+6841                     ; 1320 	msg.frame_h2 = 0x7E;
+6843  0007 a67e          	ld	a,#126
+6844  0009 6b03          	ld	(OFST-31,sp),a
+6845                     ; 1321 	msg.message_id = slcspc_get_message_id();
+6847  000b cd0000        	call	_slcspc_get_message_id
+6849  000e 6b04          	ld	(OFST-30,sp),a
+6850                     ; 1322 	msg.payload[0] = 0x59;
+6852  0010 a659          	ld	a,#89
+6853  0012 6b05          	ld	(OFST-29,sp),a
+6854                     ; 1323 	msg.payload[1] = mdid;
+6856  0014 7b23          	ld	a,(OFST+1,sp)
+6857  0016 6b06          	ld	(OFST-28,sp),a
+6858                     ; 1325 	ret = slcspc_one_process(&msg, 2, mdid);		
+6860  0018 7b23          	ld	a,(OFST+1,sp)
+6861  001a 88            	push	a
+6862  001b 4b02          	push	#2
+6863  001d 96            	ldw	x,sp
+6864  001e 1c0004        	addw	x,#OFST-30
+6865  0021 cd0000        	call	_slcspc_one_process
+6867  0024 85            	popw	x
+6868  0025 6b01          	ld	(OFST-33,sp),a
+6869                     ; 1326 	if (ret == 0){
+6871  0027 0d01          	tnz	(OFST-33,sp)
+6872  0029 264e          	jrne	L1362
+6873                     ; 1328 			if((swuart_frame.rxbuf[5] == 0xAA) && (swuart_frame.rxbuf[6]==0x05)){
+6875  002b c60024        	ld	a,_swuart_frame+21
+6876  002e a1aa          	cp	a,#170
+6877  0030 2647          	jrne	L1362
+6879  0032 c60025        	ld	a,_swuart_frame+22
+6880  0035 a105          	cp	a,#5
+6881  0037 2640          	jrne	L1362
+6882                     ; 1329 				sc.slc[swuart_frame.rxbuf[7] -1].ch1_status = swuart_frame.rxbuf[8];
+6884  0039 c60026        	ld	a,_swuart_frame+23
+6885  003c 97            	ld	xl,a
+6886  003d a624          	ld	a,#36
+6887  003f 42            	mul	x,a
+6888  0040 1d0024        	subw	x,#36
+6889  0043 c60027        	ld	a,_swuart_frame+24
+6890  0046 d70384        	ld	(_sc+649,x),a
+6891                     ; 1330 				sc.slc[swuart_frame.rxbuf[7] -1].ch2_status = swuart_frame.rxbuf[9];
+6893  0049 c60026        	ld	a,_swuart_frame+23
+6894  004c 97            	ld	xl,a
+6895  004d a624          	ld	a,#36
+6896  004f 42            	mul	x,a
+6897  0050 1d0024        	subw	x,#36
+6898  0053 c60028        	ld	a,_swuart_frame+25
+6899  0056 d70385        	ld	(_sc+650,x),a
+6900                     ; 1331 				sc.slc[swuart_frame.rxbuf[7] -1].ch3_status = swuart_frame.rxbuf[10];
+6902  0059 c60026        	ld	a,_swuart_frame+23
+6903  005c 97            	ld	xl,a
+6904  005d a624          	ld	a,#36
+6905  005f 42            	mul	x,a
+6906  0060 1d0024        	subw	x,#36
+6907  0063 c60029        	ld	a,_swuart_frame+26
+6908  0066 d70386        	ld	(_sc+651,x),a
+6909                     ; 1332 				sc.slc[swuart_frame.rxbuf[7] -1].ch4_status = swuart_frame.rxbuf[11];
+6911  0069 c60026        	ld	a,_swuart_frame+23
+6912  006c 97            	ld	xl,a
+6913  006d a624          	ld	a,#36
+6914  006f 42            	mul	x,a
+6915  0070 1d0024        	subw	x,#36
+6916  0073 c6002a        	ld	a,_swuart_frame+27
+6917  0076 d70387        	ld	(_sc+652,x),a
+6918  0079               L1362:
+6919                     ; 1338 	return ret;
+6921  0079 7b01          	ld	a,(OFST-33,sp)
+6924  007b 5b23          	addw	sp,#35
+6925  007d 81            	ret
+7006                     ; 1351 u8 slcspc_action_plug(u8 action, u8 mdid_channel, u8 value, u8 ext)
+7006                     ; 1352 {
+7007                     .text:	section	.text,new
+7008  0000               _slcspc_action_plug:
+7010  0000 89            	pushw	x
+7011  0001 5222          	subw	sp,#34
+7012       00000022      OFST:	set	34
+7015                     ; 1355 	u8 mdid = mdid_channel >> 4;
+7017  0003 9f            	ld	a,xl
+7018  0004 4e            	swap	a
+7019  0005 a40f          	and	a,#15
+7020  0007 6b01          	ld	(OFST-33,sp),a
+7021                     ; 1357 	msg.frame_h1 = 0x7E;
+7023  0009 a67e          	ld	a,#126
+7024  000b 6b02          	ld	(OFST-32,sp),a
+7025                     ; 1358 	msg.frame_h2 = 0x7E;
+7027  000d a67e          	ld	a,#126
+7028  000f 6b03          	ld	(OFST-31,sp),a
+7029                     ; 1359 	msg.message_id = slcspc_get_message_id();
+7031  0011 cd0000        	call	_slcspc_get_message_id
+7033  0014 6b04          	ld	(OFST-30,sp),a
+7034                     ; 1360 	msg.payload[0] = action;
+7036  0016 7b23          	ld	a,(OFST+1,sp)
+7037  0018 6b05          	ld	(OFST-29,sp),a
+7038                     ; 1361 	msg.payload[1] = mdid_channel;
+7040  001a 7b24          	ld	a,(OFST+2,sp)
+7041  001c 6b06          	ld	(OFST-28,sp),a
+7042                     ; 1362 	msg.payload[2] = value;
+7044  001e 7b27          	ld	a,(OFST+5,sp)
+7045  0020 6b07          	ld	(OFST-27,sp),a
+7046                     ; 1363 	msg.payload[3] = ext;
+7048  0022 7b28          	ld	a,(OFST+6,sp)
+7049  0024 6b08          	ld	(OFST-26,sp),a
+7050                     ; 1365 	ret = slcspc_one_process(&msg, 4, mdid);		
+7052  0026 7b01          	ld	a,(OFST-33,sp)
+7053  0028 88            	push	a
+7054  0029 4b04          	push	#4
+7055  002b 96            	ldw	x,sp
+7056  002c 1c0004        	addw	x,#OFST-30
+7057  002f cd0000        	call	_slcspc_one_process
+7059  0032 85            	popw	x
+7060  0033 6b01          	ld	(OFST-33,sp),a
+7061                     ; 1366 	if (ret == 0){
+7063  0035 0d01          	tnz	(OFST-33,sp)
+7064  0037 264e          	jrne	L7662
+7065                     ; 1369 			if((swuart_frame.rxbuf[5] == 0xAA) && (swuart_frame.rxbuf[6] == 0x05)){
+7067  0039 c60024        	ld	a,_swuart_frame+21
+7068  003c a1aa          	cp	a,#170
+7069  003e 2647          	jrne	L7662
+7071  0040 c60025        	ld	a,_swuart_frame+22
+7072  0043 a105          	cp	a,#5
+7073  0045 2640          	jrne	L7662
+7074                     ; 1370 				sc.spc[swuart_frame.rxbuf[7] -1].ch1_status = swuart_frame.rxbuf[8];
+7076  0047 c60026        	ld	a,_swuart_frame+23
+7077  004a 97            	ld	xl,a
+7078  004b a627          	ld	a,#39
+7079  004d 42            	mul	x,a
+7080  004e 1d0027        	subw	x,#39
+7081  0051 c60027        	ld	a,_swuart_frame+24
+7082  0054 d7013b        	ld	(_sc+64,x),a
+7083                     ; 1371 				sc.spc[swuart_frame.rxbuf[7] -1].ch2_status = swuart_frame.rxbuf[9];
+7085  0057 c60026        	ld	a,_swuart_frame+23
+7086  005a 97            	ld	xl,a
+7087  005b a627          	ld	a,#39
+7088  005d 42            	mul	x,a
+7089  005e 1d0027        	subw	x,#39
+7090  0061 c60028        	ld	a,_swuart_frame+25
+7091  0064 d7013c        	ld	(_sc+65,x),a
+7092                     ; 1372 				sc.spc[swuart_frame.rxbuf[7] -1].ch3_status = swuart_frame.rxbuf[10];
+7094  0067 c60026        	ld	a,_swuart_frame+23
+7095  006a 97            	ld	xl,a
+7096  006b a627          	ld	a,#39
+7097  006d 42            	mul	x,a
+7098  006e 1d0027        	subw	x,#39
+7099  0071 c60029        	ld	a,_swuart_frame+26
+7100  0074 d7013d        	ld	(_sc+66,x),a
+7101                     ; 1373 				sc.spc[swuart_frame.rxbuf[7] -1].ch4_status = swuart_frame.rxbuf[11];
+7103  0077 c60026        	ld	a,_swuart_frame+23
+7104  007a 97            	ld	xl,a
+7105  007b a627          	ld	a,#39
+7106  007d 42            	mul	x,a
+7107  007e 1d0027        	subw	x,#39
+7108  0081 c6002a        	ld	a,_swuart_frame+27
+7109  0084 d7013e        	ld	(_sc+67,x),a
+7110  0087               L7662:
+7111                     ; 1380 	return ret;
+7113  0087 7b01          	ld	a,(OFST-33,sp)
+7116  0089 5b24          	addw	sp,#36
+7117  008b 81            	ret
+7159                     ; 1390 u8 slcspc_multiple_action_dimmer(u8 num)
+7159                     ; 1391 {
+7160                     .text:	section	.text,new
+7161  0000               _slcspc_multiple_action_dimmer:
+7163  0000 88            	push	a
+7164  0001 88            	push	a
+7165       00000001      OFST:	set	1
+7168                     ; 1394 	for(i = 0; i < num; i++){
+7170  0002 0f01          	clr	(OFST+0,sp)
+7172  0004 2021          	jra	L5172
+7173  0006               L1172:
+7174                     ; 1396 		slcspc_single_action_dimmer(0x51, sicp_buf[8 + i], sicp_buf[8 + num], sicp_buf[9 + num]);
+7176  0006 7b02          	ld	a,(OFST+1,sp)
+7177  0008 5f            	clrw	x
+7178  0009 97            	ld	xl,a
+7179  000a d6007e        	ld	a,(_sicp_buf+9,x)
+7180  000d 88            	push	a
+7181  000e 7b03          	ld	a,(OFST+2,sp)
+7182  0010 5f            	clrw	x
+7183  0011 97            	ld	xl,a
+7184  0012 d6007d        	ld	a,(_sicp_buf+8,x)
+7185  0015 88            	push	a
+7186  0016 7b03          	ld	a,(OFST+2,sp)
+7187  0018 5f            	clrw	x
+7188  0019 97            	ld	xl,a
+7189  001a d6007d        	ld	a,(_sicp_buf+8,x)
+7190  001d 97            	ld	xl,a
+7191  001e a651          	ld	a,#81
+7192  0020 95            	ld	xh,a
+7193  0021 cd0000        	call	_slcspc_single_action_dimmer
+7195  0024 85            	popw	x
+7196                     ; 1394 	for(i = 0; i < num; i++){
+7198  0025 0c01          	inc	(OFST+0,sp)
+7199  0027               L5172:
+7202  0027 7b01          	ld	a,(OFST+0,sp)
+7203  0029 1102          	cp	a,(OFST+1,sp)
+7204  002b 25d9          	jrult	L1172
+7205                     ; 1400 	return 0;
+7207  002d 4f            	clr	a
+7210  002e 85            	popw	x
+7211  002f 81            	ret
+7253                     ; 1411 u8 slcspc_multiple_action_plug(u8 num)
+7253                     ; 1412 {
+7254                     .text:	section	.text,new
+7255  0000               _slcspc_multiple_action_plug:
+7257  0000 88            	push	a
+7258  0001 88            	push	a
+7259       00000001      OFST:	set	1
+7262                     ; 1415 	for(i = 0; i < num; i++){
+7264  0002 0f01          	clr	(OFST+0,sp)
+7266  0004 2021          	jra	L3472
+7267  0006               L7372:
+7268                     ; 1417 		slcspc_action_plug(0x55, sicp_buf[8 + i], sicp_buf[8 + num], sicp_buf[9 + num]);
+7270  0006 7b02          	ld	a,(OFST+1,sp)
+7271  0008 5f            	clrw	x
+7272  0009 97            	ld	xl,a
+7273  000a d6007e        	ld	a,(_sicp_buf+9,x)
+7274  000d 88            	push	a
+7275  000e 7b03          	ld	a,(OFST+2,sp)
+7276  0010 5f            	clrw	x
+7277  0011 97            	ld	xl,a
+7278  0012 d6007d        	ld	a,(_sicp_buf+8,x)
+7279  0015 88            	push	a
+7280  0016 7b03          	ld	a,(OFST+2,sp)
+7281  0018 5f            	clrw	x
+7282  0019 97            	ld	xl,a
+7283  001a d6007d        	ld	a,(_sicp_buf+8,x)
+7284  001d 97            	ld	xl,a
+7285  001e a655          	ld	a,#85
+7286  0020 95            	ld	xh,a
+7287  0021 cd0000        	call	_slcspc_action_plug
+7289  0024 85            	popw	x
+7290                     ; 1415 	for(i = 0; i < num; i++){
+7292  0025 0c01          	inc	(OFST+0,sp)
+7293  0027               L3472:
+7296  0027 7b01          	ld	a,(OFST+0,sp)
+7297  0029 1102          	cp	a,(OFST+1,sp)
+7298  002b 25d9          	jrult	L7372
+7299                     ; 1421 	return 0;
+7301  002d 4f            	clr	a
+7304  002e 85            	popw	x
+7305  002f 81            	ret
+7330                     ; 1429 void slcspc_select_channel_init(void)
+7330                     ; 1430 {
+7331                     .text:	section	.text,new
+7332  0000               _slcspc_select_channel_init:
+7336                     ; 1432 	GPIO_Init(SLCSPC_SELECT_GPIO, (GPIO_Pin_TypeDef)SLCSPC_SELECT_HIGH, GPIO_MODE_OUT_PP_HIGH_FAST); 
+7338  0000 4bf0          	push	#240
+7339  0002 4b20          	push	#32
+7340  0004 ae500a        	ldw	x,#20490
+7341  0007 cd0000        	call	_GPIO_Init
+7343  000a 85            	popw	x
+7344                     ; 1433 	GPIO_Init(SLCSPC_SELECT_GPIO, (GPIO_Pin_TypeDef)SLCSPC_SELECT_LOW,  GPIO_MODE_OUT_PP_HIGH_FAST); 
+7346  000b 4bf0          	push	#240
+7347  000d 4b10          	push	#16
+7348  000f ae500a        	ldw	x,#20490
+7349  0012 cd0000        	call	_GPIO_Init
+7351  0015 85            	popw	x
+7352                     ; 1434 	GPIO_Init(SLCSPC_SELECT_GPIO, (GPIO_Pin_TypeDef)SLCSPC_SELECT_PIN2, GPIO_MODE_OUT_PP_LOW_FAST); 
+7354  0016 4be0          	push	#224
+7355  0018 4b08          	push	#8
+7356  001a ae500a        	ldw	x,#20490
+7357  001d cd0000        	call	_GPIO_Init
+7359  0020 85            	popw	x
+7360                     ; 1435 	GPIO_Init(SLCSPC_SELECT_GPIO, (GPIO_Pin_TypeDef)SLCSPC_SELECT_PIN1, GPIO_MODE_OUT_PP_LOW_FAST); 
+7362  0021 4be0          	push	#224
+7363  0023 4b04          	push	#4
+7364  0025 ae500a        	ldw	x,#20490
+7365  0028 cd0000        	call	_GPIO_Init
+7367  002b 85            	popw	x
+7368                     ; 1436 	GPIO_Init(SLCSPC_SELECT_GPIO, (GPIO_Pin_TypeDef)SLCSPC_SELECT_PIN0, GPIO_MODE_OUT_PP_LOW_FAST); 
+7370  002c 4be0          	push	#224
+7371  002e 4b02          	push	#2
+7372  0030 ae500a        	ldw	x,#20490
+7373  0033 cd0000        	call	_GPIO_Init
+7375  0036 85            	popw	x
+7376                     ; 1438 }
+7379  0037 81            	ret
+7405                     ; 1441 void slcspc_select_channel_reset(void)
+7405                     ; 1442 {
+7406                     .text:	section	.text,new
+7407  0000               _slcspc_select_channel_reset:
+7411                     ; 1443 	GPIO_WriteHigh(SLCSPC_SELECT_GPIO, (GPIO_Pin_TypeDef)SLCSPC_SELECT_HIGH);
+7413  0000 4b20          	push	#32
+7414  0002 ae500a        	ldw	x,#20490
+7415  0005 cd0000        	call	_GPIO_WriteHigh
+7417  0008 84            	pop	a
+7418                     ; 1444 	GPIO_WriteHigh(SLCSPC_SELECT_GPIO, (GPIO_Pin_TypeDef)SLCSPC_SELECT_LOW);
+7420  0009 4b10          	push	#16
+7421  000b ae500a        	ldw	x,#20490
+7422  000e cd0000        	call	_GPIO_WriteHigh
+7424  0011 84            	pop	a
+7425                     ; 1445 	GPIO_WriteLow(SLCSPC_SELECT_GPIO, (GPIO_Pin_TypeDef)SLCSPC_SELECT_PIN2);
+7427  0012 4b08          	push	#8
+7428  0014 ae500a        	ldw	x,#20490
+7429  0017 cd0000        	call	_GPIO_WriteLow
+7431  001a 84            	pop	a
+7432                     ; 1446 	GPIO_WriteLow(SLCSPC_SELECT_GPIO, (GPIO_Pin_TypeDef)SLCSPC_SELECT_PIN1);
+7434  001b 4b04          	push	#4
+7435  001d ae500a        	ldw	x,#20490
+7436  0020 cd0000        	call	_GPIO_WriteLow
+7438  0023 84            	pop	a
+7439                     ; 1447 	GPIO_WriteLow(SLCSPC_SELECT_GPIO, (GPIO_Pin_TypeDef)SLCSPC_SELECT_PIN0);
+7441  0024 4b02          	push	#2
+7442  0026 ae500a        	ldw	x,#20490
+7443  0029 cd0000        	call	_GPIO_WriteLow
+7445  002c 84            	pop	a
+7446                     ; 1448 }
+7449  002d 81            	ret
+7485                     ; 1451 void slcspc_select_channel(u8 addr)
+7485                     ; 1452 {
+7486                     .text:	section	.text,new
+7487  0000               _slcspc_select_channel:
+7489  0000 88            	push	a
+7490       00000000      OFST:	set	0
+7493                     ; 1453 	slcspc_select_channel_reset();
+7495  0001 cd0000        	call	_slcspc_select_channel_reset
+7497                     ; 1455 	if(addr & 0x08){
+7499  0004 7b01          	ld	a,(OFST+1,sp)
+7500  0006 a508          	bcp	a,#8
+7501  0008 270b          	jreq	L3003
+7502                     ; 1456 		GPIO_WriteLow(SLCSPC_SELECT_GPIO, (GPIO_Pin_TypeDef)SLCSPC_SELECT_HIGH);
+7504  000a 4b20          	push	#32
+7505  000c ae500a        	ldw	x,#20490
+7506  000f cd0000        	call	_GPIO_WriteLow
+7508  0012 84            	pop	a
+7510  0013 2009          	jra	L5003
+7511  0015               L3003:
+7512                     ; 1458 		GPIO_WriteLow(SLCSPC_SELECT_GPIO, (GPIO_Pin_TypeDef)SLCSPC_SELECT_LOW);
+7514  0015 4b10          	push	#16
+7515  0017 ae500a        	ldw	x,#20490
+7516  001a cd0000        	call	_GPIO_WriteLow
+7518  001d 84            	pop	a
+7519  001e               L5003:
+7520                     ; 1461 	if(addr & 0x04){
+7522  001e 7b01          	ld	a,(OFST+1,sp)
+7523  0020 a504          	bcp	a,#4
+7524  0022 2709          	jreq	L7003
+7525                     ; 1462 		GPIO_WriteHigh(SLCSPC_SELECT_GPIO, (GPIO_Pin_TypeDef)SLCSPC_SELECT_PIN2);
+7527  0024 4b08          	push	#8
+7528  0026 ae500a        	ldw	x,#20490
+7529  0029 cd0000        	call	_GPIO_WriteHigh
+7531  002c 84            	pop	a
+7532  002d               L7003:
+7533                     ; 1465 	if(addr & 0x02){
+7535  002d 7b01          	ld	a,(OFST+1,sp)
+7536  002f a502          	bcp	a,#2
+7537  0031 2709          	jreq	L1103
+7538                     ; 1466 		GPIO_WriteHigh(SLCSPC_SELECT_GPIO, (GPIO_Pin_TypeDef)SLCSPC_SELECT_PIN1);
+7540  0033 4b04          	push	#4
+7541  0035 ae500a        	ldw	x,#20490
+7542  0038 cd0000        	call	_GPIO_WriteHigh
+7544  003b 84            	pop	a
+7545  003c               L1103:
+7546                     ; 1469 	if(addr & 0x01){
+7548  003c 7b01          	ld	a,(OFST+1,sp)
+7549  003e a501          	bcp	a,#1
+7550  0040 2709          	jreq	L3103
+7551                     ; 1470 		GPIO_WriteHigh(SLCSPC_SELECT_GPIO, (GPIO_Pin_TypeDef)SLCSPC_SELECT_PIN0);
+7553  0042 4b02          	push	#2
+7554  0044 ae500a        	ldw	x,#20490
+7555  0047 cd0000        	call	_GPIO_WriteHigh
+7557  004a 84            	pop	a
+7558  004b               L3103:
+7559                     ; 1473 }
+7562  004b 84            	pop	a
+7563  004c 81            	ret
+7698                     	xdef	_slcspc_check_sum
+7699                     	xdef	_send_malfunction
+7700                     	xdef	_send_spc_device_info
+7701                     	xdef	_send_slc_device_info
+7702                     	xdef	_sicp_recv_DD
+7703                     	xdef	_host_meshid_save
+7704                     	xdef	_clear_uart_buf
+7705                     	xdef	_uart1_send
+7706                     	xdef	_BIT
+7707                     	xref	_MEEPROM_WriteByte
+7708                     	xref	_cmd_led_flag
+7709                     	xref	_rand
+7710                     	xdef	_slcspc_multiple_action_plug
+7711                     	xdef	_slcspc_multiple_action_dimmer
+7712                     	xdef	_slcspc_action_plug
+7713                     	xdef	_slcspc_single_action_dimmer_result
+7714                     	xdef	_slcspc_single_action_dimmer
+7715                     	xdef	_slcspc_get_energy_consum
+7716                     	xdef	_slcspc_heartbeat
+7717                     	xdef	_slcspc_device_info
+7718                     	xdef	_slcspc_one_process
+7719                     	xdef	_slcspc_select_channel_reset
+7720                     	xdef	_slcspc_select_channel
+7721                     	xdef	_slcspc_select_channel_init
+7722                     	xdef	_slcspc_send_and_recv
+7723                     	xdef	_sicp_get_message_id
+7724                     	xdef	_slcspc_get_message_id
+7725                     	switch	.bss
+7726  0000               _hb_fail_mdid_cnt:
+7727  0000 000000000000  	ds.b	15
+7728                     	xdef	_hb_fail_mdid_cnt
+7729  000f               _swuart_frame:
+7730  000f 000000000000  	ds.b	96
+7731                     	xdef	_swuart_frame
+7732                     	xdef	_UART3_RX_ISR
+7733                     	xdef	_UART3_TX_ISR
+7734                     	xdef	_uart3_init
+7735                     	xdef	_delay
+7736                     	xdef	_sicp_heart_beat
+7737                     	xdef	_send_device_info_active
+7738                     	xdef	_send_device_info_all
+7739                     	xdef	_malfunction_detect
+7740                     	xdef	_malfunction_sended_confirm
+7741                     	xdef	_send_device_info
+7742                     	xdef	_report_energy_consum
+7743                     	xdef	_sicp_receipt_Done
+7744                     	xdef	_sicp_receipt
+7745                     	xdef	_sicp_send_message
+7746                     	xdef	_random
+7747                     	xdef	_Check_Sum
+7748                     	xdef	_sicp_rev_anaylze
+7749                     	xdef	_UART1_RX_ISR
+7750                     	xdef	_UART1_TX_ISR
+7751                     	xdef	_uart1_init
+7752                     	xdef	_mymemcpy
+7753  006f               _mal_timeout:
+7754  006f 00            	ds.b	1
+7755                     	xdef	_mal_timeout
+7756  0070               _di_timeout:
+7757  0070 00            	ds.b	1
+7758                     	xdef	_di_timeout
+7759  0071               _send_failed_count:
+7760  0071 0000          	ds.b	2
+7761                     	xdef	_send_failed_count
+7762  0073               _send_fault_count:
+7763  0073 0000          	ds.b	2
+7764                     	xdef	_send_fault_count
+7765  0075               _sicp_buf:
+7766  0075 000000000000  	ds.b	40
+7767                     	xdef	_sicp_buf
+7768  009d               _Uart2_Rec_Cnt:
+7769  009d 00            	ds.b	1
+7770                     	xdef	_Uart2_Rec_Cnt
+7771  009e               _Uart2_Rece_Buf:
+7772  009e 000000000000  	ds.b	40
+7773                     	xdef	_Uart2_Rece_Buf
+7774  00c6               _Uart2_Send_Done:
+7775  00c6 00            	ds.b	1
+7776                     	xdef	_Uart2_Send_Done
+7777  00c7               _Uart2_Send_Cnt:
+7778  00c7 00            	ds.b	1
+7779                     	xdef	_Uart2_Send_Cnt
+7780  00c8               _Uart2_Send_Length:
+7781  00c8 00            	ds.b	1
+7782                     	xdef	_Uart2_Send_Length
+7783  00c9               _UART2_Send_Buf:
+7784  00c9 000000000000  	ds.b	40
+7785                     	xdef	_UART2_Send_Buf
+7786  00f1               _rev_mesh_id_L:
+7787  00f1 00            	ds.b	1
+7788                     	xdef	_rev_mesh_id_L
+7789  00f2               _rev_mesh_id_H:
+7790  00f2 00            	ds.b	1
+7791                     	xdef	_rev_mesh_id_H
+7792  00f3               _rev_message_id:
+7793  00f3 00            	ds.b	1
+7794                     	xdef	_rev_message_id
+7795  00f4               _ns_host_meshid_L:
+7796  00f4 00            	ds.b	1
+7797                     	xdef	_ns_host_meshid_L
+7798  00f5               _ns_host_meshid_H:
+7799  00f5 00            	ds.b	1
+7800                     	xdef	_ns_host_meshid_H
+7801  00f6               _ns_own_meshid_L:
+7802  00f6 00            	ds.b	1
+7803                     	xdef	_ns_own_meshid_L
+7804  00f7               _ns_own_meshid_H:
+7805  00f7 00            	ds.b	1
+7806                     	xdef	_ns_own_meshid_H
+7807  00f8               _ns_phonenum:
+7808  00f8 00            	ds.b	1
+7809                     	xdef	_ns_phonenum
+7810  00f9               _ns_status:
+7811  00f9 00            	ds.b	1
+7812                     	xdef	_ns_status
+7813  00fa               _ns_signal:
+7814  00fa 00            	ds.b	1
+7815                     	xdef	_ns_signal
+7816  00fb               _sc:
+7817  00fb 000000000000  	ds.b	1163
+7818                     	xdef	_sc
+7819  0586               _UART1Flag6_:
+7820  0586 00            	ds.b	1
+7821                     	xdef	_UART1Flag6_
+7822  0587               _UART1Flag5_:
+7823  0587 00            	ds.b	1
+7824                     	xdef	_UART1Flag5_
+7825  0588               _UART1Flag4_:
+7826  0588 00            	ds.b	1
+7827                     	xdef	_UART1Flag4_
+7828  0589               _UART1Flag3_:
+7829  0589 00            	ds.b	1
+7830                     	xdef	_UART1Flag3_
+7831  058a               _UART1Flag2_:
+7832  058a 00            	ds.b	1
+7833                     	xdef	_UART1Flag2_
+7834  058b               _UART1Flag1_:
+7835  058b 00            	ds.b	1
+7836                     	xdef	_UART1Flag1_
+7837                     	xref	_UART3_ITConfig
+7838                     	xref	_UART3_Cmd
+7839                     	xref	_UART3_Init
+7840                     	xref	_UART3_DeInit
+7841                     	xref	_UART1_ITConfig
+7842                     	xref	_UART1_Cmd
+7843                     	xref	_UART1_Init
+7844                     	xref	_UART1_DeInit
+7845                     	xref	_GPIO_WriteLow
+7846                     	xref	_GPIO_WriteHigh
+7847                     	xref	_GPIO_Init
+7848                     	xref.b	c_lreg
+7849                     	xref.b	c_x
+7850                     	xref.b	c_y
+7870                     	xref	c_sdivx
+7871                     	xref	c_idiv
+7872                     	xref	c_lrzmp
+7873                     	xref	c_lgsbc
+7874                     	xref	c_ltor
+7875                     	end

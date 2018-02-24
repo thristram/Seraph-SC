@@ -96,48 +96,62 @@
  525  0000               f_TIM3_CAP_COM_IRQHandler:
  530                     ; 312 }
  533  0000 80            	iret
- 556                     ; 361  INTERRUPT_HANDLER(UART2_TX_IRQHandler, 20)
- 556                     ; 362 {
+ 556                     ; 322  INTERRUPT_HANDLER(UART1_TX_IRQHandler, 17)
+ 556                     ; 323 {
  557                     .text:	section	.text,new
- 558  0000               f_UART2_TX_IRQHandler:
- 563                     ; 366   }
+ 558  0000               f_UART1_TX_IRQHandler:
+ 563                     ; 327 }
  566  0000 80            	iret
- 589                     ; 373  INTERRUPT_HANDLER(UART2_RX_IRQHandler, 21)
- 589                     ; 374 {
+ 589                     ; 334  INTERRUPT_HANDLER(UART1_RX_IRQHandler, 18)
+ 589                     ; 335 {
  590                     .text:	section	.text,new
- 591  0000               f_UART2_RX_IRQHandler:
- 596                     ; 378   }
+ 591  0000               f_UART1_RX_IRQHandler:
+ 596                     ; 339 }
  599  0000 80            	iret
- 621                     ; 426  INTERRUPT_HANDLER(ADC1_IRQHandler, 22)
- 621                     ; 427 {
- 622                     .text:	section	.text,new
- 623  0000               f_ADC1_IRQHandler:
- 628                     ; 432 }
- 631  0000 80            	iret
- 654                     ; 466 INTERRUPT_HANDLER(EEPROM_EEC_IRQHandler, 24)
- 654                     ; 467 {
- 655                     .text:	section	.text,new
- 656  0000               f_EEPROM_EEC_IRQHandler:
- 661                     ; 471 }
- 664  0000 80            	iret
- 676                     	xdef	f_EEPROM_EEC_IRQHandler
- 677                     	xdef	f_ADC1_IRQHandler
- 678                     	xdef	f_UART2_TX_IRQHandler
- 679                     	xdef	f_UART2_RX_IRQHandler
- 680                     	xdef	f_TIM3_CAP_COM_IRQHandler
- 681                     	xdef	f_TIM3_UPD_OVF_BRK_IRQHandler
- 682                     	xdef	f_TIM2_CAP_COM_IRQHandler
- 683                     	xdef	f_TIM2_UPD_OVF_BRK_IRQHandler
- 684                     	xdef	f_TIM1_UPD_OVF_TRG_BRK_IRQHandler
- 685                     	xdef	f_TIM1_CAP_COM_IRQHandler
- 686                     	xdef	f_SPI_IRQHandler
- 687                     	xdef	f_EXTI_PORTE_IRQHandler
- 688                     	xdef	f_EXTI_PORTD_IRQHandler
- 689                     	xdef	f_EXTI_PORTC_IRQHandler
- 690                     	xdef	f_EXTI_PORTB_IRQHandler
- 691                     	xdef	f_EXTI_PORTA_IRQHandler
- 692                     	xdef	f_CLK_IRQHandler
- 693                     	xdef	f_AWU_IRQHandler
- 694                     	xdef	f_TLI_IRQHandler
- 695                     	xdef	f_TRAP_IRQHandler
- 714                     	end
+ 622                     ; 387  INTERRUPT_HANDLER(UART3_TX_IRQHandler, 20)
+ 622                     ; 388 {
+ 623                     .text:	section	.text,new
+ 624  0000               f_UART3_TX_IRQHandler:
+ 629                     ; 392   }
+ 632  0000 80            	iret
+ 655                     ; 399  INTERRUPT_HANDLER(UART3_RX_IRQHandler, 21)
+ 655                     ; 400 {
+ 656                     .text:	section	.text,new
+ 657  0000               f_UART3_RX_IRQHandler:
+ 662                     ; 404   }
+ 665  0000 80            	iret
+ 687                     ; 413  INTERRUPT_HANDLER(ADC2_IRQHandler, 22)
+ 687                     ; 414 {
+ 688                     .text:	section	.text,new
+ 689  0000               f_ADC2_IRQHandler:
+ 694                     ; 419 }
+ 697  0000 80            	iret
+ 720                     ; 466 INTERRUPT_HANDLER(EEPROM_EEC_IRQHandler, 24)
+ 720                     ; 467 {
+ 721                     .text:	section	.text,new
+ 722  0000               f_EEPROM_EEC_IRQHandler:
+ 727                     ; 471 }
+ 730  0000 80            	iret
+ 742                     	xdef	f_EEPROM_EEC_IRQHandler
+ 743                     	xdef	f_ADC2_IRQHandler
+ 744                     	xdef	f_UART3_TX_IRQHandler
+ 745                     	xdef	f_UART3_RX_IRQHandler
+ 746                     	xdef	f_UART1_RX_IRQHandler
+ 747                     	xdef	f_UART1_TX_IRQHandler
+ 748                     	xdef	f_TIM3_CAP_COM_IRQHandler
+ 749                     	xdef	f_TIM3_UPD_OVF_BRK_IRQHandler
+ 750                     	xdef	f_TIM2_CAP_COM_IRQHandler
+ 751                     	xdef	f_TIM2_UPD_OVF_BRK_IRQHandler
+ 752                     	xdef	f_TIM1_UPD_OVF_TRG_BRK_IRQHandler
+ 753                     	xdef	f_TIM1_CAP_COM_IRQHandler
+ 754                     	xdef	f_SPI_IRQHandler
+ 755                     	xdef	f_EXTI_PORTE_IRQHandler
+ 756                     	xdef	f_EXTI_PORTD_IRQHandler
+ 757                     	xdef	f_EXTI_PORTC_IRQHandler
+ 758                     	xdef	f_EXTI_PORTB_IRQHandler
+ 759                     	xdef	f_EXTI_PORTA_IRQHandler
+ 760                     	xdef	f_CLK_IRQHandler
+ 761                     	xdef	f_AWU_IRQHandler
+ 762                     	xdef	f_TLI_IRQHandler
+ 763                     	xdef	f_TRAP_IRQHandler
+ 782                     	end

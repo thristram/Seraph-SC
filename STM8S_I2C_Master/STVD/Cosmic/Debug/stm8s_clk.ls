@@ -340,7 +340,7 @@
  889  002f a103          	cp	a,#3
  890  0031 273c          	jreq	L011
  891  0033 7b01          	ld	a,(OFST+1,sp)
- 892  0035 a103          	cp	a,#3
+ 892  0035 a102          	cp	a,#2
  893  0037 2736          	jreq	L011
  894  0039 7b01          	ld	a,(OFST+1,sp)
  895  003b a104          	cp	a,#4
@@ -1069,9 +1069,9 @@
 2490  006f 200a          	jra	L3601
 2491  0071               L5601:
 2492                     ; 591     clockfrequency = HSE_VALUE;
-2494  0071 ae2400        	ldw	x,#9216
+2494  0071 ae3600        	ldw	x,#13824
 2495  0074 1f07          	ldw	(OFST-2,sp),x
-2496  0076 ae00f4        	ldw	x,#244
+2496  0076 ae016e        	ldw	x,#366
 2497  0079 1f05          	ldw	(OFST-4,sp),x
 2498  007b               L3601:
 2499                     ; 594   return((uint32_t)clockfrequency);

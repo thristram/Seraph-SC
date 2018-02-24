@@ -3,7 +3,7 @@ DumpRWOnFly1=0
 DumpRWOnFly2=0
 DumpRWOnFly3=0
 DumpRWOnFly4=0
-WatchVariables1=i2c_tx_buf!1;device_flag!1;test!1;sc!1;ret!1;mdid!1;i2c_rx_buf!1;ns_own_meshid_H!1;ns_own_meshid_L!1;ns_host_meshid_H!1;ns_host_meshid_L!1;i2c_rx_buf!1;
+WatchVariables1=swuart_frame!1;sc!1;temp!1;
 FormatWatch1=1
 FormatViewType1=1
 FormatViewAddress1=1
@@ -32,7 +32,7 @@ DisplayFormat=1
 ShowPeriphAddress=0
 ShowRegisterAddress=1
 [DebugState_v1-Debug.AddOn.St7McuIcdConf]
-McuName=STM8S005K6
+McuName=STM8S007C8
 [DebugState_v1-Debug.AddOn.IcdBreak]
 ICDBreak0=CR:0x00000000,BK1:0x00000000,BK2:0x00000000
 [DebugState_v1-Debug.AddOn.SteppingMode]

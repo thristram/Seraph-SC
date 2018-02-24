@@ -14,15 +14,26 @@ TIEMR_EXT union  FLAG 		Flag1_;
 #define f_300ms					Flag1_._flag_bit.bit2
 #define f_1s						Flag1_._flag_bit.bit3
 
-TIEMR_EXT uint16_t systime_count[5];
 
 
-TIEMR_EXT void Init_Time4(void);
-TIEMR_EXT void Sys_Time_Manage(void);
+void timer4_init(void);
+void timer2_init(void);
+
 #ifdef _COSMIC_
-@far @interrupt void TIM4InterruptHandle (void);
+@far @interrupt void Timer4_ISR (void);
 #else
-void TIM4InterruptHandle (void) interrupt 23;
+void Timer4_ISR (void) interrupt 23;
 #endif
+
+
+
+#ifdef _RAISONANCE_
+void Timer2_ISR(void) interrupt 13 ;
+#endif
+#ifdef _COSMIC_
+@far @interrupt void Timer2_ISR(void);
+#endif
+
+
 
 #endif

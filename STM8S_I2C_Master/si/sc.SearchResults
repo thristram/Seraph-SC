@@ -1,0 +1,3 @@
+---- uart1_send Matches (2 in 1 files) ----
+Uart.c (d:\fyl\wp\stm8s\stm8s_i2c_master\src):void uart1_send(u8 *buf, u16 len)
+Uart.c (d:\fyl\wp\stm8s\stm8s_i2c_master\src):	uart1_send(UART2_Send_Buf,7+payload_len);
